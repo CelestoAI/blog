@@ -86,7 +86,7 @@ If the task goes right, great — your real machine was never at risk.
 
 ## So what does SmolVM do?
 
-SmolVM is a Python SDK and CLI for running code and browser tasks inside **disposable sandboxes**. The goal is simple: give apps and AI agents an isolated workspace so risky work stays away from your machine. ([docs.celesto.ai][2])
+SmolVM is a Python SDK and CLI for running code and browser tasks inside **disposable sandboxes**. The goal is simple: give apps and AI agents an isolated workspace so risky work stays away from your machine.
 
 That is the key idea.
 
@@ -107,7 +107,7 @@ You can think of it like this:
 
 The agent works in that room, not in your whole house.
 
-SmolVM goes one step further and uses **microVMs**, which are just very small, lightweight virtual machines designed to start fast and stay isolated. Its docs say that on Linux it uses **Firecracker microVMs**, and on macOS it uses **QEMU**. You do not need to know those names to use the product. The important part is what they do: they create a separate environment so the agent is not running directly on your machine. ([docs.celesto.ai][2])
+SmolVM goes one step further and uses **microVMs**, which are just very small, lightweight virtual machines designed to start fast and stay isolated. Its docs say that on Linux it uses **Firecracker microVMs**, and on macOS it uses **QEMU**. You do not need to know those names to use the product. The important part is what they do: they create a separate environment so the agent is not running directly on your machine.
 
 ## Why is that better than running on the host?
 
