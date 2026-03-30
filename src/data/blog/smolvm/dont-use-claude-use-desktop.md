@@ -113,7 +113,7 @@ SmolVM goes one step further and uses **microVMs**, which are just very small, l
 
 Because the host is your actual machine.
 
-SmolVM’s AI agent integration guide explains the design clearly: instead of executing model-generated commands directly on your machine, it starts an isolated microVM, runs the code there, and tears it down when finished. ([docs.celesto.ai][3])
+SmolVM’s AI agent integration guide explains the design clearly: instead of executing model-generated commands directly on your machine, it starts an isolated microVM, runs the code there, and tears it down when finished.
 
 That one design choice fixes a lot.
 
@@ -136,7 +136,7 @@ Another term worth translating.
 
 **Ephemeral** just means **temporary**.
 
-An ephemeral sandbox is a fresh environment created for one task and destroyed right after. SmolVM’s docs describe this directly: spin up a fresh VM for every task, then destroy it so no state carries over between tasks. ([docs.celesto.ai][3])
+An ephemeral sandbox is a fresh environment created for one task and destroyed right after. SmolVM’s docs describe this directly: spin up a fresh VM for every task, then destroy it so no state carries over between tasks.
 
 That is useful when the task is risky or untrusted.
 
@@ -160,7 +160,7 @@ They assume the choice is:
 
 That is false.
 
-SmolVM’s docs also describe a **reusable sandbox across turns**. In plain English, that means the agent can keep the same temporary machine alive across multiple steps. So it can write a file now, come back later, read it again, edit it, and continue from where it left off. ([docs.celesto.ai][3])
+SmolVM’s docs also describe a **reusable sandbox across turns**. In plain English, that means the agent can keep the same temporary machine alive across multiple steps. So it can write a file now, come back later, read it again, edit it, and continue from where it left off.
 
 That is a much better model for agents.
 
@@ -172,7 +172,7 @@ You still avoid using the host machine.
 
 This matters for browser agents too.
 
-SmolVM includes a browser session that launches Chromium inside a microVM. The docs say this is useful for scraping, testing, and computer-use agents that need to interact with real web pages in an isolated environment. It can also expose a live view so you can watch what is happening. ([docs.celesto.ai][3])
+SmolVM includes a browser session that launches Chromium inside a microVM. The docs say this is useful for scraping, testing, and computer-use agents that need to interact with real web pages in an isolated environment. It can also expose a live view so you can watch what is happening.
 
 That is the important shift:
 
