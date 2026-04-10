@@ -5,7 +5,7 @@ pubDatetime: 2026-02-15T12:00:00Z
 title: "Orchestrating Dinner with OpenClaw"
 description: "Build an agentic personal chef that learns your preferences over time."
 tags: ["ai-agents", "food", "orchestration", "openclaw", "agentor", "exa", "observability"]
-featured: true
+featured: false
 ---
 
 # Orchestrating Dinner
