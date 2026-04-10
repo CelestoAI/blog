@@ -33,6 +33,7 @@ const {
   timezone,
   tags,
   hideEditPost,
+  authorUrl,
 } = post.data;
 
 const { Content } = await render(post);
@@ -96,16 +97,21 @@ const nextPost =
     >
       {title}
     </h1>
-    <div class="my-2 flex items-center gap-2">
-      <Datetime {pubDatetime} {modDatetime} {timezone} size="lg" />
-      <span
-        aria-hidden="true"
-        class:list={[
-          "max-sm:hidden",
-          { hidden: !SITE.editPost.enabled || hideEditPost },
-        ]}>|</span
-      >
-      <EditPost {hideEditPost} {post} class="max-sm:hidden" />
+    <div class="my-2">
+      <div class="text-sm text-opacity-80">
+        {authorUrl ? <a href={authorUrl} target="_blank" rel="noopener noreferrer" class="hover:text-accent underline underline-offset-2">{author}</a> : author}
+      </div>
+      <div class="flex items-center gap-2">
+        <Datetime {pubDatetime} {modDatetime} {timezone} size="lg" />
+        <span
+          aria-hidden="true"
+          class:list={[
+            "max-sm:hidden",
+            { hidden: !SITE.editPost.enabled || hideEditPost },
+          ]}>|</span
+        >
+        <EditPost {hideEditPost} {post} class="max-sm:hidden" />
+      </div>
     </div>
     <article
       id="article"

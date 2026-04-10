@@ -1,5 +1,6 @@
 ---
 author: Francesco Zuppichini
+authorUrl: "https://www.linkedin.com/in/francesco-zuppichini-94659a150"
 pubDatetime: 2026-02-05T12:00:00Z
 title: "Scraping Pokemon Cards with AI Agents"
 description: "Build an AI agent that scrapes Pokemon card prices from Cardmarket using Agentor and ScrapeGraphAI. Full code included."
