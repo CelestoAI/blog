@@ -1,8 +1,12 @@
 ---
-title: "How to Safely Run AI-Generated Code with SmolVM (Open-Source MicroVM Sandbox)"
+pubDatetime: 2026-04-21
+modDatetime: 2026-04-21
 published: true
+title: "How to Safely Run AI-Generated Code with SmolVM (Open-Source MicroVM Sandbox)"
 description: "SmolVM is an open-source microVM runtime that lets AI agents run untrusted code in a hardware-isolated sandbox. Learn why Docker isn't enough for LLM-generated code and how to spin up a Firecracker-powered sandbox in three lines of Python."
-tags: ai, python, opensource
+tags:
+  - python
+  - opensource
 ---
 
 Your AI agent just wrote some Python. Do you feel good about running it on your laptop?
