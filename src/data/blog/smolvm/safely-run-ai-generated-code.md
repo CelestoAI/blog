@@ -56,23 +56,28 @@ SmolVM wraps Firecracker (on Linux) and QEMU (on macOS) in a clean Python API so
 
 ## SmolVM quickstart
 
-Install it:
+Install SmolVM with a single command:
+
+```bash
+curl -sSL https://celesto.ai/install.sh | bash
+```
+
+This installs everything you need (including Python), configures your machine, and verifies the setup.
+
+<details>
+<summary>Manual installation</summary>
 
 ```bash
 pip install smolvm
+smolvm setup
+smolvm doctor
 ```
 
-On Linux, run the one-time host setup so Firecracker has the permissions it needs:
+On supported Linux and macOS systems, `pip install smolvm` also pulls in the matching `smolvm-core` wheel automatically. Most users do not need Rust installed.
 
-```bash
-sudo ./scripts/system-setup.sh --configure-runtime
-```
+Linux may prompt for `sudo` during setup so it can install host dependencies and configure runtime permissions.
 
-On macOS, the QEMU backend is used automatically:
-
-```bash
-./scripts/system-setup-macos.sh
-```
+</details>
 
 Spin up a sandbox and run a command:
 
