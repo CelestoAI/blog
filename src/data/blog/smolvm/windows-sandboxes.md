@@ -4,13 +4,12 @@ modDatetime: 2026-05-26
 title: "Open Source Windows Sandbox in Python: Run Windows 11 on Linux with SmolVM"
 published: true
 description: "SmolVM now supports Windows 11 sandboxes. Boot disposable Windows VMs from Python, run PowerShell, upload files, pass environment variables, and tear the VM down after the task."
-tags: 
-    - windows
-    - python
-    - opensource
-    - ai
+tags:
+  - windows
+  - python
+  - opensource
+  - ai
 ---
-
 
 Linux-only sandboxes will not automate the world.
 
@@ -133,9 +132,9 @@ smolvm windows build-image \
 
 You provide:
 
-* a Windows 11 ISO
-* the virtio-win driver ISO
-* an output path for the `.qcow2`
+- a Windows 11 ISO
+- the virtio-win driver ISO
+- an output path for the `.qcow2`
 
 The build command creates a Windows image with OpenSSH Server, virtio-win drivers, and a local admin account.
 
@@ -229,11 +228,11 @@ SmolVM keeps your baseline Windows image read-only. Each VM gets its own thin `q
 
 That gives you a clean model:
 
-* the golden Windows image stays unchanged
-* each sandbox gets separate disk state
-* multiple sandboxes can share the same baseline
-* crashes do not corrupt the base image
-* task state can vanish when the VM is deleted
+- the golden Windows image stays unchanged
+- each sandbox gets separate disk state
+- multiple sandboxes can share the same baseline
+- crashes do not corrupt the base image
+- task state can vanish when the VM is deleted
 
 This matters for agents.
 
@@ -251,19 +250,19 @@ SmolVM is for a different use case.
 
 Use Microsoft Windows Sandbox when:
 
-* you are on a Windows host
-* you want a local temporary desktop
-* you want to manually test an app or file
-* you do not need a Python API
+- you are on a Windows host
+- you want a local temporary desktop
+- you want to manually test an app or file
+- you do not need a Python API
 
 Use SmolVM when:
 
-* you are on a Linux host
-* you want to control Windows from Python
-* you need command execution
-* you need file upload
-* you need env vars
-* you want disposable VMs for agents, tests, or automation
+- you are on a Linux host
+- you want to control Windows from Python
+- you need command execution
+- you need file upload
+- you need env vars
+- you want disposable VMs for agents, tests, or automation
 
 That is the distinction.
 
@@ -277,14 +276,14 @@ Windows support in SmolVM is V1.
 
 Today, it supports:
 
-* Windows 11 guests
-* Python API via `SmolVM(...)`
-* PowerShell commands via `vm.run(...)`
-* file upload into Windows paths
-* environment variables
-* Windows image creation via CLI
-* QEMU + KVM on Linux hosts
-* per-VM disk overlays
+- Windows 11 guests
+- Python API via `SmolVM(...)`
+- PowerShell commands via `vm.run(...)`
+- file upload into Windows paths
+- environment variables
+- Windows image creation via CLI
+- QEMU + KVM on Linux hosts
+- per-VM disk overlays
 
 That is enough for command-level Windows automation, test systems, and the base layer for agent workflows.
 
@@ -294,10 +293,10 @@ The first version is deliberately narrow.
 
 Today, Windows guests do not support:
 
-* macOS hosts
-* host folder mounts
-* network allowlists and egress controls
-* snapshots
+- macOS hosts
+- host folder mounts
+- network allowlists and egress controls
+- snapshots
 
 Those features raise clear errors instead of silent failures.
 
@@ -313,14 +312,14 @@ That assumption breaks as soon as agents leave code tasks and enter real busines
 
 Real work happens in:
 
-* browsers
-* terminals
-* file systems
-* desktop apps
-* old ERPs
-* customer portals
-* internal tools
-* Windows-only software
+- browsers
+- terminals
+- file systems
+- desktop apps
+- old ERPs
+- customer portals
+- internal tools
+- Windows-only software
 
 Computer-use agents need runtime environments that match that world.
 
