@@ -11,6 +11,10 @@ tags:
   - ai
 ---
 
+<div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;margin-bottom:2rem;">
+  <iframe src="https://www.youtube.com/embed/iqoWK22Vx_g" style="position:absolute;top:0;left:0;width:100%;height:100%;" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+
 Linux-only sandboxes will not automate the world.
 
 A lot of business software does not live inside a clean Linux container.
