@@ -97,7 +97,6 @@ with SmolVM(
     ssh_user="smolvm",
     ssh_password="smolvm",
 ) as vm:
-    vm.wait_for_ssh()
     print(vm.run("Write-Output 'hello from windows'").stdout)
 ```
 
@@ -153,7 +152,6 @@ with SmolVM(
     ssh_user="smolvm",
     ssh_password="smolvm",
 ) as vm:
-    vm.wait_for_ssh()
     print(vm.run("hostname").stdout)
 ```
 
@@ -216,7 +214,6 @@ with SmolVM(
         "APP_MODE": "production",
     },
 ) as vm:
-    vm.wait_for_ssh()
     print(vm.run("$env:APP_MODE").stdout.strip())
 ```
 
