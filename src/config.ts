@@ -5,7 +5,8 @@ export const SITE = {
   profile: "https://celesto.ai/",
   desc: "Insights, tutorials, and updates from Celesto AI - the fastest way to deploy long-running AI agents with built-in observability and security.",
   title: "Celesto AI Blog",
-  ogImage: "https://ik.imagekit.io/gradsflow/celestoai/logo/celesto-preview_YCCacMZkx.png?updatedAt=1758078180636",
+  ogImage:
+    "https://ik.imagekit.io/gradsflow/celestoai/logo/celesto-preview_YCCacMZkx.png?updatedAt=1758078180636",
   lightAndDarkMode: true,
   postPerIndex: 4,
   postPerPage: 4,

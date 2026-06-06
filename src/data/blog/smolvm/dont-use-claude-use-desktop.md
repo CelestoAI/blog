@@ -12,7 +12,6 @@ tags:
   - Security
 ---
 
-
 Anthropic recently added a feature to Claude Code called **computer use**. In plain English, this means Claude can do things like open apps, click buttons, type, scroll, and look at what is on your screen from the command line. Anthropic positions it for tasks like testing native apps, debugging visual issues, and using tools that do not have an API or command-line interface.
 
 That is powerful and also where many developers are about to make a bad security decision.
@@ -35,7 +34,7 @@ If the model misreads something, follows a bad instruction, clicks the wrong win
 
 Yes, and Anthropic has put real thought into them.
 
-Claude asks for app approvals during a session. It warns when an app would effectively give shell access, file access, or system settings access. It hides other apps while it works. You can stop it with `Esc`. Only one Claude session can control the machine at a time. Those are sensible protections. 
+Claude asks for app approvals during a session. It warns when an app would effectively give shell access, file access, or system settings access. It hides other apps while it works. You can stop it with `Esc`. Only one Claude session can control the machine at a time. Those are sensible protections.
 
 But guardrails are not the same as the right architecture.
 
@@ -49,8 +48,8 @@ This sounds like security jargon, so let’s make it simple.
 
 A **trust boundary** is just the line between:
 
-* the part of the system you are willing to risk
-* and the part you really do not want touched
+- the part of the system you are willing to risk
+- and the part you really do not want touched
 
 If you let an AI model click around on your laptop, your laptop is inside the trust boundary. You are trusting the agent not to do damage there.
 
@@ -70,9 +69,9 @@ Say:
 
 That separate computer should be:
 
-* isolated from your real machine
-* easy to reset
-* safe to throw away when the task finishes
+- isolated from your real machine
+- easy to reset
+- safe to throw away when the task finishes
 
 That is what a **sandbox** is.
 
@@ -102,8 +101,8 @@ A **VM**, or **virtual machine**, is basically a software-created computer. It a
 
 You can think of it like this:
 
-* your laptop is the real house
-* a VM is a separate locked room built inside that house
+- your laptop is the real house
+- a VM is a separate locked room built inside that house
 
 The agent works in that room, not in your whole house.
 
@@ -119,12 +118,12 @@ That one design choice fixes a lot.
 
 Now when the model needs to:
 
-* run shell commands
-* install packages
-* open a browser
-* click around a UI
-* write files
-* test workflows
+- run shell commands
+- install packages
+- open a browser
+- click around a UI
+- write files
+- test workflows
 
 …it does those things in a throwaway environment, not on your laptop.
 
@@ -142,10 +141,10 @@ That is useful when the task is risky or untrusted.
 
 For example:
 
-* testing generated shell commands
-* browsing unknown websites
-* opening files you do not fully trust
-* letting an agent explore and try things
+- testing generated shell commands
+- browsing unknown websites
+- opening files you do not fully trust
+- letting an agent explore and try things
 
 If anything weird happens, you delete the environment and move on.
 
@@ -155,8 +154,8 @@ This is where a lot of people get confused.
 
 They assume the choice is:
 
-* either use the real machine so the state persists
-* or use a sandbox and lose all progress after every step
+- either use the real machine so the state persists
+- or use a sandbox and lose all progress after every step
 
 That is false.
 

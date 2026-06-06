@@ -11,14 +11,38 @@ const { tag, size = "md", clickable = true } = Astro.props;
 
 // Generate consistent color based on tag name
 const tagColors: Record<string, { bg: string; text: string }> = {
-  ai: { bg: "bg-purple-100 dark:bg-purple-900/40", text: "text-purple-700 dark:text-purple-300" },
-  llm: { bg: "bg-blue-100 dark:bg-blue-900/40", text: "text-blue-700 dark:text-blue-300" },
-  tutorial: { bg: "bg-green-100 dark:bg-green-900/40", text: "text-green-700 dark:text-green-300" },
-  news: { bg: "bg-amber-100 dark:bg-amber-900/40", text: "text-amber-700 dark:text-amber-300" },
-  agents: { bg: "bg-rose-100 dark:bg-rose-900/40", text: "text-rose-700 dark:text-rose-300" },
-  observability: { bg: "bg-cyan-100 dark:bg-cyan-900/40", text: "text-cyan-700 dark:text-cyan-300" },
-  security: { bg: "bg-red-100 dark:bg-red-900/40", text: "text-red-700 dark:text-red-300" },
-  default: { bg: "bg-slate-100 dark:bg-slate-800/60", text: "text-slate-700 dark:text-slate-300" },
+  ai: {
+    bg: "bg-purple-100 dark:bg-purple-900/40",
+    text: "text-purple-700 dark:text-purple-300",
+  },
+  llm: {
+    bg: "bg-blue-100 dark:bg-blue-900/40",
+    text: "text-blue-700 dark:text-blue-300",
+  },
+  tutorial: {
+    bg: "bg-green-100 dark:bg-green-900/40",
+    text: "text-green-700 dark:text-green-300",
+  },
+  news: {
+    bg: "bg-amber-100 dark:bg-amber-900/40",
+    text: "text-amber-700 dark:text-amber-300",
+  },
+  agents: {
+    bg: "bg-rose-100 dark:bg-rose-900/40",
+    text: "text-rose-700 dark:text-rose-300",
+  },
+  observability: {
+    bg: "bg-cyan-100 dark:bg-cyan-900/40",
+    text: "text-cyan-700 dark:text-cyan-300",
+  },
+  security: {
+    bg: "bg-red-100 dark:bg-red-900/40",
+    text: "text-red-700 dark:text-red-300",
+  },
+  default: {
+    bg: "bg-slate-100 dark:bg-slate-800/60",
+    text: "text-slate-700 dark:text-slate-300",
+  },
 };
 
 const normalizedTag = tag.toLowerCase();
@@ -40,15 +64,15 @@ const baseClasses = [
 const hoverClasses = clickable ? "hover:opacity-80" : "";
 ---
 
-{clickable ? (
-  <a
-    href={`${SITE.basePath}/tags/${tag}/`}
-    class:list={[...baseClasses, hoverClasses]}
-  >
-    {tag}
-  </a>
-) : (
-  <span class:list={baseClasses}>
-    {tag}
-  </span>
-)}
+{
+  clickable ? (
+    <a
+      href={`${SITE.basePath}/tags/${tag}/`}
+      class:list={[...baseClasses, hoverClasses]}
+    >
+      {tag}
+    </a>
+  ) : (
+    <span class:list={baseClasses}>{tag}</span>
+  )
+}

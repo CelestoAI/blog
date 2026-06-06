@@ -32,7 +32,10 @@ const {
 // Handle both external URLs and local paths for OG image
 const socialImageURL = ogImage.startsWith("http")
   ? ogImage
-  : new URL(ogImage.startsWith("/") ? ogImage : `/${ogImage}`, Astro.url).toString();
+  : new URL(
+      ogImage.startsWith("/") ? ogImage : `/${ogImage}`,
+      Astro.url
+    ).toString();
 
 const structuredData = {
   "@context": "https://schema.org",
@@ -60,7 +63,11 @@ const structuredData = {
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
-    <link rel="icon" type="image/svg+xml" href="https://ik.imagekit.io/gradsflow/celestoai/logo/celesto-logo_KDV0f6bxO.svg" />
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="https://ik.imagekit.io/gradsflow/celestoai/logo/celesto-logo_KDV0f6bxO.svg"
+    />
     <link rel="canonical" href={canonicalURL} />
     <meta name="generator" content={Astro.generator} />
 
@@ -75,7 +82,10 @@ const structuredData = {
     <meta name="title" content={title} />
     <meta name="description" content={description} />
     <meta name="author" content={author} />
-    <meta name="keywords" content="AI agents, agent infrastructure, agent runtime, machine learning, artificial intelligence, Celesto AI, tutorials, insights" />
+    <meta
+      name="keywords"
+      content="AI agents, agent infrastructure, agent runtime, machine learning, artificial intelligence, Celesto AI, tutorials, insights"
+    />
     <meta name="robots" content="index, follow" />
     <link rel="sitemap" href={`${SITE.basePath}/sitemap-index.xml`} />
 
@@ -145,23 +155,89 @@ const structuredData = {
 
     {/* PostHog Analytics */}
     <script is:inline>
-      !function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.crossOrigin="anonymous",p.async=!0,p.src=s.api_host.replace(".i.posthog.com","-assets.i.posthog.com")+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="init capture register register_once register_for_session unregister unregister_for_session getFeatureFlag getFeatureFlagPayload isFeatureEnabled reloadFeatureFlags updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures on onFeatureFlags onSurveys onSessionId getSurveys getActiveMatchingSurveys renderSurvey canRenderSurvey identify setPersonProperties group resetGroups setPersonPropertiesForFlags resetPersonPropertiesForFlags setGroupPropertiesForFlags resetGroupPropertiesForFlags reset get_distinct_id getGroups get_session_id get_session_replay_url alias set_config startSessionRecording stopSessionRecording sessionRecordingStarted captureException loadToolbar get_property getSessionProperty createPersonProfile opt_in_capturing opt_out_capturing has_opted_in_capturing has_opted_out_capturing clear_opt_in_out_capturing debug getPageViewId".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
-      posthog.init('phc_vjIHlkZ5iOYWdZx0LXiifLKGl53QehS8LjudWiuSRND', {
-        api_host: 'https://us.i.posthog.com',
-        defaults: '2025-11-30',
-        person_profiles: 'identified_only',
+      (function initPostHog(documentRef, posthogStub) {
+        if (posthogStub.__SV) return;
+
+        window.posthog = posthogStub;
+        posthogStub._i = [];
+        posthogStub.init = (projectApiKey, config, name) => {
+          const addStubMethod = (target, methodPath) => {
+            const parts = methodPath.split(".");
+            let methodName = methodPath;
+
+            if (parts.length === 2) {
+              target = target[parts[0]];
+              methodName = parts[1];
+            }
+
+            target[methodName] = (...args) => {
+              target.push([methodName].concat(args));
+            };
+          };
+
+          const script = documentRef.createElement("script");
+          script.type = "text/javascript";
+          script.crossOrigin = "anonymous";
+          script.async = true;
+          script.src = `${config.api_host.replace(
+            ".i.posthog.com",
+            "-assets.i.posthog.com"
+          )}/static/array.js`;
+
+          const firstScript = documentRef.getElementsByTagName("script")[0];
+          firstScript.parentNode.insertBefore(script, firstScript);
+
+          let instance = posthogStub;
+          let instanceName = name;
+
+          if (instanceName !== undefined) {
+            instance = posthogStub[instanceName] = [];
+          } else {
+            instanceName = "posthog";
+          }
+
+          instance.people = instance.people || [];
+          instance.toString = showStub => {
+            let label = "posthog";
+
+            if (instanceName !== "posthog") label += `.${instanceName}`;
+            if (!showStub) label += " (stub)";
+
+            return label;
+          };
+          instance.people.toString = () =>
+            `${instance.toString(1)}.people (stub)`;
+
+          const methods =
+            "init capture register register_once register_for_session unregister unregister_for_session getFeatureFlag getFeatureFlagPayload isFeatureEnabled reloadFeatureFlags updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures on onFeatureFlags onSurveys onSessionId getSurveys getActiveMatchingSurveys renderSurvey canRenderSurvey identify setPersonProperties group resetGroups setPersonPropertiesForFlags resetPersonPropertiesForFlags setGroupPropertiesForFlags resetGroupPropertiesForFlags reset get_distinct_id getGroups get_session_id get_session_replay_url alias set_config startSessionRecording stopSessionRecording sessionRecordingStarted captureException loadToolbar get_property getSessionProperty createPersonProfile opt_in_capturing opt_out_capturing has_opted_in_capturing has_opted_out_capturing clear_opt_in_out_capturing debug getPageViewId".split(
+              " "
+            );
+
+          for (let index = 0; index < methods.length; index += 1) {
+            addStubMethod(instance, methods[index]);
+          }
+
+          posthogStub._i.push([projectApiKey, config, instanceName]);
+        };
+        posthogStub.__SV = 1;
+      })(document, window.posthog || []);
+
+      window.posthog.init("phc_vjIHlkZ5iOYWdZx0LXiifLKGl53QehS8LjudWiuSRND", {
+        api_host: "https://us.i.posthog.com",
+        defaults: "2025-11-30",
+        person_profiles: "identified_only",
         capture_pageview: false, // We'll handle this manually for Astro transitions
         capture_pageleave: true,
       });
 
       // Manual pageview capture to support Astro view transitions
-      const capturePageview = () => posthog.capture('$pageview');
-      
+      const capturePageview = () => window.posthog.capture("$pageview");
+
       // Capture on initial load
       capturePageview();
 
       // Capture on every navigation (Astro view transitions)
-      document.addEventListener('astro:page-load', capturePageview);
+      document.addEventListener("astro:page-load", capturePageview);
     </script>
 
     <ClientRouter />

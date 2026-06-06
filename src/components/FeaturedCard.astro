@@ -31,29 +31,29 @@ const isHero = variant === "hero";
   ]}
 >
   <!-- Gradient overlay for hero variant -->
-  {isHero && (
-    <div
-      class="pointer-events-none absolute inset-0 -z-10 rounded-xl bg-gradient-to-br from-accent/5 to-transparent"
-      aria-hidden="true"
-    />
-  )}
+  {
+    isHero && (
+      <div
+        class="pointer-events-none absolute inset-0 -z-10 rounded-xl bg-gradient-to-br from-accent/5 to-transparent"
+        aria-hidden="true"
+      />
+    )
+  }
 
-  <a
-    href={postUrl}
-    class="absolute inset-0 z-10"
-    aria-label={`Read ${title}`}
-  >
+  <a href={postUrl} class="absolute inset-0 z-10" aria-label={`Read ${title}`}>
     <span class="sr-only">Read {title}</span>
   </a>
 
   <!-- Tags -->
-  {tags && tags.length > 0 && (
-    <div class="relative z-20 mb-3 flex flex-wrap gap-2">
-      {tags.slice(0, 2).map((tag: string) => (
-        <TagPill tag={tag} size="sm" />
-      ))}
-    </div>
-  )}
+  {
+    tags && tags.length > 0 && (
+      <div class="relative z-20 mb-3 flex flex-wrap gap-2">
+        {tags.slice(0, 2).map((tag: string) => (
+          <TagPill tag={tag} size="sm" />
+        ))}
+      </div>
+    )
+  }
 
   <!-- Title -->
   <h3
@@ -79,7 +79,9 @@ const isHero = variant === "hero";
   </p>
 
   <!-- Reading time -->
-  <div class="mt-4 flex items-center gap-2 font-mono text-sm text-foreground/60">
+  <div
+    class="mt-4 flex items-center gap-2 font-mono text-sm text-foreground/60"
+  >
     <IconClock class="size-4" />
     <span>{readingTime} min read</span>
   </div>
