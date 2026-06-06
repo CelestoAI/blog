@@ -11,23 +11,27 @@ type Props = {
 };
 
 const { latestPost } = Astro.props;
-const latestPostUrl = latestPost ? getPath(latestPost.id, latestPost.filePath) : null;
+const latestPostUrl = latestPost
+  ? getPath(latestPost.id, latestPost.filePath)
+  : null;
 ---
 
-<section
-  id="hero"
-  class="relative overflow-hidden pt-8 pb-10"
->
+<section id="hero" class="relative overflow-hidden pt-8 pb-10">
   <!-- Subtle gradient glow background -->
-  <div
-    class="pointer-events-none absolute inset-0 -z-10"
-    aria-hidden="true"
-  >
-    <div class="absolute top-0 left-1/4 h-64 w-64 rounded-full bg-accent/5 blur-3xl" />
-    <div class="absolute right-1/4 bottom-0 h-48 w-48 rounded-full bg-accent/10 blur-3xl" />
+  <div class="pointer-events-none absolute inset-0 -z-10" aria-hidden="true">
+    <div
+      class="absolute top-0 left-1/4 h-64 w-64 rounded-full bg-accent/5 blur-3xl"
+    >
+    </div>
+    <div
+      class="absolute right-1/4 bottom-0 h-48 w-48 rounded-full bg-accent/10 blur-3xl"
+    >
+    </div>
   </div>
 
-  <div class="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
+  <div
+    class="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between"
+  >
     <!-- Left: Title and tagline -->
     <div class="flex-1">
       <div class="mb-4 flex items-center gap-3">
@@ -41,11 +45,7 @@ const latestPostUrl = latestPost ? getPath(latestPost.id, latestPost.filePath) :
           aria-label="RSS feed"
           title="RSS Feed"
         >
-          <IconRss
-            width={20}
-            height={20}
-            class="stroke-accent stroke-3"
-          />
+          <IconRss width={20} height={20} class="stroke-accent stroke-3" />
           <span class="sr-only">RSS Feed</span>
         </a>
       </div>
@@ -54,27 +54,31 @@ const latestPostUrl = latestPost ? getPath(latestPost.id, latestPost.filePath) :
         Welcome to the official blog of Celesto AI.
       </p>
 
-      {latestPost && latestPostUrl && (
-        <div class="mt-4 flex items-center gap-2">
-          <span class="rounded-full bg-accent/10 px-3 py-1 text-sm font-medium text-accent">
-            Latest
-          </span>
-          <a
-            href={latestPostUrl}
-            class="text-sm text-foreground/70 transition-colors hover:text-accent"
-          >
-            {latestPost.data.title}
-          </a>
-        </div>
-      )}
+      {
+        latestPost && latestPostUrl && (
+          <div class="mt-4 flex items-center gap-2">
+            <span class="rounded-full bg-accent/10 px-3 py-1 text-sm font-medium text-accent">
+              Latest
+            </span>
+            <a
+              href={latestPostUrl}
+              class="text-sm text-foreground/70 transition-colors hover:text-accent"
+            >
+              {latestPost.data.title}
+            </a>
+          </div>
+        )
+      }
     </div>
 
     <!-- Right: Social icons -->
-    {SOCIALS.length > 0 && (
-      <div class="flex flex-col items-start gap-2 sm:items-end">
-        <span class="text-sm font-medium text-foreground/60">Follow us</span>
-        <Socials />
-      </div>
-    )}
+    {
+      SOCIALS.length > 0 && (
+        <div class="flex flex-col items-start gap-2 sm:items-end">
+          <span class="text-sm font-medium text-foreground/60">Follow us</span>
+          <Socials />
+        </div>
+      )
+    }
   </div>
 </section>

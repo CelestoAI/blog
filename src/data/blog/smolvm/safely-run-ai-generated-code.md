@@ -201,18 +201,18 @@ If the model writes code that tries to phone home, the network stack says no.
 
 Here's how SmolVM stacks up against the options most teams consider:
 
-| Feature | Docker / containers | SmolVM | E2B (hosted) | firecracker-containerd |
-|---|---|---|---|---|
-| Isolation boundary | Shared kernel | Hardware (KVM/Firecracker) | Hardware (Firecracker) | Hardware (Firecracker) |
-| Boot time | ~100ms | ~500ms | ~150ms (hosted) | ~500ms |
-| Runs on your infra | ✅ | ✅ | ❌ (their cloud) | ✅ (complex setup) |
-| Python SDK | via Docker SDK | ✅ native | ✅ native | ❌ |
-| macOS support | ✅ | ✅ (QEMU) | ✅ | ❌ |
-| Host directory mounts | ✅ | ✅ | Limited | ✅ |
-| Domain allowlisting | Manual | ✅ built-in | ✅ | Manual |
-| Snapshots | ❌ | ✅ | ✅ | ✅ |
-| Open source | ✅ | ✅ (Apache 2.0) | ❌ | ✅ |
-| Price | Free | Free | Per-sandbox | Free |
+| Feature               | Docker / containers | SmolVM                     | E2B (hosted)           | firecracker-containerd |
+| --------------------- | ------------------- | -------------------------- | ---------------------- | ---------------------- |
+| Isolation boundary    | Shared kernel       | Hardware (KVM/Firecracker) | Hardware (Firecracker) | Hardware (Firecracker) |
+| Boot time             | ~100ms              | ~500ms                     | ~150ms (hosted)        | ~500ms                 |
+| Runs on your infra    | ✅                  | ✅                         | ❌ (their cloud)       | ✅ (complex setup)     |
+| Python SDK            | via Docker SDK      | ✅ native                  | ✅ native              | ❌                     |
+| macOS support         | ✅                  | ✅ (QEMU)                  | ✅                     | ❌                     |
+| Host directory mounts | ✅                  | ✅                         | Limited                | ✅                     |
+| Domain allowlisting   | Manual              | ✅ built-in                | ✅                     | Manual                 |
+| Snapshots             | ❌                  | ✅                         | ✅                     | ✅                     |
+| Open source           | ✅                  | ✅ (Apache 2.0)            | ❌                     | ✅                     |
+| Price                 | Free                | Free                       | Per-sandbox            | Free                   |
 
 If you want a hosted sandbox and don't mind a per-request cost, E2B is a great product. If you want to run sandboxes **on your own infrastructure** (for cost, privacy, VPC requirements, or regulated-industry compliance), SmolVM is the option that gets you there without wiring up firecracker-containerd by hand.
 
@@ -293,4 +293,4 @@ If you're building something interesting on top of it — or you hit something t
 
 ---
 
-*Building with AI agents? We'd love to hear what you're working on. Drop a comment below or find us on [GitHub](https://github.com/CelestoAI/SmolVM).*
+_Building with AI agents? We'd love to hear what you're working on. Drop a comment below or find us on [GitHub](https://github.com/CelestoAI/SmolVM)._

@@ -16,7 +16,7 @@ tags:
   - Security
 ---
 
-Running OpenClaw (aka ClawdBot / MoltBot) on your own laptop *works*—and for tinkering it’s fine.
+Running OpenClaw (aka ClawdBot / MoltBot) on your own laptop _works_—and for tinkering it’s fine.
 
 > You don’t need to be an engineer to run OpenClaw, but you do need to host it like infrastructure.
 
@@ -45,11 +45,13 @@ Personal laptops are optimized for the opposite: mobility, sleep mode, Wi‑Fi s
 If your laptop sleeps, reboots, runs out of battery, or you close the lid… your agent stops.
 
 That breaks the most valuable OpenClaw behaviors:
+
 - scheduled reminders (cron jobs)
 - follow-ups and “nudge me later”
 - long-running tasks (research, indexing, background runs)
 
 Even if you disable sleep, laptops still:
+
 - hop networks (home → office → hotspot)
 - drop VPNs
 - throttle under low power
@@ -64,6 +66,7 @@ Even if you disable sleep, laptops still:
 This is the big one.
 
 If OpenClaw can run commands / access files, you’re placing an “automation engine” next to:
+
 - your browser sessions
 - personal documents
 - SSH keys
@@ -72,24 +75,27 @@ If OpenClaw can run commands / access files, you’re placing an “automation e
 - iMessage/WhatsApp/Telegram sessions (depending on your setup)
 
 Even without malicious intent, the risk comes from:
+
 - accidental commands
 - dependency compromise
 - prompt-injection via web pages/messages
 - misconfiguration (too-broad mounts, env vars, etc.)
 
-**A good rule:** don’t run *automated execution* in the same environment where your highest-value personal secrets live.
+**A good rule:** don’t run _automated execution_ in the same environment where your highest-value personal secrets live.
 
 ---
 
 ## 3) Privacy + leakage risk: logs and memory end up on your main machine
 
 Agents generate:
+
 - conversation transcripts
 - tool call logs
 - cached web content
 - “memory” files (context you want it to recall later)
 
 On a personal laptop, that stuff:
+
 - gets backed up to iCloud/Drive unintentionally
 - gets indexed by desktop search
 - becomes discoverable in screenshots, screen shares, or “recent files”
@@ -102,12 +108,14 @@ If you later change your mind (“I didn’t want the agent remembering that”)
 ## 4) Resource contention: you’ll feel it (fans, heat, CPU spikes)
 
 Running a persistent agent stack means:
+
 - background CPU
 - memory usage
 - network activity
 - sometimes browser automation
 
 On a laptop, that translates into:
+
 - worse battery life
 - heat/fan noise
 - degraded performance during meetings/calls
@@ -120,12 +128,14 @@ This is annoying at best—and at worst it causes you to stop running the agent.
 ## 5) Operational friction: updates, breakage, and “agent babysitting”
 
 A reliable agent requires basic ops:
+
 - upgrades
 - restarts
 - permissions
 - monitoring (“is it down?”)
 
 On a laptop, that becomes a recurring tax:
+
 - “why didn’t the reminder fire?”
 - “oh, my laptop was asleep”
 - “oh, Docker reset”
@@ -135,7 +145,7 @@ This is exactly the kind of friction that kills personal automation projects.
 
 ---
 
-# So where *should* you run OpenClaw?
+# So where _should_ you run OpenClaw?
 
 Here are the practical alternatives, in order of seriousness:
 
@@ -144,11 +154,13 @@ Here are the practical alternatives, in order of seriousness:
 ## Option A: A small server / VPS (best all-around)
 
 Run OpenClaw on a cheap always-on box:
+
 - VPS (Hetzner/DigitalOcean/etc.)
 - home server / mini PC
 - a dedicated machine you can lock down
 
 Benefits:
+
 - always-on reliability
 - cleaner security boundary
 - easier monitoring
@@ -156,6 +168,7 @@ Benefits:
 ## Option B: Hardened isolation (security-first)
 
 If your concern is “agent execution near secrets,” you want stronger boundaries:
+
 - strict mounts (only mount what’s needed)
 - read-only containers
 - gVisor / microVM approaches (for kernel-level isolation goals)

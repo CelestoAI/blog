@@ -19,6 +19,7 @@ In this article, we'll wire up [Agentor](https://github.com/celestoai/agentor) w
 ## What We're Building
 
 A simple but powerful setup:
+
 - **Agentor**: An AI agent framework that handles the reasoning and orchestration
 - **ScrapeGraphAI**: AI-powered web scraping that actually understands page content
 
@@ -34,6 +35,7 @@ uv add agentor scrapegraph-py python-dotenv
 ```
 
 Grab your API keys:
+
 - **OpenAI**: For the agent's brain
 - **ScrapeGraphAI**: For the scraping (free tier works fine)
 - **Celesto**: For agent hosting (optional)
@@ -114,10 +116,10 @@ I scraped the page and extracted the product listings. I could not write files f
 }
 ```
 
-
 ## What's Next
 
 This is just the start. From here you could:
+
 - **Schedule it**: Run the agent on a cron job and track price changes over time
 - **Add alerts**: Notify yourself when a card drops below a threshold
 - **Expand scope**: Monitor multiple marketplaces (eBay, TCGPlayer)

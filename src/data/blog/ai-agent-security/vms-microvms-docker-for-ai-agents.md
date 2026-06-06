@@ -113,15 +113,15 @@ That combination — real isolation, fast enough for per-task sandboxing — is 
 
 ## Side-by-side comparison
 
-| | Docker | Traditional VM | MicroVM |
-|---|---|---|---|
-| **Startup time** | < 1 second | Seconds to minutes | ~200 ms |
-| **Isolation level** | Process-level (shared kernel) | Hardware-level (separate kernel) | Hardware-level (separate kernel) |
-| **Full OS environment** | No — single process, no init system | Yes — full operating system | Yes — minimal but complete OS |
-| **Install & run software** | Limited — no systemd, fragile packages | Full support | Full support |
-| **Memory overhead** | Very low | High (hundreds of MB+) | Low (~5 MB) |
-| **Container escape risk** | Higher — shared kernel | Very low | Very low |
-| **Best for** | Trusted workloads, packaging | Long-running, high-security workloads | Per-task agent sandboxing |
+|                            | Docker                                 | Traditional VM                        | MicroVM                          |
+| -------------------------- | -------------------------------------- | ------------------------------------- | -------------------------------- |
+| **Startup time**           | < 1 second                             | Seconds to minutes                    | ~200 ms                          |
+| **Isolation level**        | Process-level (shared kernel)          | Hardware-level (separate kernel)      | Hardware-level (separate kernel) |
+| **Full OS environment**    | No — single process, no init system    | Yes — full operating system           | Yes — minimal but complete OS    |
+| **Install & run software** | Limited — no systemd, fragile packages | Full support                          | Full support                     |
+| **Memory overhead**        | Very low                               | High (hundreds of MB+)                | Low (~5 MB)                      |
+| **Container escape risk**  | Higher — shared kernel                 | Very low                              | Very low                         |
+| **Best for**               | Trusted workloads, packaging           | Long-running, high-security workloads | Per-task agent sandboxing        |
 
 ---
 

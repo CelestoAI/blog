@@ -30,6 +30,7 @@ description: A short summary of the blog post for SEO and previews.
 ## 👨🏻‍💻 Local Development
 
 1. **Install dependencies:**
+
    ```bash
    npm install
    ```
@@ -42,14 +43,14 @@ description: A short summary of the blog post for SEO and previews.
 
 ## 🧞 Commands
 
-| Command           | Action                                           |
-| :---------------- | :----------------------------------------------- |
-| `npm install`     | Installs dependencies                            |
-| `npm run dev`     | Starts local dev server at `localhost:4321/blog/`|
-| `npm run build`   | Builds the production site to `./dist/`          |
-| `npm run preview` | Previews the build locally                       |
-| `npm run format`  | Formats code with Prettier                       |
-| `npm run lint`    | Lints code with ESLint                           |
+| Command           | Action                                            |
+| :---------------- | :------------------------------------------------ |
+| `npm install`     | Installs dependencies                             |
+| `npm run dev`     | Starts local dev server at `localhost:4321/blog/` |
+| `npm run build`   | Builds the production site to `./dist/`           |
+| `npm run preview` | Previews the build locally                        |
+| `npm run format`  | Formats code with Prettier                        |
+| `npm run lint`    | Lints code with ESLint                            |
 
 ## 🤝 Contribution
 
