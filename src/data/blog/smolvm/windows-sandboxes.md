@@ -3,6 +3,7 @@ pubDatetime: 2026-05-26
 modDatetime: 2026-05-26
 title: "Open Source Windows Sandbox in Python: Run Windows 11 on Linux with SmolVM"
 published: true
+featured: true
 description: "SmolVM now supports Windows 11 sandboxes. Boot disposable Windows VMs from Python, run PowerShell, upload files, pass environment variables, and tear the VM down after the task."
 tags:
   - windows
