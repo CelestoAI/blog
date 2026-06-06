@@ -45,7 +45,7 @@ This works at the file and directory level.
 
 `qcow2` is different.
 
-`qcow2` works at the virtual disk block level.
+`qcow2` works at the virtual disk block level. That means QEMU tracks changes in chunks of the VM's disk image, not individual files and folders inside the guest OS.
 
 The guest operating system does not know it is using an overlay. It just sees a normal disk.
 
