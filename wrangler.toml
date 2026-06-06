@@ -1,6 +1,6 @@
 #:schema node_modules/wrangler/config-schema.json
 name = "paper-blog"
-main = "@astrojs/cloudflare/entrypoints/server"
+main = "./dist/_worker.js/index.js"
 compatibility_date = "2026-02-04"
 compatibility_flags = [ "nodejs_compat" ]
 
