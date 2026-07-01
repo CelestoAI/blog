@@ -11,9 +11,6 @@ tags:
   - Storage
 ---
 
-
-# Petabyte-scale storage for AI agent sandboxes
-
 Most conversations about AI sandboxes start with isolation. Can the agent run untrusted code safely? How quickly does the machine boot? Can it execute commands, install packages, and stream logs back to the user?
 
 Those questions matter, but they miss what happens after the sandbox starts doing real work.
