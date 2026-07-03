@@ -259,6 +259,8 @@ In this run, CelestoFS reached about 90% of root-disk aggregate write bandwidth:
 
 Benchmarks are not guarantees. They vary with machine size, concurrency, cache state, file mix, and workload shape. But they show the intended tradeoff: root disk remains best for temporary high-churn scratch work, while CelestoFS gives agents a large durable workspace that can hold real project state without tying that state to boot disk size.
 
+For the latest storage measurements, see the [Celesto petabyte scale storage docs](https://docs.celesto.ai/celesto-sdk/features/petabyte-storage).
+
 ---
 
 ## How to use it
