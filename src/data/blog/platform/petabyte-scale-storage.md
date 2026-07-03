@@ -1,7 +1,7 @@
 ---
 author: Aniket Maurya
 pubDatetime: 2026-07-01T11:00:00Z
-modDatetime: 2026-07-01T11:00:00Z
+modDatetime: 2026-07-03T17:00:00Z
 title: "Petabyte-scale storage for AI agent sandboxes"
 description: "CelestoFS gives AI agent sandboxes a durable petabyte-scale workspace filesystem for repositories, build artifacts, datasets, and workspace state."
 featured: true
@@ -205,6 +205,59 @@ JuiceFS gives us a filesystem layer that mounts inside the sandbox, while Celest
 The user does not need to mount JuiceFS, configure SQLite, or manage Litestream. The important boundary is simple: Celesto owns the storage plumbing, and the sandbox sees a filesystem.
 
 That boundary keeps the agent interface boring in the right way. Tools that expect files can keep using files. Build systems can write where they already write. Test runners can emit reports. Browser tools can save traces. Data tools can create local datasets. The platform handles the durability and capacity behind the mount.
+
+---
+
+## What the benchmarks show
+
+A large workspace is only useful if it still feels like a computer. We benchmark CelestoFS against the sandbox root disk to understand where it performs well and where agents should still prefer local scratch space.
+
+These benchmarks ran inside a `coding-agent` Linux sandbox. The data source was a local HTTP server inside the same machine, so public internet bandwidth was not part of the result. The benchmark wrote to `/home/ohm` for CelestoFS and `/tmp` for root-disk comparison.
+
+### Many small files
+
+Small files are the hard case for any object-storage-backed filesystem. Each file create, close, directory update, and delete has metadata cost. This is the pattern you see with package installs, build caches, test reports, and tool-generated artifacts.
+
+The benchmark wrote 5,000 files, each 4 KiB, spread across 100 directories with 32 concurrent workers.
+
+| Target                   | Write time |    Throughput | p50 file latency | p95 file latency | Delete time |
+| ------------------------ | ---------: | ------------: | ---------------: | ---------------: | ----------: |
+| CelestoFS, before tuning |    32.872s | 152.1 files/s |         201.69ms |         268.58ms |      5.536s |
+| CelestoFS, current       |    13.974s | 357.8 files/s |          47.65ms |         129.01ms |      2.780s |
+| Root disk, current run   |     7.673s | 651.7 files/s |           4.15ms |           7.09ms |      0.072s |
+
+The tuning work made CelestoFS much faster for this workload:
+
+```text
+Write time: 32.872s -> 13.974s   57.5% lower
+Throughput: 152.1/s -> 357.8/s   2.35x higher
+p50 latency: 201.69ms -> 47.65ms 76.4% lower
+p95 latency: 268.58ms -> 129.01ms 52.0% lower
+```
+
+Root disk is still faster for high-churn tiny files. That is expected. The root disk is local block storage; CelestoFS is durable workspace storage backed outside the VM. The practical rule is simple: keep durable work in `/home/ohm`, and use `/tmp` for throwaway scratch data that does not need to survive.
+
+### Large files
+
+Large sequential files are a better fit for CelestoFS. They look more like datasets, model files, archives, browser traces, exported reports, and build artifacts.
+
+The benchmark wrote four files: 10 MiB, 100 MiB, 500 MiB, and 1 GiB. Total data written was 1,634 MiB.
+
+| Target    | Write time | Write bandwidth | Sync time | Delete time |
+| --------- | ---------: | --------------: | --------: | ----------: |
+| CelestoFS |     7.835s |    208.56 MiB/s |    4.090s |      0.358s |
+| Root disk |     7.072s |    231.06 MiB/s |    5.687s |      0.144s |
+
+Per-file write results:
+
+| Target    |                10 MiB |                100 MiB |               500 MiB |                 1 GiB |
+| --------- | --------------------: | ---------------------: | --------------------: | --------------------: |
+| CelestoFS | 0.043s / 230.88 MiB/s |  0.237s / 421.38 MiB/s | 1.846s / 270.80 MiB/s | 5.703s / 179.56 MiB/s |
+| Root disk | 0.015s / 674.62 MiB/s | 0.086s / 1157.66 MiB/s | 0.521s / 960.51 MiB/s | 6.449s / 158.78 MiB/s |
+
+In this run, CelestoFS reached about 90% of root-disk aggregate write bandwidth: 208.56 MiB/s versus 231.06 MiB/s. For the workloads CelestoFS is designed to carry — durable project state, generated artifacts, traces, datasets, and resumable agent work — large-file performance is healthy.
+
+Benchmarks are not guarantees. They vary with machine size, concurrency, cache state, file mix, and workload shape. But they show the intended tradeoff: root disk remains best for temporary high-churn scratch work, while CelestoFS gives agents a large durable workspace that can hold real project state without tying that state to boot disk size.
 
 ---
 
