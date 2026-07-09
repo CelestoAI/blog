@@ -7,7 +7,7 @@ compatibility_flags = [ "nodejs_compat" ]
 # If you use assets in the public folder, they are handled by Astro's build
 # But for Cloudflare Workers, we define the directory for static assets.
 [assets]
-directory = "./dist"
+directory = "./dist/client"
 binding = "ASSETS"
 
 [observability]
