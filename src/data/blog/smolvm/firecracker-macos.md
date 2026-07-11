@@ -5,6 +5,7 @@ pubDatetime: 2026-07-11
 modDatetime: 2026-07-11
 title: "Firecracker on macOS: Develop with QEMU, Deploy with Firecracker"
 description: "Firecracker does not run natively on macOS. Learn how to develop with SmolVM and QEMU on a Mac, then switch to Firecracker on Linux with one backend flag."
+ogImage: ./images/qemu-fc-smolvm.png
 featured: true
 draft: false
 tags:
@@ -15,6 +16,8 @@ tags:
   - smolvm
   - sandboxes
 ---
+
+![SmolVM code selecting Firecracker or QEMU with one backend variable](./images/qemu-fc-smolvm.png)
 
 If you searched for **Firecracker macOS**, here is the direct answer:
 
@@ -58,6 +61,27 @@ SmolVM selects a backend based on the host:
 - **Linux:** Firecracker
 
 On macOS, QEMU uses Hypervisor.framework for hardware acceleration. On Linux, Firecracker uses KVM.
+
+### The complete backend change is one line
+
+Here is a minimal sandbox test for local macOS development:
+
+```python
+from smolvm import SmolVM
+
+with SmolVM(os="alpine", backend="qemu") as vm:
+    result = vm.run("uname -a")
+    print(result.stdout)
+```
+
+To run the same workload with Firecracker on a Linux KVM host, change only the backend:
+
+```diff
+-with SmolVM(os="alpine", backend="qemu") as vm:
++with SmolVM(os="alpine", backend="firecracker") as vm:
+```
+
+The guest OS, command, return value, and surrounding application code stay the same. SmolVM changes how the isolated machine is launched.
 
 Start by installing QEMU and SmolVM on your Mac:
 
