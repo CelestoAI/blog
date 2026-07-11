@@ -18,25 +18,81 @@ tags:
   - sandboxes
 ---
 
-A search for **Firecracker, QEMU, and libkrun performance benchmarks and sizing profiles** sounds like it should produce one table with a winner and a recommended machine size.
+When an AI agent runs generated code, opens a browser, or installs packages, it should not do that directly on the host machine. A common solution is to give each task an isolated **sandbox**: a disposable virtual computer with its own kernel, memory, disk, and network boundary.
 
-It does not work that way.
+Firecracker, QEMU, and libkrun are three ways to create that virtual computer.
 
-If you arrived through the query **Firecracker and libkrun performance benchmarks sizing profiles**, QEMU belongs in the comparison. SmolVM has same-host Firecracker and QEMU measurements, while it does not yet have an equivalent published libkrun result. Showing all three lets us publish the data that exists without filling the missing cell with a cross-machine guess.
+They are all virtual machine monitors, or **VMMs**. A VMM is the host-side software that creates and runs a guest virtual machine. They overlap, but they were designed with different priorities.
 
-A useful comparison has to control the host, guest image, CPU architecture, memory, disk, networking, control channel, and workload. A Firecracker number from a Linux bare-metal server cannot be compared honestly with a libkrun number from an Apple Silicon laptop.
+A performance benchmark asks how quickly and efficiently each option runs a workload. A **sizing profile** describes the CPU, memory, and disk allocation that workload should start with.
 
-This guide does three things:
-
-1. Shows the same-host Firecracker and QEMU measurements available in SmolVM.
-2. Labels libkrun as not yet measured in that controlled benchmark instead of inventing a result.
-3. Provides reproducible commands and workload-based sizing profiles for all three backends.
+This article begins with those basic differences, then moves into measured results, reproducible commands, and host-capacity planning.
 
 ---
 
-## Short answer: which backend should you choose?
+## First: what are Firecracker, QEMU, and libkrun?
 
-Choose based on the host and operations you need before optimizing milliseconds.
+### Firecracker
+
+[Firecracker](https://github.com/firecracker-microvm/firecracker) is a minimal VMM built by AWS for short-lived, isolated workloads such as AWS Lambda and Fargate.
+
+It runs on Linux and uses KVM, the Linux kernel's hardware virtualization interface. Firecracker exposes a deliberately small virtual hardware model. That reduces device emulation and attack surface, but it also makes Firecracker less general-purpose than QEMU.
+
+A virtual machine with this reduced device model is often called a **microVM**. It still has its own guest kernel. “Micro” refers to the smaller VMM and virtual hardware surface, not to weaker isolation.
+
+### QEMU
+
+[QEMU](https://www.qemu.org/) is a general-purpose machine emulator and virtualizer. It supports many CPU architectures, guest operating systems, firmware modes, and virtual devices.
+
+On Linux, QEMU can use KVM for hardware acceleration. On macOS, it can use Hypervisor.framework, Apple's hardware virtualization API.
+
+QEMU's broader hardware model makes it useful for local development, Windows guests, firmware boot, and workloads that need devices or compatibility Firecracker does not provide. That flexibility can add boot work when the guest probes devices it does not need.
+
+### libkrun
+
+[libkrun](https://github.com/containers/libkrun) is a library for embedding lightweight virtual machines into an application. Instead of controlling a standalone VMM through a large external interface, a runtime can configure and enter a VM through the library API.
+
+libkrun can use KVM on Linux and Hypervisor.framework on macOS. That makes it relevant for lightweight sandbox runtimes that want a native path on both platforms.
+
+The architecture is attractive, but architecture alone does not establish performance. libkrun needs to be measured with the same host, guest, and workload as the other backends.
+
+## Where SmolVM fits
+
+[SmolVM](https://github.com/CelestoAI/SmolVM) is an open-source Python SDK and command-line runtime for creating disposable VM sandboxes.
+
+It provides one sandbox interface over multiple VMM backends:
+
+```text
+Your Python code or CLI command
+              |
+              v
+           SmolVM
+       /       |       \
+Firecracker   QEMU   libkrun
+       \       |       /
+        isolated guest VM
+```
+
+A developer can run QEMU on macOS, then select Firecracker on a Linux KVM host without rewriting the workload API. libkrun is available as an explicit backend.
+
+This article uses SmolVM's benchmark data because it runs the same public sandbox API and guest workload across backends. The results measure the path an application experiences, not only how long a VMM process takes to appear.
+
+You do not need to adopt SmolVM to use the methodology. The same rule applies to any runtime: keep the host, image, resources, control path, and workload constant before ranking VMMs.
+
+## Results at a glance
+
+The existing controlled SmolVM data covers Firecracker and QEMU on the same Linux KVM host. It does not yet contain a comparable libkrun result.
+
+The historical end-to-end results ranged from roughly **1.34 to 1.94 seconds** until the first command completed, depending on backend, guest boot configuration, and control channel. The **control channel** is how the host sends commands into the guest; the measurements used SSH or vsock, a virtual-socket transport designed for host-to-guest communication.
+
+The high-level conclusions are:
+
+- Firecracker reached the first command faster than QEMU when both used SSH.
+- QEMU with vsock nearly matched Firecracker's first interaction and reduced repeated-command latency from about 42 ms to 1 ms.
+- Guest boot and command transport mattered more than VMM process launch.
+- libkrun remains an unmeasured row in this controlled comparison.
+
+Choose based on host and required operations before optimizing milliseconds:
 
 | Requirement                | Firecracker                   | QEMU                            | libkrun                      |
 | -------------------------- | ----------------------------- | ------------------------------- | ---------------------------- |
@@ -51,7 +107,7 @@ For a Linux production fleet that depends on snapshots or pause/resume, Firecrac
 
 For local macOS development, QEMU is the default and supports broader guest and firmware workflows. libkrun is worth measuring when you want a smaller library-oriented path and do not need the lifecycle operations it currently lacks.
 
-Performance decides between viable options. It should not hide missing capabilities.
+Readers who only need the decision summary can stop here. The next sections explain the measurements, their limits, and how to produce a sizing profile for a real workload.
 
 ## What SmolVM measured for Firecracker and QEMU
 
