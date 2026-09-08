@@ -1,8 +1,9 @@
 ---
 author: Aniket Maurya
 authorUrl: "https://www.linkedin.com/in/aniketmaurya"
-pubDatetime: 2026-09-08
-modDatetime: 2026-09-08
+pubDatetime: 2026-09-07T21:00:00Z
+modDatetime: 2026-09-07T21:00:00Z
+timezone: Asia/Kolkata
 title: "NVIDIA OpenShell vs SmolVM: Two Approaches to Secure AI Agent Sandboxes"
 description: "Compare NVIDIA OpenShell and Celesto SmolVM across isolation, security policies, microVMs, Windows support, browser automation, snapshots, and agent workloads."
 featured: true
