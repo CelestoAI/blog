@@ -1,8 +1,8 @@
 ---
 author: Aniket Maurya
 authorUrl: "https://www.linkedin.com/in/aniketmaurya"
-pubDatetime: 2026-09-13T21:00:00Z
-modDatetime: 2026-09-14T00:00:00Z
+pubDatetime: 2026-09-13T18:30:00Z
+modDatetime: 2026-09-13T18:30:00Z
 title: "Can Docker Safely Run AI Agents? Containers vs. MicroVMs"
 description: "Docker isolates AI agents, but containers share the host kernel. See where the boundary weakens and when a microVM provides safer isolation."
 featured: true
