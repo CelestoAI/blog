@@ -2,9 +2,9 @@
 author: Aniket Maurya
 authorUrl: "https://www.linkedin.com/in/aniketmaurya"
 pubDatetime: 2026-09-13T18:30:00Z
-modDatetime: 2026-09-13T18:30:00Z
+modDatetime: 2026-09-13T20:30:00Z
 title: "Can Docker Safely Run AI Agents? Containers vs. MicroVMs"
-description: "Docker isolates AI agents, but containers share the host kernel. See where the boundary weakens and when a microVM provides safer isolation."
+description: "Docker protects trusted workloads, but containers share the host kernel. Compare Docker and microVM boundaries for untrusted AI agent code."
 featured: true
 draft: false
 tags:
@@ -13,19 +13,25 @@ tags:
   - sandboxing
 ---
 
-Docker can isolate an AI agent, but every container still shares the host Linux kernel.
+Docker is not inherently insecure. Its default isolation often suits applications and code that you trust.
 
-That tradeoff can suit code you trust. It is less attractive when an agent may execute code from an unknown repository, package, webpage, or document.
+The choice changes when an AI agent may execute hostile code. Docker containers share the host Linux kernel. MicroVMs give each workload a separate guest kernel behind a hardware virtualization boundary.
 
-A microVM adds a separate guest kernel and a hardware virtualization boundary. An attacker must cross both the guest boundary and the hypervisor boundary to reach the host.
+That architectural difference—not ordinary Docker misconfiguration—is why a microVM provides a stronger default for untrusted agent workloads.
 
-The practical answer is:
+## Choose the boundary from the workload
 
-- Use Docker for trusted workloads with strict container policy.
-- Prefer a microVM for hostile or unknown code.
-- Never expose the host Docker socket, broad host mounts, or privileged mode to an untrusted agent.
+| Workload                                        | Sensible default                      |
+| ----------------------------------------------- | ------------------------------------- |
+| Your application or reviewed code               | Docker                                |
+| Local development with limited consequences     | Docker                                |
+| Unknown repositories or generated code          | MicroVM                               |
+| Multi-tenant agent execution                    | MicroVM                               |
+| A workload with access to sensitive credentials | MicroVM with strict credential policy |
 
-This distinction does not mean that a normal Docker container can execute commands on its host merely because it shares the host kernel. A container still has a real security boundary. The concern is the value of a kernel or runtime flaw when the workload has both the motive and time to probe that boundary.
+This is not a choice between “secure” and “insecure.” It is a choice between two security boundaries with different attack surfaces and failure modes.
+
+A normal container cannot access its host merely because it shares the host kernel. An attacker still needs granted host access or a flaw in the kernel, container runtime, or control plane. A microVM adds another boundary that the attacker must cross.
 
 ## Why AI agents need a stronger boundary
 
@@ -105,112 +111,43 @@ mount -t tmpfs none /mnt
 
 Docker drops `CAP_SYS_ADMIN` by default, so the kernel rejects the operation. This is real isolation.
 
-The security model becomes weaker when an operator removes these controls or grants direct access to host resources.
+## What a correct Docker configuration still shares
 
-## How the Docker boundary gets weaker
+Docker's defaults provide a real boundary, but they do not remove shared fate between the workload and the host.
 
-Two cases often appear under the label "container escape":
+Even with a careful configuration:
 
-1. A vulnerability defeats a container boundary.
-2. An operator connects the container to sensitive host resources.
+- Container system calls still reach the host kernel.
+- A host-kernel flaw can affect the host and every container on it.
+- A flaw in `runc`, `containerd`, Docker, or another runtime component can defeat isolation.
+- Every container on the host depends on the same kernel and runtime patch level.
+- An autonomous agent can probe the boundary across many requests.
 
-The second case is easier to demonstrate and often easier to prevent.
+This is the core argument for a microVM. A separate guest kernel contains a guest-kernel compromise inside the virtual machine unless the attacker also defeats the hypervisor or another host interface.
 
-### 1. Docker socket access
+A microVM is not invulnerable. It moves the workload away from the host kernel and adds a hardware-enforced boundary. The host still needs a patched hypervisor, strict device policy, narrow file shares, and safe credential controls.
 
-This mount exposes the host Docker API to the container:
+## Configuration can remove Docker's protections
 
-```bash
--v /var/run/docker.sock:/var/run/docker.sock
-```
+Poor configuration is a separate problem. It is not the reason that Docker and microVMs have different security properties, but it can erase the isolation that Docker provides.
 
-A process with access to a rootful Docker daemon can ask it to create containers with host mounts, devices, extra capabilities, or privileged mode. That authority is close to host root access. Docker warns that anyone who can instruct the daemon can gain root access to its host. See [Protect the Docker daemon socket](https://docs.docker.com/engine/security/protect-access/).
+Avoid these options for untrusted workloads:
 
-The precise statement is:
+- **Docker socket access:** A process that controls a rootful Docker daemon can ask it to create containers with host mounts, devices, extra capabilities, or privileged mode. See [Docker daemon socket protection](https://docs.docker.com/engine/security/protect-access/).
+- **Writable host mounts:** A container can alter any host path that the operator shares with write access. Share narrow paths and use `readonly` or `ro` where possible. See [Docker bind mounts](https://docs.docker.com/engine/storage/bind-mounts/).
+- **Privileged mode:** `--privileged` grants all Linux capabilities, exposes host devices, and relaxes security policy. See [Docker container runtime options](https://docs.docker.com/engine/containers/run/#runtime-privilege-and-linux-capabilities).
+- **Host namespaces:** Options such as `--pid=host` and `--network=host` remove namespace boundaries.
+- **Extra capabilities:** Broad capabilities such as `CAP_SYS_ADMIN` expose more kernel interfaces.
+- **Disabled security policy:** `seccomp=unconfined` or weak AppArmor and SELinux policy removes defense layers.
+- **Unsafe control-plane parameters:** A sandbox API must reject host mounts, devices, namespaces, capabilities, and security options that the workload does not need. See [Docker's daemon attack-surface guidance](https://docs.docker.com/engine/security/#docker-daemon-attack-surface).
 
-> Docker socket access grants control over a service that can create containers with host-level access.
+These options explain how operators can weaken Docker. They do not prove that a default container has no security boundary.
 
-An agent sandbox must not expose that socket.
+## Optional lab: inspect the shared-kernel boundary
 
-### 2. Writable host bind mounts
+This lab compares the host and container kernels, namespaces, capability masks, and seccomp state. It does not weaken Docker or attempt an escape.
 
-This command shares `/srv/project` with the container:
-
-```bash
-docker run --rm \
-  --mount type=bind,src=/srv/project,dst=/workspace \
-  agent
-```
-
-Docker bind mounts have write access by default. A container process can create, alter, or delete files in the shared host directory. The host granted that access, so this is not an escape.
-
-Share only narrow paths and add `readonly` or `ro` when the workload does not need write access. See [Docker bind mounts](https://docs.docker.com/engine/storage/bind-mounts/).
-
-### 3. Privileged mode
-
-The `--privileged` flag changes the threat model. It grants all Linux capabilities, gives access to host devices, and relaxes the default AppArmor or SELinux policy. Docker warns that privileged containers can gain almost the same host access as processes outside a container. See [Docker container runtime options](https://docs.docker.com/engine/containers/run/#runtime-privilege-and-linux-capabilities).
-
-If the workload is untrusted, `--privileged` removes the boundary that most people expect from a Docker sandbox.
-
-### 4. Host namespaces
-
-Docker can let a container join host namespaces:
-
-```bash
---pid=host
---network=host
---userns=host
-```
-
-These flags have different effects:
-
-- `--pid=host` lets the container see host process identifiers.
-- `--network=host` removes the normal network namespace boundary.
-- `--userns=host` disables the user-namespace remap for that container when the daemon has user remap enabled.
-
-None of these flags grants instant host root access by itself. Each one removes a layer and exposes more host surface to the workload.
-
-### 5. Extra capabilities
-
-Linux capabilities divide root authority into smaller units. Docker removes many dangerous capabilities by default, but an operator can add them back:
-
-```bash
-docker run --cap-add=SYS_ADMIN ...
-```
-
-`CAP_SYS_ADMIN` gates a broad set of kernel operations. Namespaces and other controls still apply, but the workload can reach more kernel interfaces. An untrusted workload should receive only the capabilities that it needs.
-
-### 6. Disabled seccomp or LSM policy
-
-An operator can disable seccomp:
-
-```bash
---security-opt seccomp=unconfined
-```
-
-The operator can also weaken AppArmor or SELinux policy. These changes do not grant an automatic escape. They remove defense layers that can block access to a vulnerable syscall, path, device, or kernel API.
-
-Docker recommends its default seccomp profile instead of an unconfined container.
-
-### 7. Unsafe control-plane parameters
-
-A sandbox API may accept values such as:
-
-```json
-{
-  "mounts": [...],
-  "capabilities": [...],
-  "network": "..."
-}
-```
-
-If an attacker can control those values, the API may expose part of the Docker control plane even when the socket never enters the sandbox. A service must validate both the workload boundary and the parameters that create that workload. Docker calls out this risk in its [daemon attack-surface guidance](https://docs.docker.com/engine/security/#docker-daemon-attack-surface).
-
-## A safe lab for the Docker boundary
-
-This lab shows namespace separation, a deliberate host mount, and read-only Docker API calls. It does not attempt a container escape.
-
-Use a Linux host with a rootful Docker Engine and the default socket path. Docker Desktop adds a virtual machine between the container and the native host. Rootless Docker uses a different socket path.
+Use a Linux host with Docker Engine. Docker Desktop adds a virtual machine between the container and the native macOS or Windows host.
 
 Create this project:
 
@@ -220,9 +157,7 @@ docker-boundary-demo/
 ├── package.json
 ├── tsconfig.json
 └── src/
-    ├── inspect-isolation.ts
-    ├── probe-docker-socket.ts
-    └── write-canary.ts
+    └── inspect-isolation.ts
 ```
 
 ### Project files
@@ -314,62 +249,7 @@ console.log({
 });
 ```
 
-Create `src/write-canary.ts`:
-
-```ts
-import { appendFileSync, readFileSync } from "node:fs";
-
-const path = "/demo/canary.txt";
-
-console.log("before:");
-console.log(readFileSync(path, "utf8"));
-
-appendFileSync(path, "container-was-here\n");
-
-console.log("after:");
-console.log(readFileSync(path, "utf8"));
-```
-
-Create `src/probe-docker-socket.ts`:
-
-```ts
-import http from "node:http";
-
-const socketPath = "/var/run/docker.sock";
-
-function get(path: string): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const req = http.request({ socketPath, path, method: "GET" }, res => {
-      let body = "";
-      res.on("data", chunk => {
-        body += chunk;
-      });
-      res.on("end", () => resolve(body));
-    });
-
-    req.on("error", reject);
-    req.end();
-  });
-}
-
-const ping = await get("/_ping");
-const version = JSON.parse(await get("/version")) as {
-  Version: string;
-  ApiVersion: string;
-  Os: string;
-  Arch: string;
-};
-
-console.log("Docker ping:", ping);
-console.log({
-  version: version.Version,
-  apiVersion: version.ApiVersion,
-  os: version.Os,
-  arch: version.Arch,
-});
-```
-
-### Step 1: inspect a normal container
+### Run the comparison
 
 Build the image:
 
@@ -395,73 +275,39 @@ Compare the results:
 
 This proves the shared-kernel model without a host-access attempt.
 
-### Step 2: share one host directory
-
-Create a temporary host file:
-
-```bash
-mkdir -p /tmp/docker-boundary-demo
-printf 'host-original\n' > /tmp/docker-boundary-demo/canary.txt
-```
-
-Attach only that directory:
-
-```bash
-docker run --rm \
-  --mount type=bind,src=/tmp/docker-boundary-demo,dst=/demo \
-  docker-boundary-demo \
-  node dist/write-canary.js
-```
-
-Inspect the file on the host:
-
-```bash
-cat /tmp/docker-boundary-demo/canary.txt
-```
-
-The output now contains:
-
-```text
-host-original
-container-was-here
-```
-
-No escape occurred. The host granted write access to one path, and the container changed that path.
-
-### Step 3: prove that the socket is a control-plane channel
-
-> **Use only the image that you built from the source above. Never expose the host Docker socket to unknown code.**
-
-Attach the rootful Docker socket and execute the read-only probe:
-
-```bash
-docker run --rm \
-  --mount type=bind,src=/var/run/docker.sock,dst=/var/run/docker.sock \
-  docker-boundary-demo \
-  node dist/probe-docker-socket.js
-```
-
-The script reads `/_ping` and `/version`. It does not create a container, join a host namespace, or alter host state.
-
-The result proves that the workload can talk to the host Docker daemon. Although this script makes read-only requests, the socket itself grants broader authority.
-
 Clean up the lab:
 
 ```bash
 docker image rm docker-boundary-demo
-rm -r /tmp/docker-boundary-demo
 ```
+
+## Why a microVM changes the failure boundary
+
+Docker and microVMs both isolate workloads. They place the strongest boundary in different locations.
+
+| Property                               | Docker container                                  | MicroVM                                                                  |
+| -------------------------------------- | ------------------------------------------------- | ------------------------------------------------------------------------ |
+| Kernel                                 | Shares the host kernel                            | Uses a guest kernel                                                      |
+| Primary boundary                       | Namespaces, capabilities, seccomp, and LSM policy | Hardware virtualization and a hypervisor                                 |
+| Host-kernel exposure                   | Container system calls reach it directly          | Guest system calls reach the guest kernel                                |
+| If the workload compromises its kernel | The host kernel is already the target             | The attacker remains inside the guest and needs another path to the host |
+| Resource cost                          | Lower                                             | Higher                                                                   |
+| Best fit                               | Trusted or reviewed code                          | Hostile or unknown code                                                  |
+
+The extra boundary matters most when the workload has a reason to attack the platform. An unknown repository, package script, or generated command can target the shared kernel. Inside a microVM, the same code first encounters the guest kernel.
+
+This does not make every microVM safer than every container. A weak microVM policy can expose host files, credentials, devices, or control-plane APIs. Compare correct configurations on both sides.
 
 ## What recent runc flaws teach us
 
-A shared kernel is not the only concern. A container also depends on the runtime that constructs its namespaces, mounts, devices, and process state. Recent `runc` advisories show how flaws in that setup path can defeat isolation.
+A container also depends on the runtime that constructs its namespaces, mounts, devices, and process state. Recent `runc` advisories show how flaws in that setup path can defeat isolation even when an operator does not grant obvious host access.
 
 - **[CVE-2025-31133](https://github.com/opencontainers/runc/security/advisories/GHSA-9493-h29p-rfm2), published November 5, 2025:** A race around masked paths could expose host data, crash the host, or lead to a container escape. Patched releases: `1.2.8`, `1.3.3`, and `1.4.0-rc.3`.
 - **[CVE-2025-52881](https://github.com/opencontainers/runc/security/advisories/GHSA-cgrx-mc8f-2prm), published November 5, 2025:** Procfs write redirection and mount races could bypass an LSM, crash the host, or support an escape. Patched releases: `1.2.8`, `1.3.3`, and `1.4.0-rc.3`.
 - **[CVE-2025-52565](https://github.com/opencontainers/runc/security/advisories/GHSA-qw9x-cqr3-wc7r), published November 5, 2025:** Races around the `/dev/console` mount could cause host denial of service or a container escape. Patched releases: `1.2.8`, `1.3.3`, and `1.4.0-rc.3`.
 - **[CVE-2026-41579](https://github.com/opencontainers/runc/security/advisories/GHSA-xjvp-4fhw-gc47), published June 13, 2026:** A malicious image with a `/dev` symlink could cause limited host filesystem integrity violations in affected integrations. Patched releases: `1.3.6`, `1.4.3`, and `1.5.0-rc.3`. The upstream advisory states that this flaw is **not exploitable under Docker** because Docker masks the malicious `/dev` symlink with a top-level read-only layer.
 
-The lesson is not that every container is unsafe. The lesson is that container security depends on the host kernel, the runtime, the daemon, and the configuration at the same time.
+These advisories do not make every container unsafe. They show that the container boundary depends on software in the host kernel and runtime. A microVM replaces direct host-kernel exposure with a guest kernel and hypervisor boundary, which changes the path and potential blast radius of a compromise.
 
 ## A practical policy for agent workloads
 
@@ -476,6 +322,8 @@ Docker can suit an agent workload when all of these conditions hold:
 - Network access follows an explicit policy.
 - The control plane validates mounts, devices, namespaces, capabilities, and security options.
 
+This policy preserves Docker's intended isolation. It does not give the workload a separate kernel.
+
 For stronger Docker isolation, consider [rootless mode](https://docs.docker.com/engine/security/rootless/) or [user-namespace remap](https://docs.docker.com/engine/security/userns-remap/). These controls reduce host privilege, but they do not give the workload a separate kernel.
 
 Prefer a microVM when the service accepts unknown repositories, package scripts, generated commands, or repeated requests from an attacker. A microVM gives each workload a guest kernel and puts a hypervisor boundary between that kernel and the host.
@@ -484,11 +332,11 @@ A microVM still needs strict policy. Do not expose host credentials, broad file 
 
 ## Bottom line
 
-Docker is a useful isolation tool, not a complete hostile-code sandbox by default.
+Docker is secure enough for many workloads. That does not mean it provides the strongest boundary for hostile code.
 
-For trusted code, strict Docker policy may provide the right balance of speed, density, and isolation. For untrusted AI-agent workloads, a microVM provides a stronger default because the workload does not share the host kernel.
+For trusted or reviewed code, Docker often provides the right balance of speed, density, and isolation. For unknown code, a microVM provides a stronger default because the workload does not share the host kernel.
 
-Choose the boundary based on the code you execute, the host access you grant, and the cost of a successful escape.
+Choose the boundary from the code you execute and the cost of a successful escape—not from a claim that either technology is universally secure or insecure.
 
 ## Sources
 
