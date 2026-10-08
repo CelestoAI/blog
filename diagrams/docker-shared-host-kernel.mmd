@@ -1,0 +1,21 @@
+graph TD
+  HOSTPROC["Host user space<br/>Host processes"]
+  CONTAINER_A["Container A · isolated user space<br/>App + libraries"]
+  CONTAINER_B["Container B · isolated user space<br/>App + libraries"]
+  KERNEL["One shared host Linux kernel<br/>Namespaces · cgroups · capabilities · seccomp"]
+  HARDWARE["Host hardware<br/>CPU · memory · storage · network"]
+
+  HOSTPROC -->|system calls| KERNEL
+  CONTAINER_A -->|filtered system calls| KERNEL
+  CONTAINER_B -->|filtered system calls| KERNEL
+  KERNEL --> HARDWARE
+
+  classDef host fill:#e8eef7,stroke:#64748b,color:#172033,stroke-width:2px;
+  classDef container fill:#e6f7f2,stroke:#0f766e,color:#123c37,stroke-width:2px;
+  classDef kernel fill:#fff1cc,stroke:#b45309,color:#4a2a05,stroke-width:3px;
+  classDef hardware fill:#f1f5f9,stroke:#64748b,color:#172033,stroke-width:2px;
+
+  class HOSTPROC host;
+  class CONTAINER_A,CONTAINER_B container;
+  class KERNEL kernel;
+  class HARDWARE hardware;

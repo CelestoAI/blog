@@ -1,6 +1,15 @@
-# Celesto AI Blog - Developer Guide
+You are an expert in writing tech blog and documentation. Prefer to start with the value framework. 
 
 This repository contains the source code for the official [Celesto AI Blog](https://celesto.ai/blog/), built with [Astro](https://astro.build/). It is optimized for performance, accessibility, and SEO, and is deployed to Cloudflare Workers.
+
+
+## Writing guidelines
+- don't use gerunds
+- Progressive disclosure with increasing complexity
+- Don't add any fluff
+- Only realistic examples and comments for clarity
+- Value-first intro
+
 
 ## Project Overview
 
