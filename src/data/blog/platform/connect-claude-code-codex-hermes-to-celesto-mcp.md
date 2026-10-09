@@ -2,7 +2,7 @@
 author: Anurag Yadav
 authorUrl: "https://www.linkedin.com/in/yadavanurag13"
 pubDatetime: 2026-10-09T20:22:53Z
-modDatetime: 2026-10-09T20:22:53Z
+modDatetime: 2026-10-09T20:45:50Z
 title: "Give Claude Code, Codex, and Hermes a Celesto Cloud Computer"
 description: "Connect Claude Code, Codex, Hermes Agent, or another MCP client to Celesto. List, create, start, stop, and use cloud computers from your agent."
 featured: false
@@ -18,9 +18,9 @@ AI agents often need a real computer to inspect files, run a command, or expose 
 
 Celesto's hosted MCP server gives Claude Code, Codex, Hermes Agent, and other compatible clients direct access to your Celesto cloud computers. After browser sign-in, ask your agent to inspect your computers, create one, start or stop one, run commands, or publish an HTTP port. No API key or local secret is required.
 
-## Before you connect
+## Connect Celesto to your agent
 
-You need a Celesto account and an MCP client. Claude Code, Codex, and Hermes Agent have instructions below. Other clients must support remote MCP over Streamable HTTP and browser-based OAuth.
+Choose Claude Code, Codex, Hermes Agent, or another compatible MCP client, then connect it to your Celesto account. The sections below provide client-specific steps. Other clients must support remote MCP over Streamable HTTP and browser-based OAuth.
 
 Every client uses this server URL:
 
