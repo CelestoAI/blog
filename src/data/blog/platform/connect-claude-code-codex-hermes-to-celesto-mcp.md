@@ -1,5 +1,5 @@
 ---
-author: Aniket Maurya
+author: Anurag Yadav
 authorUrl: "https://www.linkedin.com/in/aniketmaurya"
 pubDatetime: 2026-10-09T12:00:00Z
 modDatetime: 2026-10-09T12:00:00Z
