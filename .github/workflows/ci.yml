@@ -25,6 +25,8 @@ jobs:
     steps:
       - name: "☁️ Checkout repository"
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
@@ -38,7 +40,15 @@ jobs:
       - name: "🔎 Lint code"
         run: npm run lint
 
+      - name: "📝 Checking changed-file format"
+        if: github.event_name == 'pull_request'
+        run: |
+          git diff --name-only --diff-filter=ACMR -z \
+            "${{ github.event.pull_request.base.sha }}" "${{ github.sha }}" \
+            | xargs -0 -r npx prettier --check
+
       - name: "📝 Checking code format"
+        if: github.event_name == 'workflow_call'
         run: npm run format:check
 
       - name: "🚀 Build the project"
