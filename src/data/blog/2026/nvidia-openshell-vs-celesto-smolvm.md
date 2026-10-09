@@ -14,6 +14,7 @@ tags:
   - sandboxes
 ---
 
+
 AI agents need more access than traditional applications.
 
 A coding agent needs a shell, filesystem, package manager, Git credentials, and network access. A computer-use agent may also need a browser, desktop environment, or Windows application.
@@ -98,15 +99,15 @@ OpenShell has a much more granular policy model than SmolVM today.
 
 A policy can control:
 
-- filesystem paths
-- process identity
-- network destinations
-- which binary may access each destination
-- HTTP methods
-- HTTP paths
-- WebSocket access
-- credential injection
-- model inference routes
+* filesystem paths
+* process identity
+* network destinations
+* which binary may access each destination
+* HTTP methods
+* HTTP paths
+* WebSocket access
+* credential injection
+* model inference routes
 
 For example, an agent could receive permission for:
 
@@ -143,10 +144,10 @@ Filesystem policy uses Linux Landlock. A policy can declare paths as read-only o
 
 Process isolation adds:
 
-- an unprivileged agent user
-- capability removal
-- seccomp syscall filters
-- privilege escalation restrictions
+* an unprivileged agent user
+* capability removal
+* seccomp syscall filters
+* privilege escalation restrictions
 
 These controls remain useful even when OpenShell uses a MicroVM driver. The VM provides one security boundary, while OpenShell restricts the agent process inside that VM.
 
@@ -239,17 +240,17 @@ This makes SmolVM closer to infrastructure such as Firecracker than to a policy 
 
 SmolVM abstracts the parts developers normally need to assemble around a VMM:
 
-- VM lifecycle
-- images
-- networking
-- command execution
-- environment variables
-- file transfer
-- port exposure
-- host mounts
-- snapshots
-- browser sessions
-- desktop access
+* VM lifecycle
+* images
+* networking
+* command execution
+* environment variables
+* file transfer
+* port exposure
+* host mounts
+* snapshots
+* browser sessions
+* desktop access
 
 The goal is not only to isolate a process.
 
@@ -265,13 +266,13 @@ It does not cover every computer-use agent.
 
 A lot of business software still requires Windows:
 
-- transport management systems
-- accounting software
-- insurance applications
-- ERP clients
-- desktop applications
-- internal enterprise tools
-- old software with no useful API
+* transport management systems
+* accounting software
+* insurance applications
+* ERP clients
+* desktop applications
+* internal enterprise tools
+* old software with no useful API
 
 SmolVM can boot a Windows 11 guest:
 
@@ -312,10 +313,10 @@ smolvm sandbox desktop test-mac
 
 This matters for tasks such as:
 
-- macOS app tests
-- installer tests
-- desktop automation
-- software that depends on macOS state
+* macOS app tests
+* installer tests
+* desktop automation
+* software that depends on macOS state
 
 Again, the core abstraction is a computer rather than only a restricted process.
 
@@ -340,9 +341,9 @@ with SmolVM.browser(
 
 One sandbox can expose:
 
-- a CDP endpoint for Playwright
-- a viewer URL for humans
-- a VNC endpoint for computer-use agents
+* a CDP endpoint for Playwright
+* a viewer URL for humans
+* a VNC endpoint for computer-use agents
 
 That gives both deterministic browser automation and pixel-level computer use against the same isolated machine.
 
@@ -539,24 +540,24 @@ A mature agent runtime may need both.
 
 Use **OpenShell** when:
 
-- least-privilege network access matters
-- credentials must stay outside the agent environment
-- you need per-binary network rules
-- you need HTTP method or path restrictions
-- Linux containers or Linux MicroVMs cover your workload
-- you already have Kubernetes or container infrastructure
-- centralized policy matters more than the guest OS
+* least-privilege network access matters
+* credentials must stay outside the agent environment
+* you need per-binary network rules
+* you need HTTP method or path restrictions
+* Linux containers or Linux MicroVMs cover your workload
+* you already have Kubernetes or container infrastructure
+* centralized policy matters more than the guest OS
 
 Use **SmolVM** when:
 
-- every agent should receive a hardware-isolated VM
-- you want Firecracker as the Linux sandbox primitive
-- you need Windows agents
-- you need macOS desktop environments
-- you build browser or computer-use agents
-- you need VNC or CDP access
-- you need VM snapshots
-- you want a small Python API around the computer lifecycle
+* every agent should receive a hardware-isolated VM
+* you want Firecracker as the Linux sandbox primitive
+* you need Windows agents
+* you need macOS desktop environments
+* you build browser or computer-use agents
+* you need VNC or CDP access
+* you need VM snapshots
+* you want a small Python API around the computer lifecycle
 
 For many coding agents, either project can provide a useful isolated runtime.
 
