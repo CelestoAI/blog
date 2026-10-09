@@ -1,9 +1,9 @@
 ---
 author: Anurag Yadav
-authorUrl: "https://www.linkedin.com/in/aniketmaurya"
+authorUrl: "https://www.linkedin.com/in/yadavanurag13"
 pubDatetime: 2026-10-09T12:00:00Z
 modDatetime: 2026-10-09T12:00:00Z
-title: "Manage Celesto Cloud Computers from Claude Code, Codex, and Hermes"
+title: "Cloud computer for every personal bot -- Muse, Claude, Codex, Hermes, Instinct, et al."
 description: "Connect Claude Code, Codex, Hermes Agent, or any MCP client to the Celesto hosted MCP server, then list, start, stop, and run commands on your cloud computers."
 featured: false
 draft: true
@@ -12,8 +12,6 @@ tags:
   - Claude Code
   - Codex
   - Hermes Agent
-  - Celesto
-  - Developer Tools
 ---
 
 <!-- TODO(author): confirm author name/authorUrl (copied from recent posts), publish date, and set draft: false when ready. -->
