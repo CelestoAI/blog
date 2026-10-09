@@ -37,18 +37,18 @@ https://mcp.celesto.ai/mcp
 
 The server exposes ten tools, all named `cloud_computer_*`:
 
-| Tool                            | What it does                                              |
-| ------------------------------- | --------------------------------------------------------- |
-| `cloud_computer_list`           | Lists the cloud computers visible to your account         |
-| `cloud_computer_info`           | Shows a computer's state and resource configuration       |
-| `cloud_computer_create`         | Creates a persistent cloud computer                       |
-| `cloud_computer_start`          | Resumes a stopped computer                                |
-| `cloud_computer_stop`           | Stops a computer and keeps its files                      |
-| `cloud_computer_delete`         | Permanently deletes a computer and its files              |
-| `cloud_computer_exec`           | Runs a command and returns its output and exit code       |
-| `cloud_computer_port_publish`   | Publishes an HTTP port and returns its public URL         |
-| `cloud_computer_port_list`      | Lists the public ports of a computer                      |
-| `cloud_computer_port_unpublish` | Removes a public port                                     |
+| Tool                            | What it does                                        |
+| ------------------------------- | --------------------------------------------------- |
+| `cloud_computer_list`           | Lists the cloud computers visible to your account   |
+| `cloud_computer_info`           | Shows a computer's state and resource configuration |
+| `cloud_computer_create`         | Creates a persistent cloud computer                 |
+| `cloud_computer_start`          | Resumes a stopped computer                          |
+| `cloud_computer_stop`           | Stops a computer and keeps its files                |
+| `cloud_computer_delete`         | Permanently deletes a computer and its files        |
+| `cloud_computer_exec`           | Runs a command and returns its output and exit code |
+| `cloud_computer_port_publish`   | Publishes an HTTP port and returns its public URL   |
+| `cloud_computer_port_list`      | Lists the public ports of a computer                |
+| `cloud_computer_port_unpublish` | Removes a public port                               |
 
 Your coding tool picks the right tool from your request. You do not need to call them by name.
 
