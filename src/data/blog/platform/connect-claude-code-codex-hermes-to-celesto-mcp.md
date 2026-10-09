@@ -1,12 +1,12 @@
 ---
 author: Anurag Yadav
 authorUrl: "https://www.linkedin.com/in/yadavanurag13"
-pubDatetime: 2026-10-09T12:00:00Z
-modDatetime: 2026-10-09T12:00:00Z
-title: "Cloud computer for every personal bot -- Muse, Claude, Codex, Hermes, Instinct, et al."
-description: "Connect Claude Code, Codex, Hermes Agent, or any MCP client to the Celesto hosted MCP server, then list, start, stop, and run commands on your cloud computers."
+pubDatetime: 2026-10-09T20:22:53Z
+modDatetime: 2026-10-09T20:22:53Z
+title: "Give Claude Code, Codex, and Hermes a Celesto Cloud Computer"
+description: "Connect Claude Code, Codex, Hermes Agent, or another MCP client to Celesto. List, create, start, stop, and use cloud computers from your agent."
 featured: false
-draft: true
+draft: false
 tags:
   - MCP
   - Claude Code
@@ -14,45 +14,42 @@ tags:
   - Hermes Agent
 ---
 
-<!-- TODO(author): confirm author name/authorUrl (copied from recent posts), publish date, and set draft: false when ready. -->
-<!-- TODO(author): add an ogImage (see src/data/blog/smolvm/firecracker-macos.md for the `ogImage: ./images/...` convention). No cover image has been created. -->
+AI agents often need a real computer to inspect files, run a command, or expose a service. Without one, you must switch between your coding tool and a cloud console. That interrupts the task and removes context from the agent.
 
-Celesto now has a hosted MCP server. Once your coding tool is connected, you can ask it to work with your Celesto cloud computers in plain language: see which ones you have, start or stop them, and run a command on one.
+Celesto's hosted MCP server gives Claude Code, Codex, Hermes Agent, and other compatible clients direct access to your Celesto cloud computers. After browser sign-in, ask your agent to inspect your computers, create one, start or stop one, run commands, or publish an HTTP port. No API key or local secret is required.
 
-You sign in with your Celesto account in the browser. There is no API key to copy into a config file.
+## Before you connect
 
-## What you need
+You need a Celesto account and an MCP client. Claude Code, Codex, and Hermes Agent have instructions below. Other clients must support remote MCP over Streamable HTTP and browser-based OAuth.
 
-A Celesto account, and one of Claude Code, Codex, or Hermes Agent installed on your machine. Other MCP clients work too; see the generic steps below.
-
-The server URL is the same for every client:
+Every client uses this server URL:
 
 ```text
 https://mcp.celesto.ai/mcp
 ```
 
-## What the tools can do
+## What your agent can do
 
-The server exposes ten tools, all named `cloud_computer_*`:
+The server provides ten `cloud_computer_*` tools. Your agent selects the appropriate tool from your request.
 
-| Tool                            | What it does                                        |
+| Tool                            | Result                                              |
 | ------------------------------- | --------------------------------------------------- |
-| `cloud_computer_list`           | Lists the cloud computers visible to your account   |
+| `cloud_computer_list`           | Lists the cloud computers in your account           |
 | `cloud_computer_info`           | Shows a computer's state and resource configuration |
 | `cloud_computer_create`         | Creates a persistent cloud computer                 |
-| `cloud_computer_start`          | Resumes a stopped computer                          |
-| `cloud_computer_stop`           | Stops a computer and keeps its files                |
-| `cloud_computer_delete`         | Permanently deletes a computer and its files        |
-| `cloud_computer_exec`           | Runs a command and returns its output and exit code |
+| `cloud_computer_start`          | Starts a stopped computer                           |
+| `cloud_computer_stop`           | Stops a computer and preserves its files            |
+| `cloud_computer_delete`         | Deletes a computer and its files permanently        |
+| `cloud_computer_exec`           | Runs a command and returns output and exit code     |
 | `cloud_computer_port_publish`   | Publishes an HTTP port and returns its public URL   |
-| `cloud_computer_port_list`      | Lists the public ports of a computer                |
+| `cloud_computer_port_list`      | Lists a computer's public ports                     |
 | `cloud_computer_port_unpublish` | Removes a public port                               |
 
-Your coding tool picks the right tool from your request. You do not need to call them by name.
+## Connect your client
 
-<!-- TODO(author): confirm what the consent page shows. The server checks a read, exec, or admin scope per tool (list/info/port list need read; create/start/stop/exec/port publish/unpublish need exec; delete needs admin), but this draft does not claim a scope picker on the consent screen. -->
+Choose your client and add the Celesto MCP server. The browser opens a Celesto consent page when the client needs authorization.
 
-## Claude Code
+### Claude Code
 
 Add the server:
 
@@ -60,9 +57,9 @@ Add the server:
 claude mcp add --transport http celesto https://mcp.celesto.ai/mcp
 ```
 
-Then start Claude Code, run `/mcp`, choose `celesto`, and log in. Your browser opens a Celesto consent page. Approve it and return to Claude Code.
+Start Claude Code, run `/mcp`, select `celesto`, and sign in through the browser.
 
-## Codex
+### Codex
 
 Add the server:
 
@@ -70,17 +67,17 @@ Add the server:
 codex mcp add celesto --url https://mcp.celesto.ai/mcp
 ```
 
-Then sign in:
+Then authorize it:
 
 ```shell
 codex mcp login celesto
 ```
 
-Codex opens the browser for the OAuth login. Approve the request on the Celesto page.
+Codex opens the Celesto consent page in your browser.
 
-## Hermes Agent
+### Hermes Agent
 
-Add the server to `~/.hermes/config.yaml`. If the file already has an `mcp_servers` section, add only the `celesto` entry to it.
+Add Celesto to `~/.hermes/config.yaml`. If `mcp_servers` already exists, add only the `celesto` entry.
 
 ```yaml
 mcp_servers:
@@ -89,18 +86,15 @@ mcp_servers:
     auth: oauth
 ```
 
-Reload the MCP servers in Hermes (`/reload-mcp`) and sign in with `hermes mcp login celesto`. Approve the request on the Celesto page in your browser.
+Reload MCP servers with `/reload-mcp`, then authorize Celesto:
 
-<!-- TODO(author): the Hermes steps come from the Hermes MCP docs and have not been run against mcp.celesto.ai. Test them (including `hermes mcp test celesto`) before publishing. -->
+```shell
+hermes mcp login celesto
+```
 
-## Any other MCP client
+### Another MCP client
 
-Any client that supports remote MCP servers over Streamable HTTP and the standard MCP browser login (OAuth) can connect. You need two things:
-
-1. The server URL: `https://mcp.celesto.ai/mcp`
-2. A way to sign in through the browser. The client finds the login endpoints from the server, so you do not enter any client ID or secret.
-
-Most clients take the same shape of config, in their own file:
+Configure a remote MCP server with this URL:
 
 ```json
 {
@@ -112,22 +106,14 @@ Most clients take the same shape of config, in their own file:
 }
 ```
 
-Check your client's MCP documentation for where that file lives and for the login command. The server does not support the older SSE transport or local stdio, so a client that only offers those cannot connect.
-
-<!-- TODO(author): the generic requirements above come from how the server works (Streamable HTTP, OAuth with PKCE). Only Claude Code, Codex, and Cursor were tested against it. Hermes was NOT tested. -->
+Use your client's browser-login command to authorize Celesto. You do not need a client ID or client secret. Clients that only support SSE or local stdio cannot connect.
 
 ## Try it
 
-Once connected, try these prompts:
+After authorization, ask your agent:
 
 1. `List my Celesto cloud computers.`
-2. `Start the computer named <name> and tell me when it is running.`
-3. `On <name>, run uname -a and df -h and show me the output.`
+2. `Start the computer named <name> and tell me when it is ready.`
+3. `On <name>, run uname -a and df -h. Show me the output.`
 
-Replace `<name>` with a name from the first prompt. Command output and the exit code come back in the conversation.
-
-## Get help
-
-If something here does not work for you, contact us at <!-- TODO(author): support channel / email / Discord link -->.
-
-<!-- TODO(author): add a link to the official MCP docs page once it exists. None was confirmed when this draft was written. -->
+Replace `<name>` with a name from the first response. The command result and exit code appear in the conversation.
