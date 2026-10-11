@@ -1,9 +1,9 @@
 ---
 pubDatetime: 2026-04-21
-modDatetime: 2026-04-21
+modDatetime: 2026-10-11
 published: true
-title: "How to Safely Run AI-Generated Code with SmolVM (Open-Source MicroVM Sandbox)"
-description: "SmolVM is an open-source microVM runtime that lets AI agents run untrusted code in a hardware-isolated sandbox. Learn why Docker isn't enough for LLM-generated code and how to spin up a Firecracker-powered sandbox in three lines of Python."
+title: "How to Safely Run AI-Generated Code with Celesto (Open-Source MicroVM Sandbox)"
+description: "Celesto is an open-source microVM runtime that lets AI agents run untrusted code in a hardware-isolated sandbox. Learn why Docker isn't enough for LLM-generated code and how to spin up a Firecracker-powered sandbox in three lines of Python."
 tags:
   - python
   - opensource
@@ -13,15 +13,15 @@ Your AI agent just wrote some Python. Do you feel good about running it on your 
 
 If the answer is "not really" — you're not alone. Every team building agents eventually hits the same wall: **LLM-generated code is the new untrusted input**, and most of the tooling we reach for (Docker, subprocess, `exec`) wasn't built for it.
 
-We built [SmolVM](https://github.com/CelestoAI/SmolVM) to fix this. It's an open-source, Firecracker-backed microVM sandbox that gives AI agents their own disposable computer — boots in under a second, isolated at the hardware level, and disappears when the agent is done.
+We built [Celesto](https://github.com/CelestoAI/celesto) to fix this. It's an open-source, Firecracker-backed microVM sandbox that gives AI agents their own disposable computer — boots in under a second, isolated at the hardware level, and disappears when the agent is done.
 
 In this post I'll walk through:
 
 - Why running AI-generated code in Docker is a bad idea
 - What microVMs give you that containers don't
-- A SmolVM quickstart (three lines of Python)
+- A Celesto quickstart (three lines of Python)
 - Real use cases: coding agents, browser agents, and giving an agent access to your repo
-- How SmolVM compares to Docker, E2B, and firecracker-containerd
+- How Celesto compares to Docker, E2B, and firecracker-containerd
 - FAQ
 
 Let's get into it.
@@ -54,13 +54,13 @@ MicroVMs take a different approach: a real hypervisor, a real guest kernel, and 
 
 The tradeoff used to be speed — full VMs took 30+ seconds to boot, which is unusable for ephemeral agent sandboxes. [Firecracker](https://firecracker-microvm.github.io/) (the microVM that powers AWS Lambda and Fargate) solved that problem. MicroVMs now boot in **under 500ms**, which makes them practical for per-request isolation.
 
-SmolVM wraps Firecracker (on Linux) and QEMU (on macOS) in a clean Python API so you don't have to deal with TAP devices, rootfs images, or vsock by hand.
+Celesto wraps Firecracker (on Linux) and QEMU (on macOS) in a clean Python API so you don't have to deal with TAP devices, rootfs images, or vsock by hand.
 
 ---
 
-## SmolVM quickstart
+## Celesto quickstart
 
-Install SmolVM with a single command:
+Install Celesto with a single command:
 
 ```bash
 curl -sSL https://celesto.ai/install.sh | bash
@@ -72,12 +72,12 @@ This installs everything you need (including Python), configures your machine, a
 <summary>Manual installation</summary>
 
 ```bash
-pip install smolvm
-smolvm setup
-smolvm doctor
+pip install celesto
+celesto setup
+celesto doctor
 ```
 
-On supported Linux and macOS systems, `pip install smolvm` also pulls in the matching `smolvm-core` wheel automatically. Most users do not need Rust installed.
+On supported Linux and macOS systems, `pip install celesto` also pulls in the matching `celesto-core` wheel automatically. Most users do not need Rust installed.
 
 Linux may prompt for `sudo` during setup so it can install host dependencies and configure runtime permissions.
 
@@ -86,11 +86,11 @@ Linux may prompt for `sudo` during setup so it can install host dependencies and
 Spin up a sandbox and run a command:
 
 ```python
-from smolvm import SmolVM
+from celesto import Celesto
 
-with SmolVM() as vm:
+with Celesto() as vm:
     result = vm.run("echo 'Hello from the sandbox!'")
-    print(result.output)
+    print(result.stdout)
 ```
 
 That's it. You now have a hardware-isolated VM with its own kernel, its own filesystem, and its own network namespace — and it'll clean itself up when the `with` block exits.
@@ -102,11 +102,11 @@ That's it. You now have a hardware-isolated VM with its own kernel, its own file
 This is the pattern most coding agents need. The model produces a shell command or a Python snippet, and you need to run it without putting your machine at risk.
 
 ```python
-from smolvm import SmolVM
+from celesto import Celesto
 
 def execute_code_in_sandbox(code: str) -> str:
     """Tool the agent can call to run shell code safely."""
-    with SmolVM() as vm:
+    with Celesto() as vm:
         result = vm.run(code)
         return result.stdout if result.exit_code == 0 else result.stderr
 ```
@@ -117,33 +117,27 @@ Wire this up as a tool in your agent framework (LangChain, [Agentor](https://git
 
 ## Real use case #2: Multi-turn sessions with persistent state
 
-For agents that install dependencies, build projects, or iterate over multiple turns, you want the VM to stick around. SmolVM supports this with explicit lifecycle control and the ability to reconnect by ID:
+For agents that install dependencies, build projects, or iterate over multiple turns, keep a named sandbox. Stop it when the task pauses, then start it again when work resumes:
 
-```python
-from smolvm import SmolVM
+```bash
+celesto sandbox create --name analysis
+celesto sandbox exec analysis -- pip install requests pandas
+celesto sandbox exec analysis -- python analysis.py
 
-vm = SmolVM()
-vm.start()
+# Pause the task and retain its files.
+celesto sandbox stop analysis
 
-# Set up the environment
-vm.run("pip install requests pandas")
-
-# Later in the conversation
-vm.run("python analysis.py")
-
-# Reconnect from a different process
-vm_id = vm.id
-# ... hours later ...
-vm = SmolVM.from_id(vm_id)
-print(vm.status)
+# Resume it later.
+celesto sandbox start analysis
+celesto sandbox exec analysis -- python analysis.py
 ```
 
 You can also inject environment variables (persisted to `/etc/profile.d/` inside the VM) for API keys and configuration:
 
 ```python
-with SmolVM() as vm:
+with Celesto() as vm:
     vm.set_env_vars({"API_KEY": "sk-...", "DEBUG": "1"})
-    print(vm.run("echo $API_KEY").output)
+    print(vm.run("echo $API_KEY").stdout)
 ```
 
 ---
@@ -153,13 +147,11 @@ with SmolVM() as vm:
 Browser-using agents need a full browser session they can see and control. Running Chrome on the host is messy — it touches your cookies, your extensions, your logged-in sessions. Running it in a sandboxed VM is clean:
 
 ```python
-with SmolVM() as vm:
-    # Start a full browser inside the VM
-    vm.run("google-chrome --remote-debugging-port=9222 &")
+from celesto import Celesto
 
-    # Expose the DevTools port to the host
-    host_port = vm.expose_local(guest_port=9222, host_port=19222)
-    # Now connect Playwright/Puppeteer to http://localhost:19222
+with Celesto.browser(headless=True) as browser:
+    # Connect Playwright or Puppeteer to this private CDP endpoint.
+    print(browser.cdp_url)
 ```
 
 The agent gets a real browser. Your host stays untouched.
@@ -171,10 +163,10 @@ The agent gets a real browser. Your host stays untouched.
 For coding agents that need to understand an existing codebase, you can mount a host directory **read-only** so the agent can explore without being able to modify anything:
 
 ```python
-with SmolVM(host_mounts=[("/Users/me/my-repo", "/workspace", "ro")]) as vm:
+with Celesto(mounts=["/Users/me/my-repo:/workspace"]) as vm:
     # Agent can read but not write
-    print(vm.run("ls /workspace").output)
-    print(vm.run("cat /workspace/README.md").output)
+    print(vm.run("ls /workspace").stdout)
+    print(vm.run("cat /workspace/README.md").stdout)
 ```
 
 This is how you get the benefits of Cursor-style codebase awareness without trusting the agent (or a prompt-injected dependency) with write access to your project.
@@ -183,10 +175,10 @@ This is how you get the benefits of Cursor-style codebase awareness without trus
 
 ## Real use case #5: Egress filtering
 
-A common exfiltration vector for malicious LLM output is "send data to attacker.com". SmolVM ships with domain allowlisting so the VM can only reach the hosts you explicitly permit:
+A common exfiltration vector for malicious LLM output is "send data to attacker.com". Celesto ships with domain allowlisting so the VM can only reach the hosts you explicitly permit:
 
 ```python
-with SmolVM(allow_hosts=["api.openai.com", "pypi.org"]) as vm:
+with Celesto(internet_settings={"allowed_domains": ["api.openai.com", "pypi.org"]}) as vm:
     # These work
     vm.run("pip install requests")
     # This silently fails — attacker.com isn't on the list
@@ -197,11 +189,11 @@ If the model writes code that tries to phone home, the network stack says no.
 
 ---
 
-## SmolVM vs Docker vs other sandboxes
+## Celesto vs Docker vs other sandboxes
 
-Here's how SmolVM stacks up against the options most teams consider:
+Here's how Celesto stacks up against the options most teams consider:
 
-| Feature               | Docker / containers | SmolVM                     | E2B (hosted)           | firecracker-containerd |
+| Feature               | Docker / containers | Celesto                     | E2B (hosted)           | firecracker-containerd |
 | --------------------- | ------------------- | -------------------------- | ---------------------- | ---------------------- |
 | Isolation boundary    | Shared kernel       | Hardware (KVM/Firecracker) | Hardware (Firecracker) | Hardware (Firecracker) |
 | Boot time             | ~100ms              | ~500ms                     | ~150ms (hosted)        | ~500ms                 |
@@ -214,7 +206,7 @@ Here's how SmolVM stacks up against the options most teams consider:
 | Open source           | ✅                  | ✅ (Apache 2.0)            | ❌                     | ✅                     |
 | Price                 | Free                | Free                       | Per-sandbox            | Free                   |
 
-If you want a hosted sandbox and don't mind a per-request cost, E2B is a great product. If you want to run sandboxes **on your own infrastructure** (for cost, privacy, VPC requirements, or regulated-industry compliance), SmolVM is the option that gets you there without wiring up firecracker-containerd by hand.
+If you want a hosted sandbox and don't mind a per-request cost, E2B is a great product. If you want to run sandboxes **on your own infrastructure** (for cost, privacy, VPC requirements, or regulated-industry compliance), Celesto is the option that gets you there without wiring up firecracker-containerd by hand.
 
 ---
 
@@ -228,7 +220,7 @@ In practice, most teams reuse VMs across a single conversation and recycle them 
 
 ## Who this is for
 
-SmolVM is useful if you're building:
+Celesto is useful if you're building:
 
 - **Coding agents** (Cursor/Devin/Claude Code-style products) that need to execute code
 - **App builders and design-to-code tools** that compile and run generated projects
@@ -247,33 +239,33 @@ If the model's output ever touches a shell, a Python interpreter, or a browser, 
 
 Docker containers share the host kernel. A kernel exploit or container-escape CVE becomes a full host compromise. For AI-generated code — which is effectively untrusted input — you want a hypervisor boundary between the code and your host. MicroVMs give you that, and modern microVMs boot fast enough to use per-request.
 
-### How is SmolVM different from E2B?
+### How is Celesto different from E2B?
 
-E2B is a hosted sandbox service — you pay per sandbox and it runs on their infrastructure. SmolVM is open source and runs on your own machine or your own cloud, which matters if you care about data privacy, egress cost, VPC deployment, or regulated-industry compliance (fintech, health tech, legal tech). Both use Firecracker under the hood on Linux.
+E2B is a hosted sandbox service — you pay per sandbox and it runs on their infrastructure. Celesto is open source and runs on your own machine or your own cloud, which matters if you care about data privacy, egress cost, VPC deployment, or regulated-industry compliance (fintech, health tech, legal tech). Both use Firecracker under the hood on Linux.
 
-### Does SmolVM work on macOS?
+### Does Celesto work on macOS?
 
-Yes. On Linux, SmolVM uses Firecracker with KVM. On macOS, it uses QEMU with the Hypervisor framework. The Python API is identical across both backends, so your code is portable.
+Yes. On Linux, Celesto uses Firecracker with KVM. On macOS, it uses QEMU with the Hypervisor framework. The Python API is identical across both backends, so your code is portable.
 
 ### What about Windows?
 
-Windows isn't supported yet. WSL2 works, but native Windows support is on the roadmap.
+Celesto supports Windows 11 guests on Linux hosts with QEMU and KVM. You provide a Windows image, then Celesto can run PowerShell commands, transfer files, and manage the VM lifecycle.
 
-### Is SmolVM production-ready?
+### Is Celesto production-ready?
 
-SmolVM is in active development (currently v0.0.3). It's being used in production by early design partners. For mission-critical workloads, we recommend pinning to a specific version and running a staging deploy first. See the [installation docs](https://docs.celesto.ai) for golden-AMI patterns and Firecracker version pinning.
+Celesto is in active development (currently v0.1.0). For mission-critical workloads, pin a version and run a staging deployment first. See the [installation docs](https://docs.celesto.ai) for host setup and runtime guidance.
 
-### Can I run GPU workloads inside SmolVM?
+### Can I run GPU workloads inside Celesto?
 
-Not in the current release. GPU passthrough for Firecracker is experimental upstream, and SmolVM doesn't expose it yet. For CPU-bound code (which is most agent code — data manipulation, API calls, shell commands, browser automation), SmolVM is a great fit. For GPU inference, keep that on the host.
+Not in the current release. GPU passthrough for Firecracker is experimental upstream, and Celesto doesn't expose it yet. For CPU-bound code (which is most agent code — data manipulation, API calls, shell commands, browser automation), Celesto is a great fit. For GPU inference, keep that on the host.
 
 ### What's the overhead per sandbox?
 
-A default SmolVM uses ~128MB of RAM and a few hundred MB of disk. You can run dozens of microVMs on a single host without breaking a sweat, which is the whole point of "micro" in microVM.
+A default Celesto uses ~128MB of RAM and a few hundred MB of disk. You can run dozens of microVMs on a single host without breaking a sweat, which is the whole point of "micro" in microVM.
 
 ### How does this fit with frameworks like LangChain or Agentor?
 
-SmolVM is a runtime, not a framework. Wrap `SmolVM().run(...)` as a tool in whatever agent framework you're using. We designed it to be framework-agnostic so it plugs into existing agent stacks.
+Celesto is a runtime, not a framework. Wrap `Celesto().run(...)` as a tool in whatever agent framework you're using. We designed it to be framework-agnostic so it plugs into existing agent stacks.
 
 ---
 
@@ -281,16 +273,16 @@ SmolVM is a runtime, not a framework. Wrap `SmolVM().run(...)` as a tool in what
 
 The fastest path:
 
-1. **Install:** `pip install smolvm`
-2. **Run host setup:** `./scripts/system-setup.sh` (Linux) or `./scripts/system-setup-macos.sh` (macOS)
+1. **Install:** `pip install celesto`
+2. **Prepare the host:** `celesto setup`, then `celesto doctor`
 3. **Try the quickstart** above
-4. **Star the repo** on [GitHub](https://github.com/CelestoAI/SmolVM) so you can find it later (and so we know it's useful — it helps us prioritize)
+4. **Star the repo** on [GitHub](https://github.com/CelestoAI/celesto) so you can find it later (and so we know it's useful — it helps us prioritize)
 5. **Read the docs** at [docs.celesto.ai](https://docs.celesto.ai)
 
-SmolVM is Apache 2.0 licensed and free to use in commercial projects. It's built and maintained by [Celesto AI](https://celesto.ai), where we're working on production infrastructure for AI agents.
+Celesto is Apache 2.0 licensed and free to use in commercial projects. It's built and maintained by [Celesto AI](https://celesto.ai), where we're working on production infrastructure for AI agents.
 
 If you're building something interesting on top of it — or you hit something that doesn't work — open an issue or reach out. We read everything.
 
 ---
 
-_Building with AI agents? We'd love to hear what you're working on. Drop a comment below or find us on [GitHub](https://github.com/CelestoAI/SmolVM)._
+_Building with AI agents? We'd love to hear what you're working on. Drop a comment below or find us on [GitHub](https://github.com/CelestoAI/celesto)._

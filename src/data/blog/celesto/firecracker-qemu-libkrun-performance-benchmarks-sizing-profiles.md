@@ -2,7 +2,7 @@
 author: Aniket Maurya
 authorUrl: "https://www.linkedin.com/in/aniketmaurya"
 pubDatetime: 2026-07-11
-modDatetime: 2026-07-11
+modDatetime: 2026-10-11
 title: "Firecracker, QEMU, and libkrun Performance Benchmarks and Sizing Profiles"
 description: "Measured Firecracker and QEMU performance, an honest libkrun data gap, reproducible benchmark commands, and practical sizing profiles for AI sandboxes."
 featured: true
@@ -14,7 +14,7 @@ tags:
   - benchmarks
   - performance
   - microvm
-  - smolvm
+  - celesto
   - sandboxes
 ---
 
@@ -56,9 +56,9 @@ libkrun can use KVM on Linux and Hypervisor.framework on macOS. That makes it re
 
 The architecture is attractive, but architecture alone does not establish performance. libkrun needs to be measured with the same host, guest, and workload as the other backends.
 
-## Where SmolVM fits
+## Where Celesto fits
 
-[SmolVM](https://github.com/CelestoAI/SmolVM) is an open-source Python SDK and command-line runtime for creating disposable VM sandboxes.
+[Celesto](https://github.com/CelestoAI/celesto) is an open-source Python SDK and command-line runtime for creating disposable VM sandboxes.
 
 It provides one sandbox interface over multiple VMM backends:
 
@@ -66,7 +66,7 @@ It provides one sandbox interface over multiple VMM backends:
 Your Python code or CLI command
               |
               v
-           SmolVM
+           Celesto
        /       |       \
 Firecracker   QEMU   libkrun
        \       |       /
@@ -75,13 +75,13 @@ Firecracker   QEMU   libkrun
 
 A developer can run QEMU on macOS, then select Firecracker on a Linux KVM host without rewriting the workload API. libkrun is available as an explicit backend.
 
-This article uses SmolVM's benchmark data because it runs the same public sandbox API and guest workload across backends. The results measure the path an application experiences, not only how long a VMM process takes to appear.
+This article uses Celesto's benchmark data because it runs the same public sandbox API and guest workload across backends. The results measure the path an application experiences, not only how long a VMM process takes to appear.
 
-You do not need to adopt SmolVM to use the methodology. The same rule applies to any runtime: keep the host, image, resources, control path, and workload constant before ranking VMMs.
+You do not need to adopt Celesto to use the methodology. The same rule applies to any runtime: keep the host, image, resources, control path, and workload constant before ranking VMMs.
 
 ## Results at a glance
 
-The existing controlled SmolVM data covers Firecracker and QEMU on the same Linux KVM host. It does not yet contain a comparable libkrun result.
+The existing controlled Celesto data covers Firecracker and QEMU on the same Linux KVM host. It does not yet contain a comparable libkrun result.
 
 The historical end-to-end results ranged from roughly **1.34 to 1.94 seconds** until the first command completed, depending on backend, guest boot configuration, and control channel. The **control channel** is how the host sends commands into the guest; the measurements used SSH or vsock, a virtual-socket transport designed for host-to-guest communication.
 
@@ -99,19 +99,19 @@ Choose based on host and required operations before optimizing milliseconds:
 | Linux KVM production hosts | Strong fit                    | Supported with KVM              | Supported path               |
 | Native macOS host          | Not supported                 | Uses Hypervisor.framework       | Uses Hypervisor.framework    |
 | VMM shape                  | Purpose-built microVM process | General-purpose system emulator | Library-based interface      |
-| SmolVM pause/resume        | Supported                     | Supported                       | Not yet supported            |
-| SmolVM snapshots           | Supported                     | Supported                       | Not yet supported            |
-| SmolVM automatic selection | Supported Linux default       | macOS default                   | Explicit `--backend libkrun` |
+| Celesto pause/resume        | Supported                     | Supported                       | Not yet supported            |
+| Celesto snapshots           | Supported                     | Supported                       | Not yet supported            |
+| Celesto automatic selection | Supported Linux default       | macOS default                   | Explicit `--backend libkrun` |
 
-For a Linux production fleet that depends on snapshots or pause/resume, Firecracker and QEMU are operationally complete choices in SmolVM today.
+For a Linux production fleet that depends on snapshots or pause/resume, Firecracker and QEMU are operationally complete choices in Celesto today.
 
 For local macOS development, QEMU is the default and supports broader guest and firmware workflows. libkrun is worth measuring when you want a smaller library-oriented path and do not need the lifecycle operations it currently lacks.
 
 Readers who only need the decision summary can stop here. The next sections explain the measurements, their limits, and how to produce a sizing profile for a real workload.
 
-## What SmolVM measured for Firecracker and QEMU
+## What Celesto measured for Firecracker and QEMU
 
-SmolVM includes a historical same-host QEMU and Firecracker boot investigation. The setup was:
+Celesto includes a historical same-host QEMU and Firecracker boot investigation. The setup was:
 
 - one Linux KVM host with 16 CPUs
 - Alpine Linux guest
@@ -138,7 +138,7 @@ They also show why a single “backend speed” number is incomplete:
 - QEMU over vsock was close to Firecracker for first interaction and dramatically faster for repeated commands.
 - Trimming the QEMU guest boot path moved the result more than VMM launch time did.
 
-A later historical before/after run measured the then-current defaults at approximately **1,177 ms for QEMU** and **1,408 ms for Firecracker**. That was a product-default comparison, not a pure hypervisor comparison: QEMU used working vsock while Firecracker still used SSH in that run. Current SmolVM also has Firecracker vsock support.
+A later historical before/after run measured the then-current defaults at approximately **1,177 ms for QEMU** and **1,408 ms for Firecracker**. That was a product-default comparison, not a pure hypervisor comparison: QEMU used working vsock while Firecracker still used SSH in that run. Current Celesto also has Firecracker vsock support.
 
 The durable finding is more important than the exact ranking:
 
@@ -148,7 +148,7 @@ Kernel boot, userspace initialization, SSH or vsock readiness, and host polling 
 
 ## libkrun benchmark status: no comparable result published yet
 
-The checked-in SmolVM reports do not contain a same-host libkrun result alongside the Firecracker and QEMU table above.
+The checked-in Celesto reports do not contain a same-host libkrun result alongside the Firecracker and QEMU table above.
 
 That missing cell should remain empty until it can be measured correctly. Publishing a libkrun number from macOS next to Linux/KVM results would mix:
 
@@ -160,11 +160,11 @@ That missing cell should remain empty until it can be measured correctly. Publis
 
 The result would look precise and still be wrong.
 
-This does not mean libkrun is slow. It means SmolVM does not yet have the controlled data required to rank it. The benchmark harness already accepts `--backend libkrun`, so the next valid result is a three-backend run on one Linux KVM host with the same SmolVM revision and guest workload.
+This does not mean libkrun is slow. It means Celesto does not yet have the controlled data required to rank it. The benchmark harness already accepts `--backend libkrun`, so the next valid result is a three-backend run on one Linux KVM host with the same Celesto revision and guest workload.
 
 ## Run a same-host Firecracker, QEMU, and libkrun benchmark
 
-SmolVM's lifecycle benchmark accepts all three backends. From a SmolVM repository checkout, run:
+Celesto's lifecycle benchmark accepts all three backends. From a Celesto repository checkout, run:
 
 ```bash
 uv run python scripts/benchmarks/bench.py \
@@ -191,9 +191,9 @@ Run all three commands on the same Linux KVM host and do not change the reposito
 Before benchmarking, verify each backend:
 
 ```bash
-smolvm doctor --backend firecracker
-smolvm doctor --backend qemu
-smolvm doctor --backend libkrun
+celesto doctor --backend firecracker
+celesto doctor --backend qemu
+celesto doctor --backend libkrun
 ```
 
 On Fedora, libkrun may be installed through the system package manager. On macOS, the project provides a Homebrew tap, but macOS results cannot form a controlled comparison with Firecracker because Firecracker does not run there.
@@ -206,7 +206,7 @@ Save at least:
 uname -a
 lscpu
 free -h
-smolvm --version
+celesto --version
 firecracker --version
 ```
 
@@ -216,7 +216,7 @@ A benchmark without environment metadata is difficult to reproduce and easy to m
 
 ## Measure the metrics agents feel
 
-The SmolVM benchmark reports raw values plus p50, p95, mean, minimum, and maximum.
+The Celesto benchmark reports raw values plus p50, p95, mean, minimum, and maximum.
 
 Focus on these metrics:
 
@@ -265,7 +265,7 @@ There are two valid questions, and they need different benchmark designs.
 
 ### Question A: which backend is faster through the public product API?
 
-Run each backend with its normal SmolVM defaults.
+Run each backend with its normal Celesto defaults.
 
 This includes differences in networking and control channels. It answers what an application experiences out of the box.
 
@@ -277,9 +277,9 @@ This isolates more of the backend, but it may not reflect how users deploy it.
 
 Publish which question you answered. Do not use a product-default benchmark to claim pure hypervisor superiority.
 
-## Current SmolVM starting profiles
+## Current Celesto starting profiles
 
-SmolVM's current defaults provide useful starting allocations:
+Celesto's current defaults provide useful starting allocations:
 
 | Workload                       |    Memory |      Disk | Source of profile          |
 | ------------------------------ | --------: | --------: | -------------------------- |
@@ -327,7 +327,7 @@ Memory: 2 GiB
 Disk: 8 GiB
 ```
 
-This aligns with SmolVM's coding-agent preset defaults for memory and disk.
+This aligns with Celesto's coding-agent preset defaults for memory and disk.
 
 ### Profile 3: browser agent
 
@@ -442,27 +442,27 @@ Defaults optimize first use. Production sizing must come from the real workload 
 
 ## Operational differences matter
 
-Even if libkrun matches or beats Firecracker and QEMU in a startup test, SmolVM's current libkrun backend does not yet implement:
+Even if libkrun matches or beats Firecracker and QEMU in a startup test, Celesto's current libkrun backend does not yet implement:
 
 - pause
 - resume
 - snapshots
 - snapshot restore
 
-Firecracker and QEMU support those lifecycle paths in SmolVM.
+Firecracker and QEMU support those lifecycle paths in Celesto.
 
 If your platform keeps sandboxes warm, suspends idle sessions, or restores snapshots, benchmark the complete lifecycle rather than only fresh boot. A backend without a required operation is not a viable winner.
 
-The SmolVM benchmark reports unsupported operations explicitly instead of replacing them with zeroes. Preserve that distinction in dashboards.
+The Celesto benchmark reports unsupported operations explicitly instead of replacing them with zeroes. Preserve that distinction in dashboards.
 
 ## What we can say today
 
 We can make five defensible statements:
 
 1. Firecracker does not run natively on macOS; QEMU and libkrun can use macOS virtualization APIs.
-2. In one historical same-host SmolVM measurement, Firecracker over SSH reached the first completed command in **1,594 ms**, compared with **1,940 ms** for QEMU over SSH.
+2. In one historical same-host Celesto measurement, Firecracker over SSH reached the first completed command in **1,594 ms**, compared with **1,940 ms** for QEMU over SSH.
 3. QEMU over vsock reached the first command in **1,571 ms** and reduced warm commands from roughly **42 ms to 1 ms**, showing that transport can matter more than VMM launch time.
-4. SmolVM does not yet have a published same-host libkrun result for that matrix, so no evidence-based libkrun ranking is possible yet.
+4. Celesto does not yet have a published same-host libkrun result for that matrix, so no evidence-based libkrun ranking is possible yet.
 5. The correct sizing profile depends more on the guest workload and concurrency target than on the backend name.
 
 Anything more specific should come with same-host raw results.
@@ -487,12 +487,12 @@ The benchmark should tell you how your agent platform behaves. It should not mer
 
 ## Sources and reproducibility
 
-- [SmolVM lifecycle benchmark](https://github.com/CelestoAI/SmolVM/tree/main/scripts/benchmarks)
-- [SmolVM boot-latency investigation](https://github.com/CelestoAI/SmolVM/blob/main/docs/benchmarks/boot-latency-learnings.md)
-- [SmolVM historical before/after report](https://github.com/CelestoAI/SmolVM/blob/main/docs/benchmarks/final-report.md)
-- [SmolVM backend resolver](https://github.com/CelestoAI/SmolVM/blob/main/src/smolvm/runtime/backends.py)
-- [SmolVM QEMU lifecycle adapter](https://github.com/CelestoAI/SmolVM/blob/main/src/smolvm/runtime/qemu.py)
-- [SmolVM libkrun lifecycle adapter](https://github.com/CelestoAI/SmolVM/blob/main/src/smolvm/runtime/libkrun.py)
+- [Celesto lifecycle benchmark](https://github.com/CelestoAI/celesto/tree/main/scripts/benchmarks)
+- [Celesto benchmark guide](https://github.com/CelestoAI/celesto/blob/main/scripts/benchmarks/README.md)
+- [Celesto benchmark reporting implementation](https://github.com/CelestoAI/celesto/blob/main/scripts/benchmarks/reporting.py)
+- [Celesto backend resolver](https://github.com/CelestoAI/celesto/blob/main/src/celesto/runtime/backends.py)
+- [Celesto QEMU lifecycle adapter](https://github.com/CelestoAI/celesto/blob/main/src/celesto/runtime/qemu.py)
+- [Celesto libkrun lifecycle adapter](https://github.com/CelestoAI/celesto/blob/main/src/celesto/runtime/libkrun.py)
 - [Firecracker](https://github.com/firecracker-microvm/firecracker)
 - [libkrun](https://github.com/containers/libkrun)
-- [Firecracker on macOS: develop with QEMU, deploy with Firecracker](/blog/posts/smolvm/firecracker-macos/)
+- [Firecracker on macOS: develop with QEMU, deploy with Firecracker](/blog/posts/celesto/firecracker-macos/)

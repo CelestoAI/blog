@@ -2,7 +2,7 @@
 author: Aniket Maurya
 authorUrl: "https://www.linkedin.com/in/aniketmaurya"
 pubDatetime: 2026-06-06
-modDatetime: 2026-06-06
+modDatetime: 2026-10-11
 title: "How qcow2 Overlays Work in QEMU"
 description: "Learn how qcow2 backing files work in QEMU, why they are different from Linux overlayfs, and how they make VM sandbox cloning fast and cheap."
 featured: true
@@ -12,7 +12,7 @@ tags:
   - qcow2
   - virtualization
   - sandboxes
-  - smolvm
+  - celesto
 ---
 
 We are using `qcow2` disk images for our sandbox VMs.

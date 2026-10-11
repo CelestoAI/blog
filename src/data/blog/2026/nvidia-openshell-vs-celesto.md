@@ -2,15 +2,15 @@
 author: Aniket Maurya
 authorUrl: "https://www.linkedin.com/in/aniketmaurya"
 pubDatetime: 2026-09-07T21:00:00Z
-modDatetime: 2026-09-07T21:00:00Z
+modDatetime: 2026-10-11
 timezone: Asia/Kolkata
-title: "NVIDIA OpenShell vs SmolVM: Two Approaches to Secure AI Agent Sandboxes"
-description: "Compare NVIDIA OpenShell and Celesto SmolVM across isolation, security policies, microVMs, Windows support, browser automation, snapshots, and agent workloads."
+title: "NVIDIA OpenShell vs Celesto: Two Approaches to Secure AI Agent Sandboxes"
+description: "Compare NVIDIA OpenShell and Celesto across isolation, security policies, microVMs, Windows support, browser automation, snapshots, and agent workloads."
 featured: true
 draft: false
 tags:
   - microvm
-  - smolvm
+  - celesto
   - sandboxes
 ---
 
@@ -23,17 +23,17 @@ That access creates risk.
 
 An agent can execute bad code, leak source files, expose credentials, call an unauthorized API, or damage the host machine.
 
-Both **NVIDIA OpenShell** and **Celesto SmolVM** address this problem with isolated execution environments. But they approach it from different layers of the stack.
+Both **NVIDIA OpenShell** and **Celesto** address this problem with isolated execution environments. But they approach it from different layers of the stack.
 
 **OpenShell focuses on policy: what an agent can access inside its environment.**
 
-**SmolVM focuses on the computer: what environment the agent gets in the first place.**
+**Celesto focuses on the computer: what environment the agent gets in the first place.**
 
 That difference affects almost every design choice.
 
 ## TL;DR
 
-|                       | NVIDIA OpenShell                                              | Celesto SmolVM                                          |
+|                       | NVIDIA OpenShell                                              | Celesto                                          |
 | --------------------- | ------------------------------------------------------------- | ------------------------------------------------------- |
 | Primary abstraction   | Policy-enforced agent runtime                                 | Disposable computer for an agent                        |
 | Isolation             | Docker, Podman, Kubernetes, or MicroVM                        | VM-first isolation                                      |
@@ -53,7 +53,7 @@ The simple version:
 
 > **OpenShell asks: what should this agent be allowed to do?**
 >
-> **SmolVM asks: what computer should this agent receive?**
+> **Celesto asks: what computer should this agent receive?**
 
 The two questions overlap, but they are not the same.
 
@@ -95,7 +95,7 @@ Its main abstraction is the security policy around the agent.
 
 ## OpenShell's strongest feature: policy enforcement
 
-OpenShell has a much more granular policy model than SmolVM today.
+OpenShell has a much more granular policy model than Celesto today.
 
 A policy can control:
 
@@ -132,7 +132,7 @@ The default security posture also matters.
 
 OpenShell uses **deny-by-default egress**. A sandbox cannot access arbitrary internet destinations unless its policy grants access.
 
-SmolVM currently takes the opposite default: a sandbox has internet access unless the developer supplies network restrictions.
+Celesto currently takes the opposite default: a sandbox has internet access unless the developer supplies network restrictions.
 
 For environments where an agent handles sensitive source code or credentials, OpenShell's model has a clear advantage.
 
@@ -153,25 +153,25 @@ These controls remain useful even when OpenShell uses a MicroVM driver. The VM p
 
 This is defense in depth.
 
-SmolVM starts from a different assumption.
+Celesto starts from a different assumption.
 
 Instead of treating the process as the primary sandbox boundary, **the VM itself is the sandbox boundary**.
 
-## What is SmolVM?
+## What is Celesto?
 
-SmolVM gives an agent its own disposable computer.
+Celesto gives an agent its own disposable computer.
 
 The API looks deliberately small:
 
 ```python
-from smolvm import SmolVM
+from celesto import Celesto
 
-with SmolVM() as vm:
+with Celesto() as vm:
     result = vm.run("python app.py")
     print(result.stdout)
 ```
 
-On Linux, SmolVM can use Firecracker-backed microVMs. It also provides QEMU and libkrun paths for other host and guest combinations.
+On Linux, Celesto can use Firecracker-backed microVMs. It also provides QEMU and libkrun paths for other host and guest combinations.
 
 Each sandbox gets its own kernel rather than a shared host kernel.
 
@@ -181,7 +181,7 @@ The abstraction looks more like this:
 Agent
   │
   ▼
-SmolVM API
+Celesto API
   │
   ▼
 Disposable computer
@@ -224,21 +224,21 @@ OpenShell
 MicroVM
 ```
 
-SmolVM puts the VM abstraction at the center:
+Celesto puts the VM abstraction at the center:
 
 ```text
 Agent
   │
   ▼
-SmolVM
+Celesto
   │
   ▼
 MicroVM
 ```
 
-This makes SmolVM closer to infrastructure such as Firecracker than to a policy engine.
+This makes Celesto closer to infrastructure such as Firecracker than to a policy engine.
 
-SmolVM abstracts the parts developers normally need to assemble around a VMM:
+Celesto abstracts the parts developers normally need to assemble around a VMM:
 
 * VM lifecycle
 * images
@@ -274,16 +274,16 @@ A lot of business software still requires Windows:
 * internal enterprise tools
 * old software with no useful API
 
-SmolVM can boot a Windows 11 guest:
+Celesto can boot a Windows 11 guest:
 
 ```python
-from smolvm import SmolVM
+from celesto import Celesto
 
-with SmolVM(
+with Celesto(
     os="windows",
-    image="~/.smolvm/images/win11.qcow2",
-    ssh_user="smolvm",
-    ssh_password="smolvm",
+    image="~/.celesto/images/win11.qcow2",
+    ssh_user="celesto",
+    ssh_password="celesto",
 ) as vm:
     print(
         vm.run(
@@ -295,20 +295,20 @@ with SmolVM(
 The same API can execute PowerShell, upload files, and pass environment variables into the Windows machine.
 OpenShell supports Windows as a **host path through WSL 2**, but its published sandbox model and security controls depend on Linux workloads and Linux kernel primitives such as Landlock and seccomp. Its current documentation does not describe Windows guest sandboxes.
 
-That makes SmolVM a better fit when the agent must interact with the operating system itself rather than only execute code.
+That makes Celesto a better fit when the agent must interact with the operating system itself rather than only execute code.
 
 ## The same applies to macOS
 
-SmolVM also has a macOS desktop sandbox preview on Apple Silicon.
+Celesto also has a macOS desktop sandbox preview on Apple Silicon.
 
 A temporary macOS environment can launch through:
 
 ```bash
-smolvm sandbox create \
+celesto sandbox create \
   --os macos \
   --name test-mac
 
-smolvm sandbox desktop test-mac
+celesto sandbox desktop test-mac
 ```
 
 This matters for tasks such as:
@@ -326,12 +326,12 @@ Computer-use agents add another requirement: a screen.
 
 A shell is no longer enough.
 
-SmolVM has a dedicated browser sandbox:
+Celesto has a dedicated browser sandbox:
 
 ```python
-from smolvm import SmolVM
+from celesto import Celesto
 
-with SmolVM.browser(
+with Celesto.browser(
     headless=False
 ) as browser:
     print(browser.cdp_url)
@@ -353,7 +353,7 @@ This represents another difference in product direction.
 
 OpenShell focuses on **agent permissions**.
 
-SmolVM focuses on **agent computers**.
+Celesto focuses on **agent computers**.
 
 ## Persistence also means different things
 
@@ -374,13 +374,13 @@ Both projects support retained state, but at different levels.
 
 OpenShell can stop a sandbox and later start the same sandbox again. Driver-owned workspace state remains available. Its MicroVM driver retains the writable overlay across stop/start operations. Delete removes that state.
 
-SmolVM also supports persistent VM state, but adds explicit VM snapshots:
+Celesto also supports persistent VM state, but adds explicit VM snapshots:
 
 ```bash
-smolvm snapshot create my-vm \
+celesto snapshot create my-vm \
   --snapshot-id checkpoint
 
-smolvm snapshot restore checkpoint \
+celesto snapshot restore checkpoint \
   --resume
 ```
 
@@ -394,7 +394,7 @@ OpenShell has the better answer today when the primary question is:
 
 > How do I give an agent the minimum permissions necessary for a task?
 
-Its policy engine provides controls that SmolVM does not currently match:
+Its policy engine provides controls that Celesto does not currently match:
 
 ### Per-process network policy
 
@@ -406,7 +406,7 @@ curl → api.github.com → allowed
 unknown_binary → api.github.com → denied
 ```
 
-SmolVM's current network controls operate closer to the VM boundary and support domain restrictions, rather than policy per executable.
+Celesto's current network controls operate closer to the VM boundary and support domain restrictions, rather than policy per executable.
 
 ### Layer 7 network rules
 
@@ -435,15 +435,15 @@ An agent therefore does not need direct access to the actual API key.
 
 This is a strong design for autonomous agents.
 
-## Where SmolVM is stronger
+## Where Celesto is stronger
 
-SmolVM has the better answer when the primary question is:
+Celesto has the better answer when the primary question is:
 
 > What computer does this agent need?
 
 ### VM-first isolation
 
-SmolVM treats hardware virtualization as the default security boundary instead of an optional compute driver.
+Celesto treats hardware virtualization as the default security boundary instead of an optional compute driver.
 
 ### Multiple operating systems
 
@@ -459,7 +459,7 @@ This matters for computer-use agents.
 
 ### Browser and desktop environments
 
-SmolVM exposes browser automation, live screen access, and VNC as first-class agent primitives.
+Celesto exposes browser automation, live screen access, and VNC as first-class agent primitives.
 
 ### Firecracker snapshots
 
@@ -470,7 +470,7 @@ Agents can checkpoint full VM state rather than only preserve workspace files.
 A coding agent can receive a project directory without a separate copy step:
 
 ```bash
-smolvm sandbox create \
+celesto sandbox create \
   --mount ~/Projects/my-app
 ```
 
@@ -481,7 +481,7 @@ Read-only mounts keep host files protected by default, while an explicit option 
 For applications that only need an isolated computer, there is no separate gateway, policy file, supervisor configuration, or provider layer to understand first.
 
 ```python
-with SmolVM() as vm:
+with Celesto() as vm:
     vm.run(...)
 ```
 
@@ -505,10 +505,10 @@ OpenShell already separates its policy system from its compute drivers:
     Container            MicroVM
 ```
 
-SmolVM is itself a microVM runtime abstraction:
+Celesto is itself a microVM runtime abstraction:
 
 ```text
-                 SmolVM
+                 Celesto
                    │
         ┌──────────┼──────────┐
         ▼          ▼          ▼
@@ -524,13 +524,13 @@ Agent
 Policy layer
   │
   ▼
-SmolVM
+Celesto
   │
   ▼
 Disposable computer
 ```
 
-That is not a documented OpenShell + SmolVM integration today.
+That is not a documented OpenShell + Celesto integration today.
 
 But architecturally, it highlights the main point: **policy enforcement and computer isolation are separate problems**.
 
@@ -548,7 +548,7 @@ Use **OpenShell** when:
 * you already have Kubernetes or container infrastructure
 * centralized policy matters more than the guest OS
 
-Use **SmolVM** when:
+Use **Celesto** when:
 
 * every agent should receive a hardware-isolated VM
 * you want Firecracker as the Linux sandbox primitive
@@ -563,7 +563,7 @@ For many coding agents, either project can provide a useful isolated runtime.
 
 For security policy, OpenShell currently goes further.
 
-For full computer environments, SmolVM covers a broader surface.
+For full computer environments, Celesto covers a broader surface.
 
 ## The larger shift
 
@@ -593,7 +593,7 @@ We think that stack will eventually contain several distinct layers:
 
 OpenShell currently puts most of its effort into the upper security layers.
 
-SmolVM puts most of its effort into the computer and VM layers.
+Celesto puts most of its effort into the computer and VM layers.
 
 Both approaches point toward the same conclusion:
 

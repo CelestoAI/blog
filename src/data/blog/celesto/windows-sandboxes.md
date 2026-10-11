@@ -1,10 +1,10 @@
 ---
 pubDatetime: 2026-05-26
-modDatetime: 2026-05-26
-title: "Open Source Windows Sandbox in Python: Run Windows 11 on Linux with SmolVM"
+modDatetime: 2026-10-11
+title: "Open Source Windows Sandbox in Python: Run Windows 11 on Linux with Celesto"
 published: true
 featured: true
-description: "SmolVM now supports Windows 11 sandboxes. Boot disposable Windows VMs from Python, run PowerShell, upload files, pass environment variables, and tear the VM down after the task."
+description: "Celesto now supports Windows 11 sandboxes. Boot disposable Windows VMs from Python, run PowerShell, upload files, pass environment variables, and tear the VM down after the task."
 tags:
   - windows
   - python
@@ -28,9 +28,9 @@ That is the awkward truth for computer-use agents.
 
 If agents need to do real work, they need to run where the work already happens. For many companies, that means Windows.
 
-That is why we added **Windows sandboxes** to **[SmolVM](https://github.com/CelestoAI/SmolVM)**.
+That is why we added **Windows sandboxes** to **[Celesto](https://github.com/CelestoAI/celesto)**.
 
-SmolVM can now boot an isolated Windows 11 VM from Python, run PowerShell commands over SSH, upload files into Windows paths, pass environment variables, and discard the VM after the task.
+Celesto can now boot an isolated Windows 11 VM from Python, run PowerShell commands over SSH, upload files into Windows paths, pass environment variables, and discard the VM after the task.
 
 This is V1. It is not magic. It is the foundation for a more realistic agent runtime.
 
@@ -44,16 +44,16 @@ First, a clarification.
 
 Microsoft already has a product called **Windows Sandbox**. It is a built-in Windows feature that gives users a temporary isolated desktop environment for safe app test and file inspection on supported Windows editions.
 
-SmolVM solves a different problem.
+Celesto solves a different problem.
 
-In this post, “Windows sandbox” means a disposable Windows 11 virtual machine controlled by SmolVM from Python on a Linux host.
+In this post, “Windows sandbox” means a disposable Windows 11 virtual machine controlled by Celesto from Python on a Linux host.
 
 The difference is important:
 
 - Microsoft Windows Sandbox is a local desktop feature for Windows users.
-- SmolVM Windows sandboxes are programmable Windows VMs for developers, agents, test systems, and automation pipelines.
+- Celesto Windows sandboxes are programmable Windows VMs for developers, agents, test systems, and automation pipelines.
 
-With SmolVM, you can start a Windows VM from Python, run commands, upload files, pass config, and delete the machine when the task ends.
+With Celesto, you can start a Windows VM from Python, run commands, upload files, pass config, and delete the machine when the task ends.
 
 ## Why Windows support matters
 
@@ -87,29 +87,29 @@ A serious agent infrastructure stack cannot pretend every workflow happens insid
 
 ## Run a Windows sandbox from Python
 
-SmolVM gives Windows guests the same core Python API used for Linux guests.
+Celesto gives Windows guests the same core Python API used for Linux guests.
 
 ```python
-from smolvm import SmolVM
+from celesto import Celesto
 
-with SmolVM(
+with Celesto(
     os="windows",
-    image="~/.smolvm/images/win11.qcow2",
-    ssh_user="smolvm",
-    ssh_password="smolvm",
+    image="~/.celesto/images/win11.qcow2",
+    ssh_user="celesto",
+    ssh_password="celesto",
 ) as vm:
     print(vm.run("Write-Output 'hello from windows'").stdout)
 ```
 
 This starts a Windows 11 VM, waits for SSH, runs a PowerShell command, and exits.
 
-On context exit, SmolVM stops and deletes the VM.
+On context exit, Celesto stops and deletes the VM.
 
 That is the core primitive: a disposable Windows computer from Python.
 
 ## Run a Windows sandbox on Linux or Ubuntu
 
-SmolVM Windows guests run on Linux hosts with QEMU and KVM.
+Celesto Windows guests run on Linux hosts with QEMU and KVM.
 
 On Debian or Ubuntu, install the host prerequisites:
 
@@ -117,21 +117,21 @@ On Debian or Ubuntu, install the host prerequisites:
 sudo apt-get install qemu-system-x86 ovmf swtpm
 ```
 
-Windows 11 needs UEFI and TPM 2.0. SmolVM handles the OVMF firmware state, starts a per-VM software TPM process, wires QEMU, and sets up SSH access.
+Windows 11 needs UEFI and TPM 2.0. Celesto handles the OVMF firmware state, starts a per-VM software TPM process, wires QEMU, and sets up SSH access.
 
-You still need a Windows disk image. SmolVM does not ship a Windows image.
+You still need a Windows disk image. Celesto does not ship a Windows image.
 
-You can either bring your own Windows 11 `.qcow2` image or create one with the SmolVM CLI.
+You can either bring your own Windows 11 `.qcow2` image or create one with the Celesto CLI.
 
 ## Build a Windows 11 sandbox image
 
 If you do not already have a Windows `.qcow2`, use:
 
 ```bash
-smolvm windows build-image \
+celesto windows build-image \
   --iso ./Win11.iso \
   --virtio-win-iso ./virtio-win.iso \
-  --output ~/.smolvm/images/win11.qcow2
+  --output ~/.celesto/images/win11.qcow2
 ```
 
 You provide:
@@ -142,16 +142,16 @@ You provide:
 
 The build command creates a Windows image with OpenSSH Server, virtio-win drivers, and a local admin account.
 
-Once the image exists, you can boot it like any other SmolVM guest:
+Once the image exists, you can boot it like any other Celesto guest:
 
 ```python
-from smolvm import SmolVM
+from celesto import Celesto
 
-with SmolVM(
+with Celesto(
     os="windows",
-    image="~/.smolvm/images/win11.qcow2",
-    ssh_user="smolvm",
-    ssh_password="smolvm",
+    image="~/.celesto/images/win11.qcow2",
+    ssh_user="celesto",
+    ssh_password="celesto",
 ) as vm:
     print(vm.run("hostname").stdout)
 ```
@@ -171,7 +171,7 @@ result = vm.run("(Get-Item C:\\Windows).Name")
 print(result.stdout.strip())
 ```
 
-SmolVM runs the command through PowerShell over SSH.
+Celesto runs the command through PowerShell over SSH.
 
 That means your automation code can treat the Windows sandbox as a programmable runtime, not just a manually operated VM.
 
@@ -179,13 +179,13 @@ That means your automation code can treat the Windows sandbox as a programmable 
 
 A useful Windows sandbox needs file transfer.
 
-SmolVM supports Windows-style paths:
+Celesto supports Windows-style paths:
 
 ```python
-vm.upload_file("./hello.ps1", "C:\\Users\\smolvm\\scripts\\hello.ps1")
+vm.upload_file("./hello.ps1", "C:\\Users\\celesto\\scripts\\hello.ps1")
 
 result = vm.run(
-    "powershell.exe -File C:\\Users\\smolvm\\scripts\\hello.ps1"
+    "powershell.exe -File C:\\Users\\celesto\\scripts\\hello.ps1"
 )
 
 print(result.stdout)
@@ -193,7 +193,7 @@ print(result.stdout)
 
 This is useful for scripts, test data, config files, installers, and agent artifacts.
 
-SmolVM also creates missing parent directories on the Windows side.
+Celesto also creates missing parent directories on the Windows side.
 
 ## Pass environment variables into Windows
 
@@ -201,16 +201,16 @@ Agents need config.
 
 Sometimes they need runtime flags. Sometimes they need temporary credentials. Sometimes they need a mode switch.
 
-SmolVM supports environment variables for Windows guests:
+Celesto supports environment variables for Windows guests:
 
 ```python
-from smolvm import SmolVM
+from celesto import Celesto
 
-with SmolVM(
+with Celesto(
     os="windows",
-    image="~/.smolvm/images/win11.qcow2",
-    ssh_user="smolvm",
-    ssh_password="smolvm",
+    image="~/.celesto/images/win11.qcow2",
+    ssh_user="celesto",
+    ssh_password="celesto",
     env_vars={
         "APP_MODE": "production",
     },
@@ -218,7 +218,7 @@ with SmolVM(
     print(vm.run("$env:APP_MODE").stdout.strip())
 ```
 
-On Windows, SmolVM writes variables into the per-user environment store.
+On Windows, Celesto writes variables into the per-user environment store.
 
 Each `vm.run(...)` call opens a fresh SSH session, so new commands can read the updated variables.
 
@@ -226,7 +226,7 @@ Each `vm.run(...)` call opens a fresh SSH session, so new commands can read the 
 
 A sandbox should be safe to destroy.
 
-SmolVM keeps your baseline Windows image read-only. Each VM gets its own thin `qcow2` overlay.
+Celesto keeps your baseline Windows image read-only. Each VM gets its own thin `qcow2` overlay.
 
 That gives you a clean model:
 
@@ -244,11 +244,11 @@ The answer is not “trust the agent.”
 
 The answer is: give the agent a disposable computer.
 
-## SmolVM vs Microsoft Windows Sandbox
+## Celesto vs Microsoft Windows Sandbox
 
 Microsoft Windows Sandbox is great when you want a temporary Windows desktop on a Windows machine.
 
-SmolVM is for a different use case.
+Celesto is for a different use case.
 
 Use Microsoft Windows Sandbox when:
 
@@ -257,7 +257,7 @@ Use Microsoft Windows Sandbox when:
 - you want to manually test an app or file
 - you do not need a Python API
 
-Use SmolVM when:
+Use Celesto when:
 
 - you are on a Linux host
 - you want to control Windows from Python
@@ -268,18 +268,18 @@ Use SmolVM when:
 
 That is the distinction.
 
-SmolVM is not a replacement for every Windows Sandbox use case.
+Celesto is not a replacement for every Windows Sandbox use case.
 
 It is an open-source runtime for programmable Windows sandboxes.
 
 ## What works today
 
-Windows support in SmolVM is V1.
+Windows support in Celesto is V1.
 
 Today, it supports:
 
 - Windows 11 guests
-- Python API via `SmolVM(...)`
+- Python API via `Celesto(...)`
 - PowerShell commands via `vm.run(...)`
 - file upload into Windows paths
 - environment variables
@@ -302,7 +302,7 @@ Today, Windows guests do not support:
 
 Those features raise clear errors instead of silent failures.
 
-Also, SmolVM does not currently ship a published Windows image. You need to bring or create a Windows 11 `.qcow2` image.
+Also, Celesto does not currently ship a published Windows image. You need to bring or create a Windows 11 `.qcow2` image.
 
 This is important. Windows support is useful today, but it is still V1.
 
@@ -331,48 +331,48 @@ They are not the whole answer.
 
 If an agent needs to operate Windows software, it needs a Windows computer. That computer should be isolated, disposable, programmable, and easy to start from code.
 
-That is the direction SmolVM is moving toward.
+That is the direction Celesto is moving toward.
 
 ## FAQ
 
-### Is SmolVM the same as Microsoft Windows Sandbox?
+### Is Celesto the same as Microsoft Windows Sandbox?
 
 No.
 
 Microsoft Windows Sandbox is a built-in Windows feature for a temporary desktop environment on supported Windows editions.
 
-SmolVM Windows sandboxes are Windows 11 VMs that run on a Linux host and can be controlled from Python.
+Celesto Windows sandboxes are Windows 11 VMs that run on a Linux host and can be controlled from Python.
 
 ### Can I run a Windows sandbox from Python?
 
 Yes.
 
-With SmolVM, you can start a Windows 11 sandbox from Python, wait for SSH, run PowerShell commands, upload files, pass environment variables, and delete the VM after the task.
+With Celesto, you can start a Windows 11 sandbox from Python, wait for SSH, run PowerShell commands, upload files, pass environment variables, and delete the VM after the task.
 
 ### Can I run a Windows sandbox on Ubuntu?
 
 Yes.
 
-SmolVM Windows guests run on Linux hosts with QEMU and KVM. On Ubuntu or Debian, install:
+Celesto Windows guests run on Linux hosts with QEMU and KVM. On Ubuntu or Debian, install:
 
 ```bash
 sudo apt-get install qemu-system-x86 ovmf swtpm
 ```
 
-### Does SmolVM provide a Windows image?
+### Does Celesto provide a Windows image?
 
 No.
 
 You need to bring a Windows 11 `.qcow2` image or create one from a Windows ISO and the virtio-win driver ISO with:
 
 ```bash
-smolvm windows build-image \
+celesto windows build-image \
   --iso ./Win11.iso \
   --virtio-win-iso ./virtio-win.iso \
-  --output ~/.smolvm/images/win11.qcow2
+  --output ~/.celesto/images/win11.qcow2
 ```
 
-### Does SmolVM support GUI automation on Windows?
+### Does Celesto support GUI automation on Windows?
 
 Windows support is V1.
 
@@ -396,7 +396,7 @@ The next wave of agents will not just write code. They will use computers.
 
 Some of those computers need to run Windows.
 
-With SmolVM, developers can now boot a disposable Windows 11 VM from Python, run PowerShell, upload files, pass environment variables, and throw the machine away after the task.
+With Celesto, developers can now boot a disposable Windows 11 VM from Python, run PowerShell, upload files, pass environment variables, and throw the machine away after the task.
 
 It is early.
 
@@ -406,12 +406,12 @@ Agents need computers.
 
 Those computers need to be isolated, disposable, programmable, and close to the operating systems businesses actually use.
 
-That is why Windows sandboxes are now part of SmolVM.
+That is why Windows sandboxes are now part of Celesto.
 
 ---
 
 ## Sources
 
-- [Windows sandboxes in SmolVM](https://docs.celesto.ai/smolvm/guides/windows-guests) — Linux host + QEMU/KVM, pre-installed `.qcow2`, OVMF, `swtpm`, PowerShell via `vm.run`, file upload, env vars, overlays, and current V1 limits.
+- [Windows sandbox guide](https://github.com/CelestoAI/celesto/blob/main/docs/guides/windows.md) — Linux host + QEMU/KVM, pre-installed `.qcow2`, OVMF, `swtpm`, PowerShell via `vm.run`, file upload, env vars, overlays, and current V1 limits.
 - [Windows Sandbox overview](https://learn.microsoft.com/en-us/windows/security/application-security/application-isolation/windows-sandbox/windows-sandbox-overview) — Microsoft's built-in temporary desktop feature on supported Windows editions.
 - [Windows Sandbox community projects](https://github.com/microsoft/Windows-Sandbox) — community tools for Microsoft's Windows Sandbox, including Python utilities such as [PyWinSandbox](https://github.com/karkason/pywinsandbox).

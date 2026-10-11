@@ -1,7 +1,7 @@
 ---
 author: Aniket Maurya
 pubDatetime: 2026-03-30
-modDatetime: 2026-03-30
+modDatetime: 2026-10-11
 title: "Don’t Let Claude Use Your Computer from the CLI"
 description: "Give it a disposable computer, not your laptop."
 featured: true
@@ -83,9 +83,9 @@ If the task goes wrong, you delete the sandbox and start fresh.
 
 If the task goes right, great — your real machine was never at risk.
 
-## So what does SmolVM do?
+## So what does Celesto do?
 
-SmolVM is a Python SDK and CLI for running code and browser tasks inside **disposable sandboxes**. The goal is simple: give apps and AI agents an isolated workspace so risky work stays away from your machine.
+Celesto is a Python SDK and CLI for running code and browser tasks inside **disposable sandboxes**. The goal is simple: give apps and AI agents an isolated workspace so risky work stays away from your machine.
 
 That is the key idea.
 
@@ -106,13 +106,13 @@ You can think of it like this:
 
 The agent works in that room, not in your whole house.
 
-SmolVM goes one step further and uses **microVMs**, which are just very small, lightweight virtual machines designed to start fast and stay isolated. Its docs say that on Linux it uses **Firecracker microVMs**, and on macOS it uses **QEMU**. You do not need to know those names to use the product. The important part is what they do: they create a separate environment so the agent is not running directly on your machine.
+Celesto goes one step further and uses **microVMs**, which are just very small, lightweight virtual machines designed to start fast and stay isolated. Its docs say that on Linux it uses **Firecracker microVMs**, and on macOS it uses **QEMU**. You do not need to know those names to use the product. The important part is what they do: they create a separate environment so the agent is not running directly on your machine.
 
 ## Why is that better than running on the host?
 
 Because the host is your actual machine.
 
-SmolVM’s AI agent integration guide explains the design clearly: instead of executing model-generated commands directly on your machine, it starts an isolated microVM, runs the code there, and tears it down when finished.
+Celesto’s AI agent integration guide explains the design clearly: instead of executing model-generated commands directly on your machine, it starts an isolated microVM, runs the code there, and tears it down when finished.
 
 That one design choice fixes a lot.
 
@@ -135,7 +135,7 @@ Another term worth translating.
 
 **Ephemeral** just means **temporary**.
 
-An ephemeral sandbox is a fresh environment created for one task and destroyed right after. SmolVM’s docs describe this directly: spin up a fresh VM for every task, then destroy it so no state carries over between tasks.
+An ephemeral sandbox is a fresh environment created for one task and destroyed right after. Celesto’s docs describe this directly: spin up a fresh VM for every task, then destroy it so no state carries over between tasks.
 
 That is useful when the task is risky or untrusted.
 
@@ -159,7 +159,7 @@ They assume the choice is:
 
 That is false.
 
-SmolVM’s docs also describe a **reusable sandbox across turns**. In plain English, that means the agent can keep the same temporary machine alive across multiple steps. So it can write a file now, come back later, read it again, edit it, and continue from where it left off.
+Celesto’s docs also describe a **reusable sandbox across turns**. In plain English, that means the agent can keep the same temporary machine alive across multiple steps. So it can write a file now, come back later, read it again, edit it, and continue from where it left off.
 
 That is a much better model for agents.
 
@@ -171,7 +171,7 @@ You still avoid using the host machine.
 
 This matters for browser agents too.
 
-SmolVM includes a browser session that launches Chromium inside a microVM. The docs say this is useful for scraping, testing, and computer-use agents that need to interact with real web pages in an isolated environment. It can also expose a live view so you can watch what is happening.
+Celesto includes a browser session that launches Chromium inside a microVM. The docs say this is useful for scraping, testing, and computer-use agents that need to interact with real web pages in an isolated environment. It can also expose a live view so you can watch what is happening.
 
 That is the important shift:
 
