@@ -94,11 +94,11 @@ The high-level conclusions are:
 
 Choose based on host and required operations before optimizing milliseconds:
 
-| Requirement                | Firecracker                   | QEMU                            | libkrun                      |
-| -------------------------- | ----------------------------- | ------------------------------- | ---------------------------- |
-| Linux KVM production hosts | Strong fit                    | Supported with KVM              | Supported path               |
-| Native macOS host          | Not supported                 | Uses Hypervisor.framework       | Uses Hypervisor.framework    |
-| VMM shape                  | Purpose-built microVM process | General-purpose system emulator | Library-based interface      |
+| Requirement                 | Firecracker                   | QEMU                            | libkrun                      |
+| --------------------------- | ----------------------------- | ------------------------------- | ---------------------------- |
+| Linux KVM production hosts  | Strong fit                    | Supported with KVM              | Supported path               |
+| Native macOS host           | Not supported                 | Uses Hypervisor.framework       | Uses Hypervisor.framework    |
+| VMM shape                   | Purpose-built microVM process | General-purpose system emulator | Library-based interface      |
 | Celesto pause/resume        | Supported                     | Supported                       | Not yet supported            |
 | Celesto snapshots           | Supported                     | Supported                       | Not yet supported            |
 | Celesto automatic selection | Supported Linux default       | macOS default                   | Explicit `--backend libkrun` |

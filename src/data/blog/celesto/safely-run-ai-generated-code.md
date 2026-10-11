@@ -193,7 +193,7 @@ If the model writes code that tries to phone home, the network stack says no.
 
 Here's how Celesto stacks up against the options most teams consider:
 
-| Feature               | Docker / containers | Celesto                     | E2B (hosted)           | firecracker-containerd |
+| Feature               | Docker / containers | Celesto                    | E2B (hosted)           | firecracker-containerd |
 | --------------------- | ------------------- | -------------------------- | ---------------------- | ---------------------- |
 | Isolation boundary    | Shared kernel       | Hardware (KVM/Firecracker) | Hardware (Firecracker) | Hardware (Firecracker) |
 | Boot time             | ~100ms              | ~500ms                     | ~150ms (hosted)        | ~500ms                 |

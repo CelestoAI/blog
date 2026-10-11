@@ -45,7 +45,7 @@ jobs:
         run: |
           git diff --name-only --diff-filter=ACMR -z \
             "${{ github.event.pull_request.base.sha }}" "${{ github.sha }}" \
-            | xargs -0 -r npx prettier --check
+            | xargs -0 -r npx prettier --check --ignore-unknown
 
       - name: "📝 Checking code format"
         if: github.event_name == 'workflow_call'

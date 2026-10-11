@@ -27,11 +27,12 @@ export default defineConfig({
       status: 301,
       destination: "/blog/posts/celesto/firecracker-macos/",
     },
-    "/posts/smolvm/firecracker-qemu-libkrun-performance-benchmarks-sizing-profiles/": {
-      status: 301,
-      destination:
-        "/blog/posts/celesto/firecracker-qemu-libkrun-performance-benchmarks-sizing-profiles/",
-    },
+    "/posts/smolvm/firecracker-qemu-libkrun-performance-benchmarks-sizing-profiles/":
+      {
+        status: 301,
+        destination:
+          "/blog/posts/celesto/firecracker-qemu-libkrun-performance-benchmarks-sizing-profiles/",
+      },
     "/posts/smolvm/how-qcow2-overlays-work-in-qemu/": {
       status: 301,
       destination: "/blog/posts/celesto/how-qcow2-overlays-work-in-qemu/",
