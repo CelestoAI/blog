@@ -2,10 +2,10 @@
 author: Aniket Maurya
 authorUrl: "https://www.linkedin.com/in/aniketmaurya"
 pubDatetime: 2026-07-11
-modDatetime: 2026-07-11
+modDatetime: 2026-10-11
 title: "Firecracker on macOS: Develop with QEMU, Deploy with Firecracker"
-description: "Firecracker does not run natively on macOS. Learn how to develop with SmolVM and QEMU on a Mac, then switch to Firecracker on Linux with one backend flag."
-ogImage: ./images/qemu-fc-smolvm.png
+description: "Firecracker does not run natively on macOS. Learn how to develop with Celesto and QEMU on a Mac, then switch to Firecracker on Linux with one backend flag."
+ogImage: ./images/qemu-fc-celesto.png
 featured: true
 draft: false
 tags:
@@ -13,11 +13,11 @@ tags:
   - macos
   - qemu
   - microvm
-  - smolvm
+  - celesto
   - sandboxes
 ---
 
-![SmolVM code selecting Firecracker or QEMU with one backend variable](./images/qemu-fc-smolvm.png)
+![Celesto code selecting Firecracker or QEMU with one backend variable](./images/qemu-fc-celesto.png)
 
 If you searched for **Firecracker macOS**, here is the direct answer:
 
@@ -27,7 +27,7 @@ Firecracker requires Linux and access to KVM through `/dev/kvm`. macOS exposes a
 
 That does not mean you need a separate development stack.
 
-With [SmolVM](https://github.com/CelestoAI/SmolVM), you can run the same sandbox workflow with QEMU on macOS, then select Firecracker when the code moves to a Linux KVM host. The backend changes. Your test commands and agent integration do not have to.
+With [Celesto](https://github.com/CelestoAI/celesto), you can run the same sandbox workflow with QEMU on macOS, then select Firecracker when the code moves to a Linux KVM host. The backend changes. Your test commands and agent integration do not have to.
 
 ---
 
@@ -53,9 +53,9 @@ Linux host  -> Firecracker -> KVM           -> Linux guest
 
 Running a Linux VM or Docker container on your Mac does not automatically solve this. Firecracker needs KVM on the machine that owns the hardware virtualization interface. Nested virtualization may be possible in specialized environments, but it is not the normal or reliable local macOS workflow.
 
-## The practical SmolVM workflow
+## The practical Celesto workflow
 
-SmolVM selects a backend based on the host:
+Celesto selects a backend based on the host:
 
 - **macOS:** QEMU
 - **Linux:** Firecracker
@@ -67,9 +67,9 @@ On macOS, QEMU uses Hypervisor.framework for hardware acceleration. On Linux, Fi
 Here is a minimal sandbox test for local macOS development:
 
 ```python
-from smolvm import SmolVM
+from celesto import Celesto
 
-with SmolVM(os="alpine", backend="qemu") as vm:
+with Celesto(os="alpine", backend="qemu") as vm:
     result = vm.run("uname -a")
     print(result.stdout)
 ```
@@ -77,31 +77,31 @@ with SmolVM(os="alpine", backend="qemu") as vm:
 To run the same workload with Firecracker on a Linux KVM host, change only the backend:
 
 ```diff
--with SmolVM(os="alpine", backend="qemu") as vm:
-+with SmolVM(os="alpine", backend="firecracker") as vm:
+-with Celesto(os="alpine", backend="qemu") as vm:
++with Celesto(os="alpine", backend="firecracker") as vm:
 ```
 
-The guest OS, command, return value, and surrounding application code stay the same. SmolVM changes how the isolated machine is launched.
+The guest OS, command, return value, and surrounding application code stay the same. Celesto changes how the isolated machine is launched.
 
-Start by installing QEMU and SmolVM on your Mac:
+Start by installing QEMU and Celesto on your Mac:
 
 ```bash
 brew install qemu
-pip install smolvm
-smolvm doctor
+pip install celesto
+celesto doctor
 ```
 
-`smolvm doctor` should report QEMU as the selected backend on Darwin.
+`celesto doctor` should report QEMU as the selected backend on Darwin.
 
 Now create a local test sandbox explicitly with QEMU:
 
 ```bash
-smolvm sandbox create \
+celesto sandbox create \
   --name backend-test \
   --os alpine \
   --backend qemu
 
-smolvm sandbox ssh backend-test
+celesto sandbox ssh backend-test
 ```
 
 Inside the sandbox, run the setup and test commands your workload needs:
@@ -116,13 +116,13 @@ Then leave and delete it:
 
 ```bash
 exit
-smolvm sandbox delete backend-test
+celesto sandbox delete backend-test
 ```
 
 On a Linux KVM host, run the same workflow and change one flag:
 
 ```bash
-smolvm sandbox create \
+celesto sandbox create \
   --name backend-test \
   --os alpine \
   --backend firecracker
@@ -137,11 +137,11 @@ For application tests, keep backend selection outside the test logic:
 ```python
 import os
 
-from smolvm import SmolVM
+from celesto import Celesto
 
-backend = os.getenv("SMOLVM_BACKEND", "auto")
+backend = os.getenv("CELESTO_BACKEND", "auto")
 
-with SmolVM(os="alpine", backend=backend) as vm:
+with Celesto(os="alpine", backend=backend) as vm:
     result = vm.run("printf 'backend test passed'")
     assert result.stdout == "backend test passed"
 ```
@@ -149,16 +149,16 @@ with SmolVM(os="alpine", backend=backend) as vm:
 Run it on your Mac with QEMU:
 
 ```bash
-SMOLVM_BACKEND=qemu python test_sandbox.py
+CELESTO_BACKEND=qemu python test_sandbox.py
 ```
 
 Run the same file on Linux with Firecracker:
 
 ```bash
-SMOLVM_BACKEND=firecracker python test_sandbox.py
+CELESTO_BACKEND=firecracker python test_sandbox.py
 ```
 
-If you leave the value as `auto`, SmolVM chooses QEMU on macOS and Firecracker on supported Linux hosts.
+If you leave the value as `auto`, Celesto chooses QEMU on macOS and Firecracker on supported Linux hosts.
 
 This is the useful abstraction boundary: your application asks for a sandbox, while deployment chooses the virtual machine monitor.
 
@@ -174,11 +174,11 @@ The following workload-level behavior should be tested on both backends:
 - agent tool behavior
 - application startup and health checks
 
-SmolVM uses the same public Python interface across QEMU and Firecracker, so most agent and command-execution code can stay backend-independent.
+Celesto uses the same public Python interface across QEMU and Firecracker, so most agent and command-execution code can stay backend-independent.
 
 For the closest comparison, pin the same:
 
-- SmolVM version
+- Celesto version
 - guest OS and image release
 - CPU architecture
 - memory allocation
@@ -199,7 +199,7 @@ Before deploying, run a Linux integration job that covers:
 
 2. **Firecracker installation**
 
-   Run `smolvm setup` and then `smolvm doctor` on the target Linux image.
+   Run `celesto setup` and then `celesto doctor` on the target Linux image.
 
 3. **Networking**
 
@@ -221,22 +221,22 @@ A small Linux KVM integration runner catches the host-specific failures that a M
 
 ## Can you use libkrun on macOS instead?
 
-SmolVM also has an explicit `libkrun` backend. On macOS, libkrun uses Hypervisor.framework rather than KVM.
+Celesto also has an explicit `libkrun` backend. On macOS, libkrun uses Hypervisor.framework rather than KVM.
 
-That makes libkrun interesting when you want a smaller embedded virtualization path on a Mac. It still does not turn Firecracker into a macOS application, and its current SmolVM lifecycle support differs from Firecracker. In particular, pause, resume, and snapshots are not yet available through the SmolVM libkrun backend.
+That makes libkrun interesting when you want a smaller embedded virtualization path on a Mac. It still does not turn Firecracker into a macOS application, and its current Celesto lifecycle support differs from Firecracker. In particular, pause, resume, and snapshots are not yet available through the Celesto libkrun backend.
 
 Use it deliberately and test the operations your application requires:
 
 ```bash
 brew tap libkrun/krun
 brew install libkrun/krun/libkrun
-smolvm doctor --backend libkrun
+celesto doctor --backend libkrun
 ```
 
 Then select it explicitly:
 
 ```bash
-smolvm sandbox create \
+celesto sandbox create \
   --name krun-test \
   --os alpine \
   --backend libkrun
@@ -248,7 +248,7 @@ For the simplest local-to-production workflow today, QEMU on macOS and Firecrack
 
 Do not benchmark only the time required to spawn the VMM process. An agent cannot do useful work at that point.
 
-Measure from sandbox creation until the first command returns. From a SmolVM repository checkout, run:
+Measure from sandbox creation until the first command returns. From a Celesto repository checkout, run:
 
 ```bash
 uv run python scripts/benchmarks/bench.py \
@@ -299,7 +299,7 @@ Firecracker is not supported natively on macOS because it requires Linux KVM.
 
 You can still develop and test Firecracker-bound workloads from a Mac:
 
-1. Run SmolVM with QEMU locally.
+1. Run Celesto with QEMU locally.
 2. Keep backend selection outside your application logic.
 3. Switch to `--backend firecracker` on Linux.
 4. Run Linux integration and performance tests before deployment.
@@ -308,10 +308,10 @@ You do not need two sandbox APIs. You need one portable workload and a backend-a
 
 ## Sources and further reading
 
-- [SmolVM installation and macOS setup](https://github.com/CelestoAI/SmolVM/blob/main/docs/installation.md)
-- [SmolVM backend selection](https://github.com/CelestoAI/SmolVM/blob/main/src/smolvm/runtime/backends.py)
-- [SmolVM benchmark suite](https://github.com/CelestoAI/SmolVM/tree/main/scripts/benchmarks)
-- [Firecracker, QEMU, and libkrun performance benchmarks and sizing profiles](/blog/posts/smolvm/firecracker-qemu-libkrun-performance-benchmarks-sizing-profiles/)
+- [Celesto installation and macOS setup](https://github.com/CelestoAI/celesto/blob/main/docs/installation.md)
+- [Celesto backend selection](https://github.com/CelestoAI/celesto/blob/main/src/celesto/runtime/backends.py)
+- [Celesto benchmark suite](https://github.com/CelestoAI/celesto/tree/main/scripts/benchmarks)
+- [Firecracker, QEMU, and libkrun performance benchmarks and sizing profiles](/blog/posts/celesto/firecracker-qemu-libkrun-performance-benchmarks-sizing-profiles/)
 - [Firecracker repository and host requirements](https://github.com/firecracker-microvm/firecracker)
-- [How qcow2 overlays work in QEMU](/blog/posts/smolvm/how-qcow2-overlays-work-in-qemu/)
+- [How qcow2 overlays work in QEMU](/blog/posts/celesto/how-qcow2-overlays-work-in-qemu/)
 - [VMs vs microVMs vs Docker for AI agents](/blog/posts/ai-agent-security/vms-microvms-docker-for-ai-agents/)

@@ -18,6 +18,38 @@ export default defineConfig({
   site: SITE.website,
   base: "/blog",
   trailingSlash: "always",
+  redirects: {
+    "/posts/smolvm/dont-use-claude-use-desktop/": {
+      status: 301,
+      destination: "/blog/posts/celesto/dont-use-claude-use-desktop/",
+    },
+    "/posts/smolvm/firecracker-macos/": {
+      status: 301,
+      destination: "/blog/posts/celesto/firecracker-macos/",
+    },
+    "/posts/smolvm/firecracker-qemu-libkrun-performance-benchmarks-sizing-profiles/":
+      {
+        status: 301,
+        destination:
+          "/blog/posts/celesto/firecracker-qemu-libkrun-performance-benchmarks-sizing-profiles/",
+      },
+    "/posts/smolvm/how-qcow2-overlays-work-in-qemu/": {
+      status: 301,
+      destination: "/blog/posts/celesto/how-qcow2-overlays-work-in-qemu/",
+    },
+    "/posts/smolvm/safely-run-ai-generated-code/": {
+      status: 301,
+      destination: "/blog/posts/celesto/safely-run-ai-generated-code/",
+    },
+    "/posts/smolvm/windows-sandboxes/": {
+      status: 301,
+      destination: "/blog/posts/celesto/windows-sandboxes/",
+    },
+    "/posts/2026/nvidia-openshell-vs-celesto-smolvm/": {
+      status: 301,
+      destination: "/blog/posts/2026/nvidia-openshell-vs-celesto/",
+    },
+  },
   output: "server",
   adapter: cloudflare({
     prerenderEnvironment: "node",
