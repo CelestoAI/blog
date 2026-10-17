@@ -12,7 +12,7 @@ tags:
 description: "A faster GitHub Actions runner for cache-hit jobs: Celesto CI took 24 seconds on 1 vCPU versus GitHub-hosted's 31 seconds on 2 vCPUs in our benchmark."
 ---
 
-Get test results sooner with a faster GitHub Actions runner and less compute. In a browser-tool cache comparison, the Celesto job completed in **24 seconds on 1 vCPU**, versus **31 seconds on a GitHub-hosted runner with 2 vCPUs**. That is about **23% less job time with half the CPUs** on a cache hit.
+We ran the same job on Celesto CI and a GitHub-hosted runner, both with a cached set of browser tools. Celesto finished in **24 seconds**. GitHub took **31 seconds**. Celesto used **1 vCPU**; GitHub used **2**. For this job, Celesto took **23% less time with half the CPUs**.
 
 Celesto CI runs your GitHub Actions workflows on fresh cloud computers, with dependency caches that survive between jobs. Without a cache, npm or pip must fetch the same packages again even when those dependencies have not changed. Cache reuse reduces that repeated work before your tests can start.
 
