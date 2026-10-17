@@ -1,17 +1,167 @@
 ---
 import IconRss from "@/assets/icons/IconRss.svg";
+import IconSearch from "@/assets/icons/IconSearch.svg";
 import { SITE } from "@/config";
+
+const topics = [
+  { label: "AI agents", tag: "ai-agents" },
+  { label: "Security", tag: "security" },
+  { label: "microVMs", tag: "microvm" },
+  { label: "CI", tag: "ci" },
+];
 ---
 
 <section id="hero" class="blog-hero">
-  <h1>Engineering logs</h1>
-  <div class="hero-bottom">
-    <p class="hero-description">
-      Practical guides, benchmarks, and notes from the team behind your agent’s
-      cloud computer.
-    </p>
-    <a href={`${SITE.basePath}/rss.xml`} class="rss-link"
-      ><IconRss class="size-4" /> Subscribe via RSS ↗</a
-    >
+  <div class="blog-toolbar">
+    <h1>Blog</h1>
+    <div class="blog-tools">
+      <form
+        action={`${SITE.basePath}/search/`}
+        role="search"
+        class="blog-search"
+      >
+        <IconSearch class="size-4" />
+        <input
+          id="blog-search-input"
+          type="search"
+          name="q"
+          placeholder="Search…"
+          aria-label="Search articles"
+        />
+        <kbd aria-hidden="true">⌘ K</kbd>
+      </form>
+      <a
+        href={`${SITE.basePath}/rss.xml`}
+        class="subscribe-button"
+        aria-label="Subscribe via RSS"
+        title="Subscribe via RSS"
+      >
+        <IconRss class="size-4" /> Subscribe
+      </a>
+    </div>
   </div>
+  <nav class="blog-topics" aria-label="Article topics">
+    <a href={`${SITE.basePath}/`} data-blog-topic="all" aria-current="true"
+      >All</a
+    >
+    {
+      topics.map(topic => (
+        <a
+          href={`${SITE.basePath}/tags/${topic.tag}/`}
+          data-blog-topic={topic.tag}
+        >
+          {topic.label}
+        </a>
+      ))
+    }
+  </nav>
 </section>
+
+<style>
+  .blog-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 32px;
+  }
+  .blog-tools {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .blog-search {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 230px;
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    color: color-mix(in srgb, var(--foreground) 65%, transparent);
+  }
+  .blog-search:focus-within {
+    border-color: var(--foreground);
+  }
+  .blog-search input {
+    width: 100%;
+    min-width: 0;
+    background: transparent;
+    font-size: 14px;
+    color: var(--foreground);
+    outline: none;
+  }
+  .blog-search input::placeholder {
+    color: inherit;
+    opacity: 0.7;
+  }
+  .blog-search kbd {
+    flex-shrink: 0;
+    border-radius: 5px;
+    background: var(--muted);
+    padding: 1px 5px;
+    font-size: 11px;
+  }
+  .subscribe-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    background: var(--surface);
+    font-size: 14px;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+  .subscribe-button:hover {
+    background: var(--muted);
+  }
+  .blog-topics {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 64px;
+  }
+  .blog-topics a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 36px;
+    padding: 6px 15px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: var(--surface);
+    font-size: 14px;
+    color: color-mix(in srgb, var(--foreground) 65%, transparent);
+  }
+  .blog-topics a:hover {
+    color: var(--foreground);
+    border-color: color-mix(in srgb, var(--foreground) 45%, transparent);
+  }
+  .blog-topics a[aria-current="true"] {
+    background: var(--foreground);
+    border-color: var(--foreground);
+    color: var(--background);
+  }
+  @media (max-width: 767px) {
+    .blog-toolbar {
+      align-items: start;
+      flex-direction: column;
+      gap: 28px;
+    }
+    .blog-tools {
+      width: 100%;
+    }
+    .blog-search {
+      flex: 1;
+      width: auto;
+      min-width: 0;
+    }
+    .blog-search kbd {
+      display: none;
+    }
+    .blog-topics {
+      margin-top: 32px;
+    }
+  }
+</style>
