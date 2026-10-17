@@ -12,29 +12,11 @@ tags:
 description: "Reuse dependencies across fresh Celesto CI runners with standard GitHub Actions cache steps. Explore workflow examples, cache keys, security, and the architecture."
 ---
 
-Celesto CI stores dependency cache archives in Celesto-managed object storage. Your jobs can reuse packages from earlier runs while each job still gets a fresh computer. Use your normal `actions/cache` steps or compatible `setup-*` cache options; no Celesto-specific cache action or extra storage credentials are required.
+Reuse dependency downloads across CI runs and spend less of each job on package setup. Celesto CI gives every job a fresh computer while it retains dependency caches for later runs. Your npm or pip install can reuse packages from an earlier job, even after that job's computer has been deleted.
 
-For a Node.js project, that means npm can reuse package downloads after a cache hit. For a Python project, pip can reuse its package cache. Your install command still resolves the dependencies your project needs, and your tests still run on every job.
+Use standard GitHub Actions cache steps or your setup action's cache option. You keep your workflow, logs, test results, and artifacts in GitHub, with no Celesto-specific cache action or extra storage credentials.
 
-This update adds archive reuse across ephemeral runners. It keeps the GitHub Actions interface: workflow files, step logs, test results, and artifacts remain in GitHub.
-
-## What changes for your workflow
-
-Celesto starts a computer for each CI job and deletes it after the job ends. Without an external cache, package files on that computer disappear with it. The next job must fetch those files again.
-
-Previously, compatible GitHub Actions cache steps on Celesto used GitHub's cache service. With the new cache path enabled, those steps store and restore archives through Celesto instead.
-
-| Part of the workflow  | Behavior with Celesto's cache                              |
-| --------------------- | ---------------------------------------------------------- |
-| Job computer          | Fresh for each job; deleted afterward                      |
-| Dependency cache      | Archive retained outside the job computer                  |
-| Workflow cache steps  | Standard cache actions and compatible setup-action options |
-| Test results and logs | Available in GitHub Actions                                |
-| Uploaded artifacts    | Retained through GitHub's artifact service                 |
-
-If your workflow already runs on Celesto and uses the cache-service v2 protocol, it needs no cache-specific YAML change. A workflow that moves from another runner must select a Celesto runner label and meet the [CI image's tool and compatibility requirements](https://docs.celesto.ai/docs/ci).
-
-Celesto and GitHub have separate cache stores. An archive saved on a GitHub-hosted runner does not automatically appear in Celesto's store, even if both jobs use the same key. Expect an initial miss after the move.
+For a Node.js project, enable `cache: npm` in `actions/setup-node`. The workflow below shows the complete setup.
 
 ## Start with a Node.js workflow
 
@@ -67,9 +49,11 @@ jobs:
 
 The `cache: npm` option selects npm's package cache. It does not retain `node_modules`. After a hit, `npm ci` still creates the dependency tree from the lockfile, but it can reuse package files from the restored cache. See the [setup-node cache reference](https://github.com/actions/setup-node#caching-global-packages-data).
 
-The first successful run can populate the cache. A later run with a compatible key and cache version can restore it. If the lockfile changes, the setup action derives a new key; the install step fetches any packages absent from the restored archive.
+On the first successful run, the action can save npm's package cache. On the next run with unchanged dependencies, it can restore those files before `npm ci`. If the lockfile changes, the setup action derives a new key; the install step fetches any packages absent from the restored archive.
 
 Keep the install step on both hits and misses. A cache accelerates dependency setup; the lockfile defines the dependency tree.
+
+If your workflow already runs on Celesto with a compatible cache action, keep its cache steps. Celesto stores the archives outside the job computer so later jobs can restore them. Caches from GitHub-hosted runners stay in GitHub's separate store, so expect an initial miss after a move to Celesto.
 
 ## Use an explicit cache for Python
 
@@ -110,7 +94,7 @@ The primary key includes the OS, architecture, Python version, and dependency-fi
 
 Use fallback keys for data your package manager can validate and supplement. A compiled binary or environment directory may need a stricter key that also captures the compiler, system libraries, build flags, and other inputs.
 
-The examples use familiar action major versions compatible with the v2 cache protocol. Keep action versions or commit pins aligned with your repository's update policy.
+Keep action versions or commit pins aligned with your repository's update policy.
 
 ## Choose keys that describe compatibility
 
@@ -120,25 +104,7 @@ For package caches, include the runtime and dependency manifest or lockfile. For
 
 Avoid a commit SHA as the only key. It creates a distinct entry for each commit and prevents reuse across unchanged dependencies. Also avoid a broad key such as `dependencies` for every runtime and platform; that makes compatibility implicit.
 
-The key is only part of cache identity. Celesto also records the workspace, repository, Git ref scope, and cache version. The client derives the cache version from details such as the cached paths and compression method. Two jobs with the same text key can still have incompatible cache versions.
-
-The CI image now includes `zstd`, which the cache toolkit can use for archive compression. A compression-method change can cause a miss even when the key text stays the same. The [actions/cache reference](https://github.com/actions/cache#cache-version) explains this version boundary.
-
-## How a restore selects an entry
-
-Celesto checks the Git ref scopes granted by the job's verified runtime token. Within each permitted scope, it checks:
-
-1. The exact primary key and cache version.
-2. A prefix match for the primary key.
-3. Each fallback key in the order supplied by `restore-keys`.
-
-For a prefix match, the most recently committed compatible entry wins. Celesto exhausts those key choices in one scope before it checks the next permitted scope.
-
-This allows a pull request to reuse an authorized base-branch or default-branch cache without a custom branch lookup in your workflow. Access depends on the token's grants. A cache from a pull request's merge ref does not become a default-branch cache just because the keys match. GitHub documents the general scope model in its [dependency cache reference](https://docs.github.com/en/actions/reference/workflows-and-actions/dependency-caching#restrictions-for-accessing-a-cache).
-
-A save first reserves an identity. If two jobs try to reserve the same workspace, repository, scope, key, and version, one reservation succeeds. The other job continues without a duplicate save. A reservation that never completes expires after 30 minutes.
-
-## What a cache hit can save
+## Check whether the cache saves time
 
 A package cache can reduce repeated network transfers and, for some package formats, repeated build work. Its value depends on the package manager and the files you retain.
 
@@ -146,11 +112,9 @@ A hit still has a cost: the runner must download and extract an archive. The ins
 
 Compare complete job durations on the same runner size. Inspect the cache-step outcome, restore duration, dependency-install duration, and archive size. A large archive with little reusable content can cost more to transfer and extract than it saves.
 
-Celesto restores archives directly from object storage through a single-stream download. This release does not provide a host-local NVMe cache or parallel ranged downloads. Network location, archive size, and extraction cost affect the result; there is no universal speedup factor.
-
 ## Storage limits and cache lifetime
 
-The first cache release has no separate cache charge. The implementation defines these configurable default storage limits:
+The first cache release has no separate cache charge. These configurable defaults determine how much cache data each tier can retain:
 
 | Limit                 | Trial and promotional tier | Paid tier |
 | --------------------- | -------------------------: | --------: |
@@ -163,11 +127,25 @@ These are defaults that Celesto can adjust. Job compute still consumes workspace
 
 An hourly cleanup task removes idle entries and then the least recently used entries until repository and workspace usage fit their limits. It also clears abandoned uploads. A restore updates the entry's last-access timestamp.
 
-The entry's actual size is checked after upload. Repository and workspace totals can temporarily exceed their limits when several saves overlap; cleanup brings those totals back under the limits. Treat caches as disposable acceleration data. Use artifacts or another durable store for output you must retain.
+Treat caches as disposable acceleration data. Use artifacts or another durable store for output you must retain.
 
-## The architecture beneath the cache step
+## Handle a miss or reset a cache
 
-The implementation has four main parts:
+A cache miss should leave your job able to install dependencies and run its tests. If the cache API is unavailable or a repository exceeds a cache request limit, Celesto returns a miss or refuses the save. Your install command can fetch dependencies through its usual source.
+
+If you explicitly set `fail-on-cache-miss: true`, a miss can still fail your workflow by design. Leave that option off when your job can build from source dependencies.
+
+Use cache-step logs to check hits, misses, and saves. GitHub's cache page and `gh cache` manage GitHub's store; they do not list or delete Celesto entries. Celesto's first release has no customer cache list or delete interface. Change your key prefix to bypass an unwanted entry, or contact support if you need it deleted before normal expiry.
+
+The current CI image supports Ubuntu Linux x64 shell steps and compatible JavaScript actions. Docker actions, job containers, and service containers are outside its supported workflow set. This release provides archive caches; persistent cache disks, package mirrors, and Docker/BuildKit layer caches are outside its scope.
+
+For setup, runner labels, installed tools, and compatibility limits, use the [Celesto CI guide](https://docs.celesto.ai/docs/ci).
+
+## How the cache works beneath your workflow
+
+A cache restore has two parts: a lookup that selects an authorized archive, then a download that supplies its files to the action. Celesto implements GitHub's cache-service v2 protocol so compatible actions can use that path without a custom client.
+
+Four components handle the request:
 
 | Component                        | Responsibility                                                                     |
 | -------------------------------- | ---------------------------------------------------------------------------------- |
@@ -175,14 +153,6 @@ The implementation has four main parts:
 | Rust proxy inside the job VM     | Separates cache requests from other results-service traffic and translates uploads |
 | Celesto cache API and PostgreSQL | Verify access, select entries, reserve saves, enforce limits, and track state      |
 | S3 object store                  | Retains archives and temporary upload blocks                                       |
-
-### Why the runner needs a patch
-
-GitHub's runner supplies `ACTIONS_RESULTS_URL` to JavaScript action steps from the job message. A normal environment-variable override is insufficient because the runner supplies its value after those environment settings.
-
-Celesto applies a small source patch to the runner in the CI image. For supported steps on the VM, it can supply the local proxy address while it preserves GitHub's original results URL for passthrough requests. Celesto builds the runner from a pinned source commit and includes it in the versioned image.
-
-Self-update is disabled so an upstream binary cannot silently replace the patch. Celesto owns the runner update cycle and checks upstream releases daily to track the upgrade window.
 
 ### Cache requests and artifacts take different routes
 
@@ -192,15 +162,33 @@ Other results-service requests, including artifact requests, pass through to Git
 
 On a cache hit, the API returns a short-lived S3 download URL. The action downloads the archive directly from S3; neither the local proxy nor the control plane relays the archive bytes on that path.
 
-### Large uploads preserve block order
+Downloads use a single stream. This release does not provide a host-local NVMe cache or parallel ranged downloads. Network location, archive size, and extraction cost affect restore duration.
 
-The GitHub cache toolkit uses Azure Blob upload semantics even when a third-party service supplies the destination URL. Celesto's proxy translates those requests into S3 operations.
+Once a job uses Celesto's cache, a service error does not redirect that operation to GitHub's cache. This avoids a run that restores from one store and saves to another. Jobs whose runner starts with Celesto's cache disabled or excluded by provider policy keep GitHub's cache route.
 
-For a small archive, the proxy streams the upload to a presigned S3 PUT URL. For a large archive, blocks arrive as separate temporary objects. The final block-list request supplies their correct order.
+### Why the runner needs a patch
 
-Arrival order cannot define file order: parallel transfers can complete out of sequence. Celesto uses S3 server-side copies to assemble the archive in block-list order, then removes the temporary objects. The control plane coordinates the operation without a full archive download and re-upload.
+GitHub's runner supplies `ACTIONS_RESULTS_URL` to JavaScript action steps from the job message. A normal environment-variable override is insufficient because the runner supplies its value after those environment settings.
 
-PostgreSQL tracks each entry through reserved, committed, and deleted states. A restore only selects committed entries. Cleanup retains deleted-entry records long enough to remove late uploads too, so an upload that arrives after an initial delete does not escape cleanup.
+Celesto applies a small source patch to the runner in the CI image. For supported steps on the VM, it can supply the local proxy address while it preserves GitHub's original results URL for passthrough requests. Celesto builds the runner from a pinned source commit and includes it in the versioned image.
+
+Self-update is disabled so an upstream binary cannot silently replace the patch. Celesto owns the runner update cycle and checks upstream releases daily to track the upgrade window.
+
+## How a restore selects an entry
+
+The key is only part of cache identity. Celesto also records the workspace, repository, Git ref scope, and cache version. The client derives the cache version from details such as the cached paths and compression method. Two jobs with the same text key can still have incompatible cache versions.
+
+The CI image includes `zstd`, which the cache toolkit can use for archive compression. A compression-method change can cause a miss even when the key text stays the same. The [actions/cache reference](https://github.com/actions/cache#cache-version) explains this version boundary.
+
+Celesto checks the Git ref scopes granted by the job's verified runtime token. Within each permitted scope, it checks:
+
+1. The exact primary key and cache version.
+2. A prefix match for the primary key.
+3. Each fallback key in the order supplied by `restore-keys`.
+
+For a prefix match, the most recently committed compatible entry wins. Celesto exhausts those key choices in one scope before it checks the next permitted scope.
+
+This allows a pull request to reuse an authorized base-branch or default-branch cache without a custom branch lookup in your workflow. Access depends on the token's grants. A cache from a pull request's merge ref does not become a default-branch cache just because the keys match. GitHub documents the general scope model in its [dependency cache reference](https://docs.github.com/en/actions/reference/workflows-and-actions/dependency-caching#restrictions-for-accessing-a-cache).
 
 ## Access follows the job that actually runs
 
@@ -212,25 +200,26 @@ A read-only grant cannot reserve a save. An invalid, expired, or unrecognized to
 
 Cache access also includes the Celesto workspace in its identity. If a repository moves to another workspace, it cannot restore entries from the previous workspace through that new connection.
 
-Keep credentials out of cached paths. Cache scope controls reuse, but a dependency archive is still accessible to jobs that hold the relevant read grant.
+Cache scope controls reuse, but a dependency archive is still accessible to jobs that hold the relevant read grant. Keep credentials out of cached paths.
 
-## Failure behavior and current limits
+## How uploads become reusable archives
 
-The cache is optional for a normal build. Short timeouts on cache control requests produce a miss or refused save when the API is unavailable. Per-repository rate limits also return a miss or refused save. The install command can then fetch dependencies through its usual source.
+The GitHub cache toolkit uses Azure Blob upload semantics even when a third-party service supplies the destination URL. Celesto's proxy translates those requests into S3 operations.
 
-Once a job uses Celesto's cache, a service error does not redirect that operation to GitHub's cache. This avoids a run that restores from one store and saves to another. Jobs whose runner starts with Celesto's cache disabled or excluded by provider policy keep GitHub's cache route.
+For a small archive, the proxy streams the upload to a presigned S3 PUT URL. For a large archive, blocks arrive as separate temporary objects. The final block-list request supplies their correct order.
 
-If you explicitly set `fail-on-cache-miss: true`, a miss can still fail your workflow by design. Leave that option off when your job can build from source dependencies.
+Arrival order cannot define file order: parallel transfers can complete out of sequence. Celesto uses S3 server-side copies to assemble the archive in block-list order, then removes the temporary objects. The control plane coordinates the operation without a full archive download and re-upload.
 
-The first release has several boundaries:
+### Concurrent saves and cleanup
 
-- **Visibility:** GitHub's cache page and `gh cache` manage GitHub's store. They do not list or delete Celesto entries. Use cache-step logs to inspect hits and misses. Celesto v1 has no customer cache list or delete interface.
-- **Reset:** Change your key prefix to bypass an unwanted entry. For earlier deletion, contact Celesto support; otherwise normal expiry applies.
-- **Cache type:** This release provides archives through the v2 protocol. Persistent cache disks, package mirrors, and Docker/BuildKit layer caches are outside its scope.
-- **Execution environment:** The current CI image supports Ubuntu Linux x64 shell steps and compatible JavaScript actions. Docker actions, job containers, and service containers are outside its supported workflow set. The runner patch leaves container steps on GitHub's results URL.
+A save first reserves an identity. If two jobs try to reserve the same workspace, repository, scope, key, and version, one reservation succeeds. The other job continues without a duplicate save. A reservation that never completes expires after 30 minutes.
+
+PostgreSQL tracks each entry through reserved, committed, and deleted states. A restore only selects committed entries. Cleanup retains deleted-entry records long enough to remove late uploads too, so an upload that arrives after an initial delete does not escape cleanup.
+
+The entry's actual size is checked after upload. Repository and workspace totals can temporarily exceed their limits when several saves overlap; hourly cleanup brings those totals back under the limits.
 
 ## Put dependency reuse to work
 
 Start with your package manager's cache and a key tied to the dependency lockfile. Run the workflow twice with unchanged dependencies, then inspect the second run's cache outcome and total duration. Keep the dependency install and test steps active on every run.
 
-For setup, runner labels, installed tools, and current compatibility limits, use the [Celesto CI guide](https://docs.celesto.ai/docs/ci). Connect a repository through the [Celesto CI App](https://github.com/apps/celesto-ci), select a runner size, and let the same workflow reuse dependency archives across fresh job computers.
+Connect a repository through the [Celesto CI App](https://github.com/apps/celesto-ci), select a runner size, and reuse dependency archives across fresh job computers.
