@@ -1,7 +1,7 @@
 ---
 author: Celesto AI
 pubDatetime: 2026-10-16T20:00:00Z
-title: "Celesto CI adds dependency caches for GitHub Actions"
+title: "Celesto CI vs. GitHub: Faster Cache-Hit Jobs on Half the CPUs"
 featured: true
 draft: false
 tags:
@@ -9,14 +9,14 @@ tags:
   - GitHub Actions
   - Developer Tools
   - Celesto
-description: "Reuse dependencies across fresh Celesto CI runners with standard GitHub Actions cache steps. Explore workflow examples, cache keys, security, and the architecture."
+description: "A cache-hit browser-tool job took 24 seconds on Celesto CI with 1 vCPU versus 31 seconds on GitHub-hosted with 2 vCPUs. See the results and workflow setup."
 ---
 
-Each Celesto CI job starts on a fresh computer. Without a dependency cache, npm or pip must fetch the same packages again, even when your dependencies have not changed. Those repeated downloads add network traffic and delay your test results.
+Get test results sooner with less compute. In a browser-tool cache comparison, the Celesto job completed in **24 seconds on 1 vCPU**, versus **31 seconds on a GitHub-hosted runner with 2 vCPUs**. That is about **23% less job time with half the CPUs** on a cache hit.
 
-Celesto CI retains dependency caches between jobs so later runs can reuse those packages. Your job can spend less time on package downloads while it still gets a fresh computer. Use standard GitHub Actions cache steps or your setup action's cache option; your workflow, logs, test results, and artifacts stay in GitHub.
+Fresh CI computers need dependencies before they can run tests. Without a cache, npm or pip must fetch the same packages again even when those dependencies have not changed. Celesto CI retains dependency caches between jobs so later runs can reuse the packages while each job still gets a fresh computer.
 
-In a browser-tool cache comparison, the Celesto job completed in **24 seconds on a cache hit**, versus **31 seconds on a GitHub-hosted runner**—about **23% less time**, with 1 vCPU versus 2 vCPUs.
+Use standard GitHub Actions cache steps or your setup action's cache option. Your workflow, logs, test results, and artifacts stay in GitHub.
 
 ## A 2.3 GB browser-tool cache: 24-second job on a hit
 
