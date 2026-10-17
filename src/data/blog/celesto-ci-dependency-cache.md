@@ -16,7 +16,33 @@ Each Celesto CI job starts on a fresh computer. Without a dependency cache, npm 
 
 Celesto CI retains dependency caches between jobs so later runs can reuse those packages. Your job can spend less time on package downloads while it still gets a fresh computer. Use standard GitHub Actions cache steps or your setup action's cache option; your workflow, logs, test results, and artifacts stay in GitHub.
 
-For a Node.js project, enable `cache: npm` in `actions/setup-node`. The workflow below shows the complete setup.
+In a browser-tool cache comparison, the Celesto job completed in **24 seconds on a cache hit**, versus **31 seconds on a GitHub-hosted runner**—about **23% less time**, with 1 vCPU versus 2 vCPUs.
+
+## A 2.3 GB browser-tool cache: 24-second job on a hit
+
+The comparison used the same browser-tool job with 2.3 GB of cache files, about 730 MB after compression. Each runner completed a cache-miss run to create the archive, then a cache-hit run to restore it.
+
+| Measurement             | Celesto CI (1 vCPU) | GitHub-hosted (2 vCPUs) |
+| ----------------------- | ------------------: | ----------------------: |
+| Cache restore on a hit  |            **13 s** |                    15 s |
+| Complete job on a hit   |            **24 s** |                    31 s |
+| Cache save after a miss |                27 s |                **12 s** |
+| Complete job on a miss  |                65 s |                **47 s** |
+
+Celesto restored the cache in 13 seconds and completed the job 7 seconds sooner in this comparison. Its cache-hit job also took 41 seconds less than its own cache-miss job: 24 seconds versus 65 seconds. That difference includes the work to create and save the initial archive.
+
+The tradeoff is the first save: Celesto took 27 seconds versus 12 seconds. The benefit in this workload came on later cache hits. A hit depends on compatible keys, access scope, and cache retention; an unchanged key alone does not guarantee reuse.
+
+The phase breakdown explains where the time went:
+
+| Phase                        | Celesto CI | GitHub-hosted |
+| ---------------------------- | ---------: | ------------: |
+| Compress archive for save    |      ~19 s |         ~10 s |
+| Upload archive               |       ~6 s |          ~2 s |
+| Download archive for restore |       ~5 s |        ~4.4 s |
+| Extract restored archive     |       ~7 s |         ~10 s |
+
+Phase values are approximate; complete step times include other overhead. Celesto used one download stream; GitHub used eight parallel streams. The CPU allocations differ, so these results compare the two runner configurations rather than isolate the cache service's performance. They describe this workload and implementation, before further optimization.
 
 ## Start with a Node.js workflow
 
@@ -145,14 +171,14 @@ For setup, runner labels, installed tools, and compatibility limits, use the [Ce
 
 A cache restore has two parts: a lookup that selects an authorized archive, then a download that supplies its files to the action. Celesto implements GitHub's cache-service v2 protocol so compatible actions can use that path without a custom client.
 
-Four components handle the request:
+Celesto retains cache archives in Google Cloud Storage. Four components handle the request:
 
 | Component                        | Responsibility                                                                     |
 | -------------------------------- | ---------------------------------------------------------------------------------- |
 | Celesto-patched GitHub runner    | Routes supported action steps through the local results proxy                      |
 | Rust proxy inside the job VM     | Separates cache requests from other results-service traffic and translates uploads |
 | Celesto cache API and PostgreSQL | Verify access, select entries, reserve saves, enforce limits, and track state      |
-| S3 object store                  | Retains archives and temporary upload blocks                                       |
+| Google Cloud Storage             | Retains archives and temporary upload blocks                                       |
 
 ### Cache requests and artifacts take different routes
 
@@ -160,7 +186,7 @@ The proxy recognizes the cache-service v2 calls for lookup, reservation, and fin
 
 Other results-service requests, including artifact requests, pass through to GitHub. This matters because cache and artifact APIs share the results endpoint. A cache override that captures the entire endpoint without passthrough would disrupt artifact operations.
 
-On a cache hit, the API returns a short-lived S3 download URL. The action downloads the archive directly from S3; neither the local proxy nor the control plane relays the archive bytes on that path.
+On a cache hit, the API returns a short-lived object-storage download URL. The action downloads the archive directly from object storage; neither the local proxy nor the control plane relays the archive bytes on that path.
 
 Downloads use a single stream. This release does not provide a host-local NVMe cache or parallel ranged downloads. Network location, archive size, and extraction cost affect restore duration.
 
@@ -204,11 +230,11 @@ Cache scope controls reuse, but a dependency archive is still accessible to jobs
 
 ## How uploads become reusable archives
 
-The GitHub cache toolkit uses Azure Blob upload semantics even when a third-party service supplies the destination URL. Celesto's proxy translates those requests into S3 operations.
+The GitHub cache toolkit uses Azure Blob upload semantics even when a third-party service supplies the destination URL. Celesto's proxy translates those requests into object-storage operations.
 
-For a small archive, the proxy streams the upload to a presigned S3 PUT URL. For a large archive, blocks arrive as separate temporary objects. The final block-list request supplies their correct order.
+For a small archive, the proxy streams the upload to a signed object-storage upload URL. For a large archive, blocks arrive as separate temporary objects. The final block-list request supplies their correct order.
 
-Arrival order cannot define file order: parallel transfers can complete out of sequence. Celesto uses S3 server-side copies to assemble the archive in block-list order, then removes the temporary objects. The control plane coordinates the operation without a full archive download and re-upload.
+Arrival order cannot define file order: parallel transfers can complete out of sequence. Celesto assembles the archive server-side in block-list order, then removes the temporary objects. The control plane coordinates the operation without a full archive download and re-upload.
 
 ### Concurrent saves and cleanup
 
