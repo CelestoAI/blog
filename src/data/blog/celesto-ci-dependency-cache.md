@@ -12,7 +12,7 @@ tags:
 description: "Reuse dependencies across fresh Celesto CI runners with standard GitHub Actions cache steps. Explore workflow examples, cache keys, security, and the architecture."
 ---
 
-Celesto CI now stores dependency cache archives in Celesto-managed object storage. Your jobs can reuse packages from earlier runs while each job still gets a fresh computer. Use your normal `actions/cache` steps or compatible `setup-*` cache options; no Celesto-specific cache action or extra storage credentials are required.
+Celesto CI stores dependency cache archives in Celesto-managed object storage. Your jobs can reuse packages from earlier runs while each job still gets a fresh computer. Use your normal `actions/cache` steps or compatible `setup-*` cache options; no Celesto-specific cache action or extra storage credentials are required.
 
 For a Node.js project, that means npm can reuse package downloads after a cache hit. For a Python project, pip can reuse its package cache. Your install command still resolves the dependencies your project needs, and your tests still run on every job.
 
