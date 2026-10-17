@@ -4,7 +4,7 @@
   "version": "5.5.1",
   "scripts": {
     "dev": "astro dev",
-    "build": "astro check && astro build && pagefind --site dist && cp .assetsignore dist/ && cp -r dist/pagefind public/",
+    "build": "astro check && astro build && pagefind --site dist/client/blog && cp .assetsignore dist/ && cp -r dist/client/blog/pagefind public/",
     "preview": "astro preview",
     "sync": "astro sync",
     "deploy": "npm run build && wrangler deploy",

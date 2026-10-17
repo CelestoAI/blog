@@ -61,6 +61,18 @@ const recentPosts = sortedPosts
         </section>
       )
     }
+    <section id="topic-results" hidden aria-labelledby="topic-results-title">
+      <div class="section-heading">
+        <h2 id="topic-results-title">Articles</h2><span
+          id="topic-count"
+          class="eyebrow"
+          role="status"
+          aria-live="polite"></span>
+      </div>
+      <div class="featured-grid">
+        {sortedPosts.map(post => <FeaturedCard post={post} />)}
+      </div>
+    </section>
     <aside class="product-note">
       <div>
         <h2>A real computer for your next agent.</h2><p>
@@ -74,11 +86,69 @@ const recentPosts = sortedPosts
 </Layout>
 
 <script>
+  document.addEventListener("keydown", event => {
+    if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
+      const input =
+        document.querySelector<HTMLInputElement>("#blog-search-input");
+      if (input) {
+        event.preventDefault();
+        input.focus();
+      }
+    }
+  });
   document.addEventListener("astro:page-load", () => {
     const indexLayout = (document.querySelector("#main-content") as HTMLElement)
       ?.dataset?.layout;
     if (indexLayout) {
       sessionStorage.setItem("backUrl", "/blog/");
+      const results = document.querySelector<HTMLElement>("#topic-results");
+      const title = document.querySelector("#topic-results-title");
+      const count = document.querySelector("#topic-count");
+      const topicLinks =
+        document.querySelectorAll<HTMLAnchorElement>("[data-blog-topic]");
+      topicLinks.forEach(link => {
+        link.addEventListener("click", event => {
+          if (
+            event.metaKey ||
+            event.ctrlKey ||
+            event.shiftKey ||
+            event.altKey ||
+            !results
+          )
+            return;
+          event.preventDefault();
+          const topic = link.dataset.blogTopic;
+          const all = topic === "all";
+          topicLinks.forEach(item =>
+            item.setAttribute("aria-current", String(item === link))
+          );
+          document
+            .querySelectorAll<HTMLElement>("#featured, #recent-posts")
+            .forEach(section => {
+              section.hidden = !all;
+            });
+          results.hidden = all;
+          if (all) return;
+          let matches = 0;
+          results
+            .querySelectorAll<HTMLElement>(".feature-card")
+            .forEach(card => {
+              const topics: string[] = JSON.parse(card.dataset.topics || "[]");
+              card.hidden = !topics.includes(topic || "");
+              if (!card.hidden) matches++;
+            });
+          if (title) title.textContent = link.textContent;
+          if (count)
+            count.textContent = `${matches} ${matches === 1 ? "article" : "articles"}`;
+        });
+      });
     }
   });
 </script>
+
+<style>
+  #topic-results[hidden],
+  #topic-results :global(.feature-card[hidden]) {
+    display: none;
+  }
+</style>

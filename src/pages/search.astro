@@ -14,7 +14,13 @@ const backUrl = SITE.showBackButton ? `${Astro.url.pathname}` : "/";
 <Layout title={`Search | ${SITE.title}`}>
   <Header />
   <Main pageTitle="Search" pageDesc="Search any article ...">
-    <div id="pagefind-search" transition:persist data-backurl={backUrl}></div>
+    <div
+      id="pagefind-search"
+      transition:persist
+      data-backurl={backUrl}
+      data-bundle-path={`${SITE.basePath}/pagefind/`}
+    >
+    </div>
   </Main>
   <Footer />
 </Layout>
@@ -47,6 +53,7 @@ const backUrl = SITE.showBackButton ? `${Astro.url.pathname}` : "/";
       // Init pagefind ui
       const search = new PagefindUI({
         element: "#pagefind-search",
+        bundlePath: pageFindSearch.dataset.bundlePath,
         showImages: false,
         showSubResults: true,
         processTerm: function (term: string) {
