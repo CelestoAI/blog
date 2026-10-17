@@ -2,185 +2,308 @@
 import IconX from "@/assets/icons/IconX.svg";
 import IconMoon from "@/assets/icons/IconMoon.svg";
 import IconSearch from "@/assets/icons/IconSearch.svg";
-import IconArchive from "@/assets/icons/IconArchive.svg";
 import IconSunHigh from "@/assets/icons/IconSunHigh.svg";
 import IconMenuDeep from "@/assets/icons/IconMenuDeep.svg";
-import LinkButton from "./LinkButton.astro";
 import { SITE } from "@/config";
 
 const base = `${SITE.basePath}/`;
-const { pathname } = Astro.url;
-
-// Remove trailing slash from current pathname if exists
-const currentPath =
-  pathname.endsWith("/") && pathname !== "/" ? pathname.slice(0, -1) : pathname;
-
-// Remove base path for comparison
-const pathWithoutBase =
-  currentPath.replace(new RegExp(`^${base.replace(/\/$/, "")}`), "") || "/";
-
-const isActive = (path: string) => {
-  const currentPathArray = pathWithoutBase.split("/").filter(p => p.trim());
-  const pathArray = path.split("/").filter(p => p.trim());
-
-  return pathWithoutBase === path || currentPathArray[0] === pathArray[0];
-};
+const currentPath = Astro.url.pathname.replace(/\/$/, "");
+const links = [
+  { label: "Blog", href: base, active: currentPath === SITE.basePath },
+  {
+    label: "Posts",
+    href: `${base}posts/`,
+    active: currentPath.startsWith(`${base}posts`),
+  },
+  {
+    label: "Tags",
+    href: `${base}tags/`,
+    active: currentPath.startsWith(`${base}tags`),
+  },
+  {
+    label: "About",
+    href: `${base}about/`,
+    active: currentPath === `${base}about`,
+  },
+  { label: "Docs ↗", href: "https://celesto.ai/docs", active: false },
+];
 ---
 
 <a
   id="skip-to-content"
   href="#main-content"
-  class="absolute start-16 -top-full z-50 bg-background px-3 py-2 text-accent backdrop-blur-lg transition-all focus:top-4"
+  class="absolute start-4 -top-full z-50 rounded-lg bg-background px-3 py-2 focus:top-4"
+  >Skip to content</a
 >
-  Skip to content
-</a>
-
-<header
-  class="app-layout flex flex-col items-center justify-between sm:flex-row"
->
-  <div
-    id="top-nav-wrap"
-    class:list={[
-      "py-4 sm:py-6",
-      "border-b border-border",
-      "relative w-full bg-background",
-      "flex items-baseline justify-between sm:items-center",
-    ]}
-  >
-    <a
-      href={base}
-      class="absolute py-1 text-xl leading-8 font-semibold whitespace-nowrap sm:static sm:my-auto sm:text-2xl sm:leading-none"
-    >
-      {SITE.title}
+<header class="site-header app-layout">
+  <nav class="navbar" aria-label="Main navigation">
+    <a href="https://celesto.ai" class="logo" aria-label="Celesto home">
+      <img
+        src="https://ik.imagekit.io/gradsflow/celestoai/logo/celesto-logo_KDV0f6bxO.svg"
+        alt=""
+        width="26"
+        height="26"
+      />
+      <span>Celesto</span>
     </a>
-    <nav
-      id="nav-menu"
-      class="flex w-full flex-col items-center sm:ms-2 sm:flex-row sm:justify-end sm:space-x-4 sm:py-0"
-    >
+    <div class="nav-actions">
+      <a
+        class="icon-button"
+        href={`${base}search/`}
+        aria-label="Search articles"
+        title="Search articles"><IconSearch /></a
+      >
+      {
+        SITE.lightAndDarkMode && (
+          <button
+            id="theme-btn"
+            class="icon-button theme-toggle"
+            title="Toggle light and dark theme"
+            aria-label="Toggle theme"
+          >
+            <IconMoon class="theme-moon" />
+            <IconSunHigh class="theme-sun" />
+          </button>
+        )
+      }
       <button
         id="menu-btn"
-        class="focus-outline self-end p-2 sm:hidden"
-        aria-label="Open Menu"
+        class="icon-button menu-toggle"
+        aria-label="Open menu"
         aria-expanded="false"
         aria-controls="menu-items"
       >
-        <IconX id="close-icon" class="hidden" />
-        <IconMenuDeep id="menu-icon" />
+        <IconMenuDeep class="menu-open" /><IconX class="menu-close" />
       </button>
-      <ul
-        id="menu-items"
-        class:list={[
-          "mt-4 grid w-44 grid-cols-2 place-content-center gap-2",
-          "[&>li>a]:block [&>li>a]:px-4 [&>li>a]:py-3 [&>li>a]:text-center [&>li>a]:font-medium [&>li>a]:hover:text-accent sm:[&>li>a]:px-2 sm:[&>li>a]:py-1",
-          "hidden",
-          "sm:mt-0 sm:flex sm:w-auto sm:gap-x-5 sm:gap-y-0",
-        ]}
-      >
-        <li class="col-span-2">
-          <a href="https://celesto.ai"> Home </a>
-        </li>
-        <li class="col-span-2">
-          <a
-            href={`${base}posts`}
-            class:list={{ "active-nav": isActive("/posts") }}
-          >
-            Posts
-          </a>
-        </li>
-        <li class="col-span-2">
-          <a
-            href={`${base}tags`}
-            class:list={{ "active-nav": isActive("/tags") }}
-          >
-            Tags
-          </a>
-        </li>
-        <li class="col-span-2">
-          <a
-            href={`${base}about`}
-            class:list={{ "active-nav": isActive("/about") }}
-          >
-            About
-          </a>
-        </li>
+    </div>
+    <div id="menu-items" class="nav-panel">
+      <ul class="nav-links">
         {
-          SITE.showArchives && (
-            <li class="col-span-2">
-              <LinkButton
-                href={`${base}archives`}
-                class:list={[
-                  "focus-outline flex justify-center p-3 sm:p-1",
-                  {
-                    "active-nav [&>svg]:stroke-accent": isActive("/archives"),
-                  },
-                ]}
-                title="Archives"
-                aria-label="archives"
+          links.map(link => (
+            <li>
+              <a
+                href={link.href}
+                aria-current={link.active ? "page" : undefined}
               >
-                <IconArchive class="hidden sm:inline-block" />
-                <span class="sm:sr-only">Archives</span>
-              </LinkButton>
+                {link.label}
+              </a>
             </li>
-          )
-        }
-        <li class="col-span-1 flex items-center justify-center">
-          <LinkButton
-            href={`${base}search`}
-            class:list={[
-              "focus-outline flex p-3 sm:p-1",
-              { "[&>svg]:stroke-accent": isActive("/search") },
-            ]}
-            title="Search"
-            aria-label="search"
-          >
-            <IconSearch />
-            <span class="sr-only">Search</span>
-          </LinkButton>
-        </li>
-        {
-          SITE.lightAndDarkMode && (
-            <li class="col-span-1 flex items-center justify-center">
-              <button
-                id="theme-btn"
-                class="focus-outline relative size-12 p-4 sm:size-8 hover:[&>svg]:stroke-accent"
-                title="Toggles light & dark"
-                aria-label="auto"
-                aria-live="polite"
-              >
-                <IconMoon class="absolute top-[50%] left-[50%] -translate-[50%] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
-                <IconSunHigh class="absolute top-[50%] left-[50%] -translate-[50%] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
-              </button>
-            </li>
-          )
+          ))
         }
       </ul>
-    </nav>
-  </div>
+      <a class="nav-cta" href="https://celesto.ai/dashboard"
+        >Start free <span aria-hidden="true">↗</span></a
+      >
+    </div>
+  </nav>
 </header>
 
-<script>
-  function toggleNav() {
-    const menuBtn = document.querySelector("#menu-btn");
-    const menuItems = document.querySelector("#menu-items");
-    const menuIcon = document.querySelector("#menu-icon");
-    const closeIcon = document.querySelector("#close-icon");
-
-    if (!menuBtn || !menuItems || !menuIcon || !closeIcon) return;
-
-    menuBtn.addEventListener("click", () => {
-      const openMenu = menuBtn.getAttribute("aria-expanded") === "true";
-
-      menuBtn.setAttribute("aria-expanded", openMenu ? "false" : "true");
-      menuBtn.setAttribute("aria-label", openMenu ? "Open Menu" : "Close Menu");
-
-      menuItems.classList.toggle("hidden");
-      menuIcon.classList.toggle("hidden");
-      closeIcon.classList.toggle("hidden");
-    });
+<style>
+  .site-header {
+    padding-top: 24px;
   }
+  .navbar {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    min-height: 64px;
+    padding: 10px 16px 10px 22px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: var(--surface);
+  }
+  .logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+    font-size: 21px;
+    font-weight: 600;
+    letter-spacing: -0.04em;
+  }
+  .logo img {
+    width: 26px;
+    height: 26px;
+  }
+  .nav-panel {
+    display: contents;
+  }
+  .nav-links {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    margin-inline: auto;
+    order: 1;
+  }
+  .nav-links a {
+    display: block;
+    padding: 8px 13px;
+    border-radius: 999px;
+    font-size: 14px;
+    line-height: 20px;
+    color: color-mix(in srgb, var(--foreground) 65%, transparent);
+    transition:
+      background 0.15s,
+      color 0.15s;
+  }
+  .nav-links a:hover,
+  .nav-links a[aria-current="page"] {
+    background: var(--muted);
+    color: var(--foreground);
+  }
+  .nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    order: 2;
+  }
+  .icon-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    color: color-mix(in srgb, var(--foreground) 65%, transparent);
+  }
+  .icon-button:hover {
+    background: var(--muted);
+    color: var(--foreground);
+  }
+  .icon-button :global(svg) {
+    width: 19px;
+    height: 19px;
+  }
+  .theme-toggle {
+    position: relative;
+  }
+  .theme-toggle :global(svg) {
+    position: absolute;
+  }
+  .theme-toggle :global(.theme-sun) {
+    display: none;
+  }
+  :global([data-theme="dark"]) .theme-toggle :global(.theme-moon) {
+    display: none;
+  }
+  :global([data-theme="dark"]) .theme-toggle :global(.theme-sun) {
+    display: block;
+  }
+  .nav-cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    flex-shrink: 0;
+    order: 3;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 9px 18px;
+    font-size: 14px;
+    font-weight: 500;
+    background: var(--muted);
+  }
+  .nav-cta:hover {
+    border-color: color-mix(in srgb, var(--foreground) 40%, transparent);
+  }
+  .menu-toggle {
+    display: none;
+  }
+  .menu-close {
+    display: none;
+  }
+  @media (max-width: 959px) {
+    .site-header {
+      padding-top: 12px;
+    }
+    .navbar {
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 0;
+      min-height: 60px;
+      padding: 8px 12px 8px 18px;
+      border-radius: 26px;
+    }
+    .nav-actions {
+      margin-left: auto;
+    }
+    .menu-toggle {
+      display: inline-flex;
+    }
+    .nav-panel {
+      display: none;
+      order: 3;
+      flex-basis: 100%;
+      padding: 14px 4px 8px;
+      margin-top: 8px;
+      border-top: 1px solid var(--border);
+    }
+    .navbar[data-open] .nav-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .navbar[data-open] .menu-open {
+      display: none;
+    }
+    .navbar[data-open] .menu-close {
+      display: block;
+    }
+    .nav-links {
+      flex-direction: column;
+      align-items: stretch;
+      margin: 0;
+      gap: 4px;
+    }
+    .nav-links a {
+      padding: 12px 16px;
+      border-radius: 12px;
+      font-size: 15px;
+    }
+    .nav-cta {
+      padding: 12px 18px;
+      border-radius: 12px;
+    }
+  }
+</style>
 
-  toggleNav();
-
-  // Runs on view transitions navigation
-  document.addEventListener("astro:after-swap", toggleNav);
+<script>
+  function setupNavigation() {
+    const navbar = document.querySelector<HTMLElement>(".navbar");
+    const button = document.querySelector<HTMLButtonElement>("#menu-btn");
+    if (!navbar || !button || navbar.dataset.ready) return;
+    navbar.dataset.ready = "true";
+    const setOpen = (open: boolean) => {
+      navbar.toggleAttribute("data-open", open);
+      button.setAttribute("aria-expanded", String(open));
+      button.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+    };
+    button.addEventListener("click", () =>
+      setOpen(!navbar.hasAttribute("data-open"))
+    );
+    navbar.addEventListener("keydown", event => {
+      if (event.key === "Escape" && navbar.hasAttribute("data-open")) {
+        setOpen(false);
+        button.focus();
+      }
+    });
+    navbar.addEventListener("focusout", event => {
+      if (!navbar.contains(event.relatedTarget as Node)) setOpen(false);
+    });
+    navbar.addEventListener("click", event => {
+      if ((event.target as Element).closest("a")) setOpen(false);
+    });
+    const closeOutside = (event: PointerEvent) => {
+      if (!navbar.isConnected) {
+        document.removeEventListener("pointerdown", closeOutside);
+        return;
+      }
+      if (!navbar.contains(event.target as Node)) setOpen(false);
+    };
+    document.addEventListener("pointerdown", closeOutside);
+  }
+  setupNavigation();
+  document.addEventListener("astro:page-load", setupNavigation);
 </script>

@@ -5,9 +5,8 @@ import Header from "@/components/Header.astro";
 import Footer from "@/components/Footer.astro";
 import Hero from "@/components/Hero.astro";
 import Card from "@/components/Card.astro";
-import LinkButton from "@/components/LinkButton.astro";
+import FeaturedCard from "@/components/FeaturedCard.astro";
 import getSortedPosts from "@/utils/getSortedPosts";
-import IconArrowRight from "@/assets/icons/IconArrowRight.svg";
 import { SITE } from "@/config";
 
 export const prerender = true;
@@ -15,57 +14,61 @@ export const prerender = true;
 const posts = await getCollection("blog");
 
 const sortedPosts = getSortedPosts(posts);
-const featuredPosts = sortedPosts.filter(({ data }) => data.featured);
-const recentPosts = sortedPosts.filter(({ data }) => !data.featured);
-const latestPost = sortedPosts[0];
+const featuredPosts = sortedPosts
+  .filter(({ data }) => data.featured)
+  .slice(0, 4);
+const featuredIds = new Set(featuredPosts.map(post => post.id));
+const recentPosts = sortedPosts
+  .filter(post => !featuredIds.has(post.id))
+  .slice(0, SITE.postPerIndex);
 ---
 
 <Layout>
   <Header />
   <main id="main-content" data-layout="index" class="app-layout">
-    <Hero latestPost={latestPost} />
-
-    <div class="border-b border-border"></div>
-
+    <Hero />
     {
       featuredPosts.length > 0 && (
-        <section
-          id="featured"
-          class:list={[
-            "pt-12 pb-6",
-            { "border-b border-border": recentPosts.length > 0 },
-          ]}
-        >
-          <h2 class="text-2xl font-semibold tracking-wide">Featured</h2>
-          <ul>
+        <section id="featured" aria-labelledby="featured-title">
+          <div class="section-heading">
+            <>
+              <h2 id="featured-title">Featured stories</h2>
+              <span class="eyebrow">Selected by Celesto</span>
+            </>
+          </div>
+          <div class="featured-grid">
             {featuredPosts.map(post => (
+              <FeaturedCard post={post} />
+            ))}
+          </div>
+        </section>
+      )
+    }
+    {
+      recentPosts.length > 0 && (
+        <section id="recent-posts" aria-labelledby="recent-title">
+          <div class="section-heading">
+            <>
+              <h2 id="recent-title">Latest from the blog</h2>
+              <a href={`${SITE.basePath}/posts/`}>All posts ↗</a>
+            </>
+          </div>
+          <ul>
+            {recentPosts.map(post => (
               <Card variant="h3" {...post} />
             ))}
           </ul>
         </section>
       )
     }
-
-    {
-      recentPosts.length > 0 && (
-        <section id="recent-posts" class="pt-12 pb-6">
-          <h2 class="text-2xl font-semibold tracking-wide">Recent Posts</h2>
-          <ul>
-            {recentPosts.map(
-              (post, index) =>
-                index < SITE.postPerIndex && <Card variant="h3" {...post} />
-            )}
-          </ul>
-        </section>
-      )
-    }
-
-    <div class="my-8 text-center">
-      <LinkButton href={`${SITE.basePath}/posts/`}>
-        All Posts
-        <IconArrowRight class="inline-block rtl:-rotate-180" />
-      </LinkButton>
-    </div>
+    <aside class="product-note">
+      <div>
+        <h2>A real computer for your next agent.</h2><p>
+          Run your agent on Celesto. Start with the CLI or explore the docs.
+        </p>
+      </div>
+      <a href="https://celesto.ai/docs">Explore the docs ↗</a>
+    </aside>
   </main>
   <Footer />
 </Layout>
