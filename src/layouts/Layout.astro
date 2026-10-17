@@ -71,6 +71,14 @@ const structuredData = {
     <link rel="canonical" href={canonicalURL} />
     <meta name="generator" content={Astro.generator} />
 
+    <Font
+      cssVariable="--font-instrument-sans"
+      preload={[{ subset: "latin", weight: 400, style: "normal" }]}
+    />
+    <Font
+      cssVariable="--font-instrument-serif"
+      preload={[{ subset: "latin", weight: 400, style: "normal" }]}
+    />
     <!-- Load Font -->
     <Font
       cssVariable="--font-google-sans-code"
@@ -245,7 +253,7 @@ const structuredData = {
     <!-- Minimal inline script to prevent FOUC - sets theme immediately -->
     <script is:inline>
       (function () {
-        const initialColorScheme = ""; // "light" | "dark"
+        const initialColorScheme = "dark"; // "light" | "dark"
         const currentTheme = localStorage.getItem("theme");
 
         function getPreferTheme() {

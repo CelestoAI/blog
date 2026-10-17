@@ -85,7 +85,17 @@ export default defineConfig({
     // @ts-ignore
     // This will be fixed in Astro 6 with Vite 7 support
     // See: https://github.com/withastro/astro/issues/14030
-    plugins: [tailwindcss(), contentReload()],
+    plugins: [
+      tailwindcss(),
+      contentReload(),
+      {
+        name: "separate-build-and-dev-caches",
+        config: (_config, { command }) => ({
+          // A build must not replace dependencies used by a live dev server.
+          cacheDir: `node_modules/.vite-${command}`,
+        }),
+      },
+    ],
     ssr: {
       external: ["@resvg/resvg-js"],
     },
@@ -98,6 +108,22 @@ export default defineConfig({
     layout: "constrained",
   },
   fonts: [
+    {
+      name: "Instrument Sans",
+      cssVariable: "--font-instrument-sans",
+      provider: fontProviders.google(),
+      weights: [400, 500, 600, 700],
+      styles: ["normal"],
+      fallbacks: ["sans-serif"],
+    },
+    {
+      name: "Instrument Serif",
+      cssVariable: "--font-instrument-serif",
+      provider: fontProviders.google(),
+      weights: [400],
+      styles: ["normal", "italic"],
+      fallbacks: ["Georgia", "serif"],
+    },
     {
       name: "Google Sans Code",
       cssVariable: "--font-google-sans-code",

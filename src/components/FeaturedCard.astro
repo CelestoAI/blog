@@ -2,87 +2,26 @@
 import type { CollectionEntry } from "astro:content";
 import { getPath } from "@/utils/getPath";
 import { getReadingTime } from "@/utils/getReadingTime";
-import { slugifyStr } from "@/utils/slugify";
-import TagPill from "./TagPill.astro";
-import IconClock from "@/assets/icons/IconClock.svg";
-
-type Props = {
-  post: CollectionEntry<"blog">;
-  variant?: "hero" | "secondary";
-};
-
-const { post, variant = "secondary" } = Astro.props;
-const { id, data, body, filePath } = post;
-const { title, description, tags } = data;
-
-const readingTime = body ? getReadingTime(body) : 1;
-const postUrl = getPath(id, filePath);
-
-const isHero = variant === "hero";
+import Datetime from "./Datetime.astro";
+import IconArrowRight from "@/assets/icons/IconArrowRight.svg";
+type Props = { post: CollectionEntry<"blog"> };
+const { post } = Astro.props;
+const { data, body, id, filePath } = post;
 ---
 
-<article
-  class:list={[
-    "group relative rounded-xl border border-border bg-background p-6",
-    "transition-all duration-300",
-    "hover:border-accent hover:shadow-[var(--card-shadow)]",
-    { "sm:col-span-2 sm:p-8": isHero },
-    "animate-slide-up",
-  ]}
->
-  <!-- Gradient overlay for hero variant -->
-  {
-    isHero && (
-      <div
-        class="pointer-events-none absolute inset-0 -z-10 rounded-xl bg-gradient-to-br from-accent/5 to-transparent"
-        aria-hidden="true"
-      />
-    )
-  }
-
-  <a href={postUrl} class="absolute inset-0 z-10" aria-label={`Read ${title}`}>
-    <span class="sr-only">Read {title}</span>
-  </a>
-
-  <!-- Tags -->
-  {
-    tags && tags.length > 0 && (
-      <div class="relative z-20 mb-3 flex flex-wrap gap-2">
-        {tags.slice(0, 2).map((tag: string) => (
-          <TagPill tag={tag} size="sm" />
-        ))}
-      </div>
-    )
-  }
-
-  <!-- Title -->
-  <h3
-    class:list={[
-      "font-semibold text-foreground transition-colors group-hover:text-accent",
-      { "text-2xl sm:text-3xl": isHero },
-      { "text-xl": !isHero },
-    ]}
-    style={{ viewTransitionName: slugifyStr(title.replaceAll(".", "-")) }}
+<article class="feature-card">
+  <span class="eyebrow"
+    >{data.tags[0]?.replaceAll("-", " ") || "From Celesto"}</span
   >
-    {title}
-  </h3>
-
-  <!-- Description -->
-  <p
-    class:list={[
-      "mt-2 text-foreground/70",
-      { "text-base sm:text-lg": isHero },
-      { "text-sm": !isHero },
-    ]}
-  >
-    {description}
-  </p>
-
-  <!-- Reading time -->
-  <div
-    class="mt-4 flex items-center gap-2 font-mono text-sm text-foreground/60"
-  >
-    <IconClock class="size-4" />
-    <span>{readingTime} min read</span>
+  <h3><a href={`${getPath(id, filePath)}/`}>{data.title}</a></h3>
+  <p>{data.description}</p>
+  <div class="feature-meta">
+    <Datetime
+      pubDatetime={data.pubDatetime}
+      modDatetime={data.modDatetime}
+      timezone={data.timezone}
+    />
+    <span>{getReadingTime(body || "")} min read</span>
+    <IconArrowRight class="size-4" />
   </div>
 </article>
