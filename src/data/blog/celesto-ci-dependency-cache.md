@@ -1,7 +1,7 @@
 ---
 author: Celesto AI
 pubDatetime: 2026-10-16T20:00:00Z
-title: "Celesto CI: A Faster GitHub Actions Runner for Cache-Hit Jobs"
+title: "Celesto CI vs. GitHub: Faster Cache-Hit Jobs on Half the CPUs"
 featured: true
 draft: false
 tags:
