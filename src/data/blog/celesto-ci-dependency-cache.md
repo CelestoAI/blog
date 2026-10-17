@@ -171,14 +171,14 @@ For setup, runner labels, installed tools, and compatibility limits, use the [Ce
 
 A cache restore has two parts: a lookup that selects an authorized archive, then a download that supplies its files to the action. Celesto implements GitHub's cache-service v2 protocol so compatible actions can use that path without a custom client.
 
-Celesto retains cache archives in Google Cloud Storage. Four components handle the request:
+Four components handle the request:
 
 | Component                        | Responsibility                                                                     |
 | -------------------------------- | ---------------------------------------------------------------------------------- |
 | Celesto-patched GitHub runner    | Routes supported action steps through the local results proxy                      |
 | Rust proxy inside the job VM     | Separates cache requests from other results-service traffic and translates uploads |
 | Celesto cache API and PostgreSQL | Verify access, select entries, reserve saves, enforce limits, and track state      |
-| Google Cloud Storage             | Retains archives and temporary upload blocks                                       |
+| Object storage                   | Retains archives and temporary upload blocks                                       |
 
 ### Cache requests and artifacts take different routes
 
