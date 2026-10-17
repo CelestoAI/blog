@@ -1,7 +1,7 @@
 ---
 author: Celesto AI
 pubDatetime: 2026-10-16T20:00:00Z
-title: "Celesto CI vs. GitHub: Faster Cache-Hit Jobs on Half the CPUs"
+title: "Celesto CI: A Faster GitHub Actions Runner for Cache-Hit Jobs"
 featured: true
 draft: false
 tags:
@@ -9,12 +9,12 @@ tags:
   - GitHub Actions
   - Developer Tools
   - Celesto
-description: "A cache-hit browser-tool job took 24 seconds on Celesto CI with 1 vCPU versus 31 seconds on GitHub-hosted with 2 vCPUs. See the results and workflow setup."
+description: "A faster GitHub Actions runner for cache-hit jobs: Celesto CI took 24 seconds on 1 vCPU versus GitHub-hosted's 31 seconds on 2 vCPUs in our benchmark."
 ---
 
-Get test results sooner with less compute. In a browser-tool cache comparison, the Celesto job completed in **24 seconds on 1 vCPU**, versus **31 seconds on a GitHub-hosted runner with 2 vCPUs**. That is about **23% less job time with half the CPUs** on a cache hit.
+Get test results sooner with a faster GitHub Actions runner and less compute. In a browser-tool cache comparison, the Celesto job completed in **24 seconds on 1 vCPU**, versus **31 seconds on a GitHub-hosted runner with 2 vCPUs**. That is about **23% less job time with half the CPUs** on a cache hit.
 
-Fresh CI computers need dependencies before they can run tests. Without a cache, npm or pip must fetch the same packages again even when those dependencies have not changed. Celesto CI retains dependency caches between jobs so later runs can reuse the packages while each job still gets a fresh computer.
+Celesto CI runs your GitHub Actions workflows on fresh cloud computers, with dependency caches that survive between jobs. Without a cache, npm or pip must fetch the same packages again even when those dependencies have not changed. Cache reuse reduces that repeated work before your tests can start.
 
 Use standard GitHub Actions cache steps or your setup action's cache option. Your workflow, logs, test results, and artifacts stay in GitHub.
 
@@ -167,7 +167,7 @@ The current CI image supports Ubuntu Linux x64 shell steps and compatible JavaSc
 
 For setup, runner labels, installed tools, and compatibility limits, use the [Celesto CI guide](https://docs.celesto.ai/docs/ci).
 
-## How the cache works beneath your workflow
+## How Celesto CI speeds up GitHub Actions with dependency caches
 
 A cache restore has two parts: a lookup that selects an authorized archive, then a download that supplies its files to the action. Celesto implements GitHub's cache-service v2 protocol so compatible actions can use that path without a custom client.
 
