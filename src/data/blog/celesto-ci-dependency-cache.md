@@ -12,9 +12,9 @@ tags:
 description: "Reuse dependencies across fresh Celesto CI runners with standard GitHub Actions cache steps. Explore workflow examples, cache keys, security, and the architecture."
 ---
 
-Reuse dependency downloads across CI runs and spend less of each job on package setup. Celesto CI gives every job a fresh computer while it retains dependency caches for later runs. Your npm or pip install can reuse packages from an earlier job, even after that job's computer has been deleted.
+Each Celesto CI job starts on a fresh computer. Without a dependency cache, npm or pip must fetch the same packages again, even when your dependencies have not changed. Those repeated downloads add network traffic and delay your test results.
 
-Use standard GitHub Actions cache steps or your setup action's cache option. You keep your workflow, logs, test results, and artifacts in GitHub, with no Celesto-specific cache action or extra storage credentials.
+Celesto CI retains dependency caches between jobs so later runs can reuse those packages. Your job can spend less time on package downloads while it still gets a fresh computer. Use standard GitHub Actions cache steps or your setup action's cache option; your workflow, logs, test results, and artifacts stay in GitHub.
 
 For a Node.js project, enable `cache: npm` in `actions/setup-node`. The workflow below shows the complete setup.
 
