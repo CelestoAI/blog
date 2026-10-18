@@ -241,6 +241,7 @@ h3 {
   display: none;
 }
 .feature-meta > svg {
+  pointer-events: none;
   position: absolute;
   top: 30px;
   right: 30px;
