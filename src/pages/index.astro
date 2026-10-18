@@ -95,7 +95,7 @@ const recentPosts = sortedPosts
       }
     }
   });
-  document.addEventListener("astro:page-load", () => {
+  function setupTopicFilters() {
     const indexLayout = (document.querySelector("#main-content") as HTMLElement)
       ?.dataset?.layout;
     if (indexLayout) {
@@ -142,7 +142,8 @@ const recentPosts = sortedPosts
         });
       });
     }
-  });
+  }
+  setupTopicFilters();
 </script>
 
 <style>

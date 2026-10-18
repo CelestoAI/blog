@@ -86,24 +86,6 @@ function setThemeFeature(): void {
 // Set up theme features after page load
 setThemeFeature();
 
-// Runs on view transitions navigation
-document.addEventListener("astro:after-swap", setThemeFeature);
-
-// Set theme-color value before page transition
-// to avoid navigation bar color flickering in Android dark mode
-document.addEventListener("astro:before-swap", event => {
-  const astroEvent = event;
-  const bgColor = document
-    .querySelector("meta[name='theme-color']")
-    ?.getAttribute("content");
-
-  if (bgColor) {
-    astroEvent.newDocument
-      .querySelector("meta[name='theme-color']")
-      ?.setAttribute("content", bgColor);
-  }
-});
-
 // sync with system changes
 window
   .matchMedia("(prefers-color-scheme: dark)")

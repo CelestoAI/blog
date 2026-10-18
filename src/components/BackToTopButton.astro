@@ -32,14 +32,17 @@ import IconArrowNarrowUp from "@/assets/icons/IconArrowNarrowUp.svg";
   </button>
 </div>
 
-<script is:inline data-astro-rerun>
+<script>
   /** Scrolls the document to the top when
    * the "Back to Top" button is clicked. */
   function backToTop() {
     const rootElement = document.documentElement;
-    const btnContainer = document.querySelector("#btt-btn-container");
+    const btnContainer =
+      document.querySelector<HTMLElement>("#btt-btn-container");
     const backToTopBtn = document.querySelector("[data-button='back-to-top']");
-    const progressIndicator = document.querySelector("#progress-indicator");
+    const progressIndicator = document.querySelector<HTMLElement>(
+      "#progress-indicator"
+    );
 
     if (!rootElement || !btnContainer || !backToTopBtn || !progressIndicator)
       return;
@@ -51,8 +54,8 @@ import IconArrowNarrowUp from "@/assets/icons/IconArrowNarrowUp.svg";
     });
 
     // Handle button visibility according to scroll position
-    let lastVisible = null;
-    function handleScroll() {
+    let lastVisible: boolean | null = null;
+    const handleScroll = () => {
       const scrollTotal = rootElement.scrollHeight - rootElement.clientHeight;
       const scrollTop = rootElement.scrollTop;
       const scrollPercent = Math.floor((scrollTop / scrollTotal) * 100);
@@ -71,7 +74,7 @@ import IconArrowNarrowUp from "@/assets/icons/IconArrowNarrowUp.svg";
         btnContainer.classList.toggle("translate-y-14", !isVisible);
         lastVisible = isVisible;
       }
-    }
+    };
 
     let ticking = false;
     document.addEventListener("scroll", () => {
