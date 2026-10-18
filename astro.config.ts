@@ -58,6 +58,8 @@ export default defineConfig({
         "img-src 'self' data: https:",
         "font-src 'self'",
         "connect-src 'self' https://*.posthog.com",
+        // PostHog session recording compresses in a blob: worker.
+        "worker-src 'self' blob:",
         "object-src 'none'",
         "base-uri 'self'",
       ],
