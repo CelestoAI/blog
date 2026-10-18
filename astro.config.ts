@@ -57,6 +57,7 @@ export default defineConfig({
   }),
   integrations: [
     sitemap({
+      entryLimit: 50_000,
       filter: page => SITE.showArchives || !page.endsWith("/archives"),
     }),
   ],
