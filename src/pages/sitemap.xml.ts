@@ -3,6 +3,6 @@ import { SITE } from "@/config";
 
 export const GET: APIRoute = ({ request }) =>
   Response.redirect(
-    new URL(`${SITE.basePath}/sitemap-index.xml`, request.url),
+    new URL(`${SITE.basePath}/sitemap-0.xml`, request.url),
     301
   );
