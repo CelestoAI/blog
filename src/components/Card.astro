@@ -2,23 +2,24 @@
 import type { CollectionEntry } from "astro:content";
 import { slugifyStr } from "@/utils/slugify";
 import { getPath } from "@/utils/getPath";
+import { getReadingTime } from "@/utils/getReadingTime";
 import Datetime from "./Datetime.astro";
 
 type Props = {
   variant?: "h2" | "h3";
 } & CollectionEntry<"blog">;
 
-const { variant: Heading = "h2", id, data, filePath } = Astro.props;
+const { variant: Heading = "h2", id, data, filePath, body } = Astro.props;
 
 const { title, description, ...props } = data;
 ---
 
 <li class="post-card">
   <a
-    href={getPath(id, filePath)}
+    href={`${getPath(id, filePath)}/`}
     class:list={[
-      "inline-block text-lg font-medium text-accent",
-      "decoration-dashed underline-offset-4 hover:underline",
+      "inline-block text-lg font-medium",
+      "underline-offset-4 hover:underline",
       "focus-visible:no-underline focus-visible:underline-offset-0",
     ]}
   >
@@ -28,6 +29,9 @@ const { title, description, ...props } = data;
       {title}
     </Heading>
   </a>
-  <Datetime {...props} class="post-date" />
+  <div class="post-meta">
+    <Datetime {...props} class="post-date" />
+    <span>{getReadingTime(body || "")} min read</span>
+  </div>
   <p>{description}</p>
 </li>

@@ -3,6 +3,7 @@ import type { CollectionEntry } from "astro:content";
 import { getPath } from "@/utils/getPath";
 import { getReadingTime } from "@/utils/getReadingTime";
 import { slugifyStr } from "@/utils/slugify";
+import { getTopicLabel } from "@/utils/blogTopics";
 import Datetime from "./Datetime.astro";
 import IconArrowRight from "@/assets/icons/IconArrowRight.svg";
 type Props = { post: CollectionEntry<"blog"> };
@@ -14,9 +15,7 @@ const { data, body, id, filePath } = post;
   class="feature-card"
   data-topics={JSON.stringify(data.tags.map(slugifyStr))}
 >
-  <span class="eyebrow"
-    >{data.tags[0]?.replaceAll("-", " ") || "From Celesto"}</span
-  >
+  <span class="eyebrow">{getTopicLabel(data.tags[0] || "Celesto")}</span>
   <h3><a href={`${getPath(id, filePath)}/`}>{data.title}</a></h3>
   <p>{data.description}</p>
   <div class="feature-meta">
@@ -26,6 +25,6 @@ const { data, body, id, filePath } = post;
       timezone={data.timezone}
     />
     <span>{getReadingTime(body || "")} min read</span>
-    <IconArrowRight class="size-4" />
+    <IconArrowRight class="size-4" aria-hidden="true" />
   </div>
 </article>

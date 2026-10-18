@@ -3,12 +3,7 @@ import IconRss from "@/assets/icons/IconRss.svg";
 import IconSearch from "@/assets/icons/IconSearch.svg";
 import { SITE } from "@/config";
 
-const topics = [
-  { label: "AI agents", tag: "ai-agents" },
-  { label: "Security", tag: "security" },
-  { label: "microVMs", tag: "microvm" },
-  { label: "CI", tag: "ci" },
-];
+import { BLOG_TOPICS } from "@/utils/blogTopics";
 ---
 
 <section id="hero" class="blog-hero">
@@ -45,7 +40,7 @@ const topics = [
       >All</a
     >
     {
-      topics.map(topic => (
+      BLOG_TOPICS.map(topic => (
         <a
           href={`${SITE.basePath}/tags/${topic.tag}/`}
           data-blog-topic={topic.tag}
@@ -156,6 +151,14 @@ const topics = [
       flex: 1;
       width: auto;
       min-width: 0;
+    }
+    .blog-search input {
+      font-size: 16px;
+    }
+    .blog-search,
+    .subscribe-button,
+    .blog-topics a {
+      min-height: 44px;
     }
     .blog-search kbd {
       display: none;
