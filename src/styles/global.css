@@ -198,7 +198,7 @@ h3 {
   border-color: var(--accent);
 }
 .feature-card h3 {
-  margin-top: 22px;
+  margin-top: 18px;
   font-size: 25px;
   font-weight: 500;
 }
@@ -231,17 +231,31 @@ h3 {
   margin-top: auto;
   padding-top: 18px;
   border-top: 1px solid var(--border);
+  font-family: var(--font-google-sans-code), monospace;
+  font-variant-numeric: tabular-nums;
   font-size: 12px;
   color: color-mix(in srgb, var(--foreground) 65%, transparent);
+  flex-wrap: wrap;
 }
-.feature-meta svg {
+.feature-meta > div svg {
   display: none;
+}
+.feature-meta > svg {
+  pointer-events: none;
+  position: absolute;
+  top: 30px;
+  right: 30px;
+  opacity: 0.65;
+}
+.feature-card:is(:hover, :focus-within) .feature-meta > svg {
+  opacity: 1;
 }
 .feature-meta > div {
   opacity: 1;
 }
-.feature-meta time {
-  font-size: 12px;
+.feature-meta time,
+.feature-meta > div > span {
+  font-size: inherit;
 }
 .post-card {
   padding: 28px 0;
@@ -265,8 +279,23 @@ h3 {
   opacity: 0.65;
 }
 .post-card .post-date {
-  margin-top: 10px;
+  font-size: inherit;
+  opacity: 1;
+}
+.post-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 24px;
+  margin-top: 12px;
+  font-family: var(--font-google-sans-code), monospace;
+  font-variant-numeric: tabular-nums;
   font-size: 12px;
+  color: color-mix(in srgb, var(--foreground) 65%, transparent);
+}
+.post-meta time,
+.post-meta .post-date > span {
+  font-size: inherit;
 }
 .post-card .post-date svg {
   display: none;
@@ -276,16 +305,12 @@ h3 {
   justify-content: space-between;
   align-items: center;
   gap: 24px;
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 32px;
-  margin: 56px 0 72px;
-  background: var(--surface);
+  border-top: 1px solid var(--border);
+  padding: 32px 0;
+  margin: 56px 0 32px;
 }
 .product-note h2 {
-  font-family: var(--font-instrument-serif), Georgia, serif;
-  font-style: italic;
-  font-size: 32px;
+  font-size: 20px;
   font-weight: 400;
 }
 .product-note p {
@@ -353,7 +378,11 @@ h3 {
   .product-note {
     align-items: start;
     flex-direction: column;
-    padding: 24px;
+    padding: 24px 0;
+  }
+  .feature-meta > svg {
+    top: 24px;
+    right: 24px;
   }
 }
 
