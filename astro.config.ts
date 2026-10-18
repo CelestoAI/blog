@@ -51,6 +51,32 @@ export default defineConfig({
       destination: "/blog/posts/2026/nvidia-openshell-vs-celesto/",
     },
   },
+  security: {
+    csp: {
+      directives: [
+        "default-src 'self'",
+        "img-src 'self' data: https:",
+        "font-src 'self'",
+        "connect-src 'self' https://*.posthog.com",
+        "object-src 'none'",
+        "base-uri 'self'",
+      ],
+      scriptDirective: {
+        // Pagefind search runs on WebAssembly.
+        resources: [
+          "'self'",
+          "'wasm-unsafe-eval'",
+          "https://us-assets.i.posthog.com",
+        ],
+      },
+      styleDirective: {
+        resources: [
+          "'self'",
+          { resource: "'unsafe-inline'", kind: "attribute" },
+        ],
+      },
+    },
+  },
   output: "server",
   adapter: cloudflare({
     prerenderEnvironment: "node",
