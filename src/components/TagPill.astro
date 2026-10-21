@@ -49,19 +49,21 @@ const normalizedTag = tag.toLowerCase();
 const colors = tagColors[normalizedTag] || tagColors.default;
 
 const sizeClasses = {
-  sm: "px-2 py-0.5 text-xs",
-  md: "px-2.5 py-1 text-sm",
+  sm: "h-control-sm px-2.5 text-label-12",
+  md: "h-control-sm px-3 text-label-14",
 };
 
 const baseClasses = [
-  "inline-flex items-center rounded-full font-mono font-medium",
+  "inline-flex items-center rounded-full font-medium",
   "transition-colors duration-200",
   sizeClasses[size],
   colors.bg,
   colors.text,
 ];
 
-const hoverClasses = clickable ? "hover:opacity-80" : "";
+const hoverClasses = clickable
+  ? "relative touch-target focus-ring hover:opacity-80"
+  : "";
 ---
 
 {

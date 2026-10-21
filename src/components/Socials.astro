@@ -8,10 +8,10 @@ import LinkButton from "./LinkButton.astro";
     SOCIALS.map(social => (
       <LinkButton
         href={social.href}
-        class="p-2 hover:rotate-6 sm:p-1"
+        class="size-8 justify-center hover:text-accent"
         title={social.linkTitle}
       >
-        <social.icon class="inline-block size-6 scale-125 fill-transparent stroke-current stroke-2 opacity-90 group-hover:fill-transparent sm:scale-110" />
+        <social.icon class="inline-block size-4 fill-transparent stroke-current stroke-2 opacity-90 group-hover:fill-transparent" />
         <span class="sr-only">{social.linkTitle}</span>
       </LinkButton>
     ))

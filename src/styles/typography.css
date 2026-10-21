@@ -13,8 +13,22 @@
       @apply mb-3 text-foreground;
     }
 
+    /* Geist has no italic: emphasis is medium weight, not a synthesized slant. */
+    em {
+      @apply font-medium not-italic;
+    }
+
+    h1 {
+      @apply text-heading-40 font-semibold;
+    }
+    h2 {
+      @apply text-heading-32 font-semibold;
+    }
     h3 {
-      @apply italic;
+      @apply text-heading-24 font-semibold;
+    }
+    h4 {
+      @apply text-heading-20 font-semibold;
     }
 
     p,
@@ -28,7 +42,7 @@
     }
 
     a {
-      @apply wrap-break-word text-foreground decoration-dashed underline-offset-4 hover:text-accent focus-visible:no-underline;
+      @apply wrap-break-word text-foreground decoration-1 underline-offset-4 hover:text-accent focus-visible:no-underline;
     }
 
     ul {
@@ -67,7 +81,12 @@
     }
 
     code {
-      @apply rounded bg-muted/75 p-1 wrap-break-word text-foreground before:content-none after:content-none;
+      @apply rounded-sm bg-muted/75 px-1.5 py-0.5 font-mono text-[0.875em] wrap-break-word text-foreground before:content-none after:content-none;
+    }
+
+    /* Mono sits on the 12/13/14 scale, so code inside a heading takes the heading's face. */
+    :is(h1, h2, h3, h4) code {
+      @apply bg-transparent p-0 font-[inherit] text-[1em];
     }
 
     .astro-code code {
@@ -83,17 +102,17 @@
     }
 
     summary {
-      @apply focus-visible:no-underline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent focus-visible:outline-dashed;
+      @apply focus-visible:no-underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent focus-visible:outline-solid;
     }
 
     pre {
-      @apply focus-visible:border-transparent focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-dashed;
+      @apply rounded-md focus-visible:border-transparent focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-solid;
     }
   }
 
   /* ===== Code Blocks & Syntax Highlighting ===== */
   .astro-code {
-    @apply flex border bg-(--shiki-light-bg) text-(--shiki-light) outline-border [&_span]:text-(--shiki-light);
+    @apply flex rounded-md border bg-(--shiki-light-bg) text-(--shiki-light) outline-border [&_span]:text-(--shiki-light);
   }
 
   html[data-theme="dark"] .astro-code {
@@ -114,6 +133,9 @@
     }
     .highlighted-word {
       @apply rounded-sm border border-border px-0.5 py-px;
+    }
+    code {
+      @apply font-mono text-copy-13;
     }
   }
 }

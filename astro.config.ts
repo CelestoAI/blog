@@ -136,30 +136,49 @@ export default defineConfig({
     responsiveStyles: true,
     layout: "constrained",
   },
+  // Geist and Geist Mono come from the `geist` npm package (SIL Open Font License) so dev and
+  // build need no font network call; Astro copies the files into the build, so the CSP
+  // keeps `font-src 'self'`.
   fonts: [
     {
-      name: "Instrument Sans",
-      cssVariable: "--font-instrument-sans",
-      provider: fontProviders.google(),
-      weights: [400, 500, 600, 700],
-      styles: ["normal"],
-      fallbacks: ["sans-serif"],
+      name: "Geist",
+      cssVariable: "--font-geist",
+      provider: fontProviders.local(),
+      options: {
+        variants: [
+          {
+            weight: "100 900",
+            style: "normal",
+            src: [
+              "./node_modules/geist/dist/fonts/geist-sans/Geist-Variable.woff2",
+            ],
+          },
+        ],
+      },
+      fallbacks: [
+        "ui-sans-serif",
+        "system-ui",
+        "-apple-system",
+        "Segoe UI",
+        "sans-serif",
+      ],
     },
     {
-      name: "Instrument Serif",
-      cssVariable: "--font-instrument-serif",
-      provider: fontProviders.google(),
-      weights: [400],
-      styles: ["normal", "italic"],
-      fallbacks: ["Georgia", "serif"],
-    },
-    {
-      name: "Google Sans Code",
-      cssVariable: "--font-google-sans-code",
-      provider: fontProviders.google(),
-      fallbacks: ["monospace"],
-      weights: [300, 400, 500, 600, 700],
-      styles: ["normal", "italic"],
+      name: "Geist Mono",
+      cssVariable: "--font-geist-mono",
+      provider: fontProviders.local(),
+      options: {
+        variants: [
+          {
+            weight: "100 900",
+            style: "normal",
+            src: [
+              "./node_modules/geist/dist/fonts/geist-mono/GeistMono-Variable.woff2",
+            ],
+          },
+        ],
+      },
+      fallbacks: ["ui-monospace", "SF Mono", "Menlo", "monospace"],
     },
   ],
   env: {

@@ -36,11 +36,11 @@ if (breadcrumbList[0] === "blog") {
 
 <nav class="app-layout mt-8 mb-1" aria-label="breadcrumb">
   <ul
-    class="font-light [&>li]:inline [&>li:not(:last-child)>a]:hover:opacity-100"
+    class="text-copy-14 [&>li]:inline [&>li:not(:last-child)>a]:hover:opacity-100"
   >
     <li>
       <a href={base} class="opacity-80">Home</a>
-      <span aria-hidden="true" class="opacity-80">&raquo;</span>
+      <span aria-hidden="true" class="mx-2 opacity-80">&raquo;</span>
     </li>
     {
       breadcrumbList.map((breadcrumb, index) =>
@@ -59,7 +59,9 @@ if (breadcrumbList[0] === "blog") {
             <a href={`${base}${breadcrumb}/`} class="capitalize opacity-70">
               {breadcrumb}
             </a>
-            <span aria-hidden="true">&raquo;</span>
+            <span aria-hidden="true" class="mx-2">
+              &raquo;
+            </span>
           </li>
         )
       )

@@ -91,11 +91,13 @@ const nextPost =
     class:list={["app-layout pb-12", { "mt-8": !SITE.showBackButton }]}
     data-pagefind-body
   >
-    <h1 class="inline-block text-2xl font-bold text-accent sm:text-3xl">
+    <h1
+      class="inline-block text-heading-24 font-semibold text-accent sm:text-heading-32"
+    >
       {title}
     </h1>
     <div class="my-2">
-      <div class="text-opacity-80 text-sm">
+      <div class="text-label-14 text-foreground/80">
         {
           authorUrl ? (
             <a
@@ -111,7 +113,7 @@ const nextPost =
           )
         }
       </div>
-      <div class="flex items-center gap-2">
+      <div class="flex items-center gap-2 text-label-14">
         <Datetime {pubDatetime} {modDatetime} {timezone} size="lg" />
         <span
           aria-hidden="true"
@@ -130,7 +132,7 @@ const nextPost =
       <Content />
     </article>
 
-    <hr class="my-8 border-dashed" />
+    <hr class="my-8" />
 
     <EditPost class="sm:hidden" {hideEditPost} {post} />
 
@@ -142,7 +144,7 @@ const nextPost =
 
     <ShareLinks />
 
-    <hr class="my-6 border-dashed" />
+    <hr class="my-6" />
 
     <!-- Previous/Next Post Buttons -->
     <div data-pagefind-ignore class="grid grid-cols-1 gap-6 sm:grid-cols-2">
@@ -150,12 +152,14 @@ const nextPost =
         prevPost && (
           <a
             href={getPath(prevPost.id, prevPost.filePath)}
-            class="flex w-full gap-1 hover:opacity-75"
+            class="flex w-full gap-1 rounded-md border border-border p-3 text-label-14 focus-ring hover:bg-muted"
           >
             <IconChevronLeft class="inline-block flex-none rtl:rotate-180" />
             <div>
-              <span>Previous Post</span>
-              <div class="text-sm text-accent/85">{prevPost.title}</div>
+              <span class="text-foreground/60">Previous Post</span>
+              <div class="mt-1 text-copy-14 text-accent/85">
+                {prevPost.title}
+              </div>
             </div>
           </a>
         )
@@ -164,11 +168,13 @@ const nextPost =
         nextPost && (
           <a
             href={getPath(nextPost.id, nextPost.filePath)}
-            class="flex w-full justify-end gap-1 text-end hover:opacity-75 sm:col-start-2"
+            class="flex w-full justify-end gap-1 rounded-md border border-border p-3 text-end text-label-14 focus-ring hover:bg-muted sm:col-start-2"
           >
             <div>
-              <span>Next Post</span>
-              <div class="text-sm text-accent/85">{nextPost.title}</div>
+              <span class="text-foreground/60">Next Post</span>
+              <div class="mt-1 text-copy-14 text-accent/85">
+                {nextPost.title}
+              </div>
             </div>
             <IconChevronRight class="inline-block flex-none rtl:rotate-180" />
           </a>
@@ -264,7 +270,7 @@ const nextPost =
         : "-top-3";
 
       const copyButton = document.createElement("button");
-      copyButton.className = `copy-code absolute end-3 ${topClass} rounded bg-muted border border-muted px-2 py-1 text-xs leading-4 text-foreground font-medium`;
+      copyButton.className = `copy-code absolute end-3 ${topClass} inline-flex h-control-sm items-center rounded-md border border-border bg-muted px-2 text-button-12 text-foreground focus-ring`;
       copyButton.innerHTML = copyButtonLabel;
       codeBlock.setAttribute("tabindex", "0");
       codeBlock.appendChild(copyButton);

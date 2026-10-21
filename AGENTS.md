@@ -83,3 +83,10 @@ Pagefind is used for search. Since the site uses SSR, pages must be explicitly p
     *   `src/layouts`: Page layouts (Layout, Main, PostDetails).
     *   `src/pages`: File-based routing for the site.
 *   **Git:** External Pull Requests are generally not accepted without prior discussion.
+
+## Design system
+
+*   The site uses Geist and Geist Mono via Astro's Fonts API (`astro.config.ts`).
+*   Type uses the `text-heading-*`, `text-label-*`, `text-copy-*` and `text-button-*` utilities in `src/styles/global.css`. Sizes: 72, 64, 56, 48, 40, 32, 24, 20, 18, 16, 14, 13, 12. No raw font sizes.
+*   No negative tracking under 24px. No italics. Mono only for code and IDs.
+*   Radii: 6px base, 12px medium. Control heights: 32/40/48px.

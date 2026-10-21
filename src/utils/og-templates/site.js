@@ -9,6 +9,7 @@ export default async () => {
       props: {
         style: {
           background: "#fefbfb",
+          fontFamily: "Geist",
           width: "100%",
           height: "100%",
           display: "flex",
@@ -26,7 +27,7 @@ export default async () => {
                 border: "4px solid #000",
                 background: "#ecebeb",
                 opacity: "0.9",
-                borderRadius: "4px",
+                borderRadius: "12px",
                 display: "flex",
                 justifyContent: "center",
                 margin: "2.5rem",
@@ -41,7 +42,7 @@ export default async () => {
               style: {
                 border: "4px solid #000",
                 background: "#fefbfb",
-                borderRadius: "4px",
+                borderRadius: "12px",
                 display: "flex",
                 justifyContent: "center",
                 margin: "2rem",
@@ -77,14 +78,18 @@ export default async () => {
                           {
                             type: "p",
                             props: {
-                              style: { fontSize: 72, fontWeight: "bold" },
+                              style: {
+                                fontSize: 64,
+                                fontWeight: 600,
+                                letterSpacing: "-0.03em",
+                              },
                               children: SITE.title,
                             },
                           },
                           {
                             type: "p",
                             props: {
-                              style: { fontSize: 28 },
+                              style: { fontSize: 24, fontWeight: 400 },
                               children: SITE.desc,
                             },
                           },
@@ -99,12 +104,12 @@ export default async () => {
                           justifyContent: "flex-end",
                           width: "100%",
                           marginBottom: "8px",
-                          fontSize: 28,
+                          fontSize: 24,
                         },
                         children: {
                           type: "span",
                           props: {
-                            style: { overflow: "hidden", fontWeight: "bold" },
+                            style: { overflow: "hidden", fontWeight: 600 },
                             children: new URL(SITE.website).hostname,
                           },
                         },

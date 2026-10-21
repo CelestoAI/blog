@@ -100,6 +100,7 @@ export default async post => {
       props: {
         style: {
           background: "#fefbfb",
+          fontFamily: "Geist",
           width: "100%",
           height: "100%",
           display: "flex",
@@ -117,7 +118,7 @@ export default async post => {
                 border: "4px solid #000",
                 background: "#ecebeb",
                 opacity: "0.9",
-                borderRadius: "4px",
+                borderRadius: "12px",
                 display: "flex",
                 justifyContent: "center",
                 margin: "2.5rem",
@@ -132,7 +133,7 @@ export default async post => {
               style: {
                 border: "4px solid #000",
                 background: "#fefbfb",
-                borderRadius: "4px",
+                borderRadius: "12px",
                 display: "flex",
                 justifyContent: "center",
                 margin: "2rem",
@@ -155,8 +156,9 @@ export default async post => {
                       type: "p",
                       props: {
                         style: {
-                          fontSize: 72,
-                          fontWeight: "bold",
+                          fontSize: 56,
+                          fontWeight: 600,
+                          letterSpacing: "-0.03em",
                           maxHeight: "84%",
                           overflow: "hidden",
                         },
@@ -171,7 +173,7 @@ export default async post => {
                           justifyContent: "space-between",
                           width: "100%",
                           marginBottom: "8px",
-                          fontSize: 28,
+                          fontSize: 24,
                         },
                         children: [
                           {
@@ -191,7 +193,7 @@ export default async post => {
                                   props: {
                                     style: {
                                       overflow: "hidden",
-                                      fontWeight: "bold",
+                                      fontWeight: 600,
                                     },
                                     children: post.data.author,
                                   },
@@ -202,7 +204,7 @@ export default async post => {
                           {
                             type: "span",
                             props: {
-                              style: { overflow: "hidden", fontWeight: "bold" },
+                              style: { overflow: "hidden", fontWeight: 600 },
                               children: SITE.title,
                             },
                           },

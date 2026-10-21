@@ -27,7 +27,7 @@ const links = [
 <a
   id="skip-to-content"
   href="#main-content"
-  class="absolute start-4 -top-full z-50 rounded-lg bg-background px-3 py-2 focus:top-4"
+  class="absolute start-4 -top-full z-50 inline-flex h-control-sm items-center rounded-md border border-border bg-background px-3 text-button-14 focus:top-4"
   >Skip to content</a
 >
 <header class="site-header app-layout">
@@ -113,9 +113,9 @@ const links = [
     align-items: center;
     gap: 10px;
     flex-shrink: 0;
-    font-size: 21px;
+    font-size: 20px;
+    line-height: 28px;
     font-weight: 600;
-    letter-spacing: -0.04em;
   }
   .logo img {
     width: 26px;
@@ -133,8 +133,10 @@ const links = [
     order: 1;
   }
   .nav-links a {
-    display: block;
-    padding: 8px 13px;
+    display: flex;
+    align-items: center;
+    height: 32px;
+    padding: 0 12px;
     border-radius: 999px;
     font-size: 14px;
     line-height: 20px;
@@ -158,18 +160,30 @@ const links = [
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    position: relative;
     width: 40px;
     height: 40px;
-    border-radius: 50%;
+    border-radius: 999px;
     color: color-mix(in srgb, var(--foreground) 65%, transparent);
+  }
+  @media (pointer: coarse) {
+    .icon-button::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 44px;
+      height: 44px;
+      transform: translate(-50%, -50%);
+    }
   }
   .icon-button:hover {
     background: var(--muted);
     color: var(--foreground);
   }
   .icon-button :global(svg) {
-    width: 19px;
-    height: 19px;
+    width: 16px;
+    height: 16px;
   }
   .theme-toggle {
     position: relative;
@@ -194,9 +208,12 @@ const links = [
     flex-shrink: 0;
     order: 3;
     border: 1px solid var(--border);
+    /* A pill bar holds pill actions: the radius follows the container's curve. */
     border-radius: 999px;
-    padding: 9px 18px;
+    height: 40px;
+    padding: 0 16px;
     font-size: 14px;
+    line-height: 20px;
     font-weight: 500;
     background: var(--muted);
   }
@@ -220,10 +237,6 @@ const links = [
       min-height: 60px;
       padding: 8px 12px 8px 18px;
       border-radius: 26px;
-    }
-    .icon-button {
-      width: 44px;
-      height: 44px;
     }
     .nav-actions {
       margin-left: auto;
@@ -257,13 +270,14 @@ const links = [
       gap: 4px;
     }
     .nav-links a {
-      padding: 12px 16px;
-      border-radius: 12px;
-      font-size: 15px;
+      height: 40px;
+      padding: 0 16px;
+      border-radius: 6px;
+      font-size: 14px;
     }
+    /* In the dropdown panel the CTA sits with the 6px menu rows. */
     .nav-cta {
-      padding: 12px 18px;
-      border-radius: 12px;
+      border-radius: 6px;
     }
   }
 </style>

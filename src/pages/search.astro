@@ -42,8 +42,8 @@ const backUrl = SITE.showBackButton ? `${Astro.url.pathname}` : "/";
       // Display warning inn dev mode
       if (import.meta.env.DEV) {
         pageFindSearch.innerHTML = `
-            <div class="bg-muted/75 rounded p-4 space-y-4 mb-4">
-              <p><strong>DEV mode Warning! </strong>You need to build the project at least once to see the search results during development.</p>
+            <div class="bg-muted/75 text-copy-14 rounded-md p-4 space-y-4 mb-4">
+              <p><strong class="font-semibold">DEV mode Warning! </strong>You need to build the project at least once to see the search results during development.</p>
               <code class="block bg-black text-white px-2 py-1 rounded">pnpm run build</code>
             </div>
           `;
@@ -91,43 +91,111 @@ const backUrl = SITE.showBackButton ? `${Astro.url.pathname}` : "/";
 
 <style is:global>
   #pagefind-search {
-    --pagefind-ui-font: var(--font-app);
+    --pagefind-ui-scale: 1;
+    --pagefind-ui-font: var(--font-geist), system-ui, sans-serif;
     --pagefind-ui-text: var(--foreground);
     --pagefind-ui-background: var(--background);
     --pagefind-ui-border: var(--border);
     --pagefind-ui-primary: var(--accent);
     --pagefind-ui-tag: var(--background);
-    --pagefind-ui-border-radius: 0.375rem;
+    --pagefind-ui-border-radius: 6px;
     --pagefind-ui-border-width: 1px;
-    --pagefind-ui-image-border-radius: 8px;
+    --pagefind-ui-image-border-radius: 6px;
     --pagefind-ui-image-box-ratio: 3 / 2;
+    font-size: 14px;
+    line-height: 20px;
 
+    /* Pagefind lays the icon and clear button out for its 64px field; ours is 40px. */
     form::before {
       background-color: var(--foreground);
+      top: 12px;
     }
 
     input {
+      height: 40px;
+      font-size: 14px;
+      line-height: 20px;
       font-weight: 400;
+      font-style: normal;
       border: 1px solid var(--border);
+      border-radius: 6px;
     }
 
-    input:focus-visible {
-      outline: 1px solid var(--accent);
+    input:focus-visible,
+    .pagefind-ui__search-clear:focus-visible,
+    .pagefind-ui__button:focus-visible,
+    .pagefind-ui__result-title a:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    .pagefind-ui__search-clear {
+      top: 2px;
+      right: 2px;
+      height: 36px;
+      font-size: 12px;
+      line-height: 16px;
+      border-radius: 6px;
+    }
+
+    .pagefind-ui__result-nested .pagefind-ui__result-link {
+      font-size: 14px;
+      line-height: 20px;
+      font-weight: 600;
+    }
+
+    .pagefind-ui__button {
+      height: 40px;
+      font-size: 14px;
+      font-weight: 500;
+      border-radius: 6px;
+    }
+
+    .pagefind-ui__message {
+      font-size: 13px;
+      line-height: 20px;
+      font-weight: 600;
+    }
+
+    .pagefind-ui__result {
+      border-radius: 6px;
+    }
+
+    .pagefind-ui__result-title {
+      font-size: 16px;
+      line-height: 24px;
+      font-weight: 600;
     }
 
     .pagefind-ui__result-title a {
       color: var(--accent);
-      outline-offset: 1px;
-      outline-color: var(--accent);
-      text-decoration-style: dashed;
+      text-decoration-style: solid;
       text-underline-offset: 4px;
     }
 
-    .pagefind-ui__result-title a:focus-visible,
-    .pagefind-ui__search-clear:focus-visible {
+    .pagefind-ui__result-title a:focus-visible {
       text-decoration-line: none;
-      outline-width: 2px;
-      outline-style: dashed;
+    }
+
+    .pagefind-ui__result-excerpt {
+      font-size: 14px;
+      line-height: 20px;
+    }
+
+    .pagefind-ui__result-tag,
+    .pagefind-ui__filter-label,
+    .pagefind-ui__filter-name {
+      font-size: 12px;
+      line-height: 16px;
+    }
+
+    .pagefind-ui__result-excerpt mark,
+    .pagefind-ui__result-title mark {
+      font-style: normal;
+      font-weight: 500;
+      background-color: color-mix(in srgb, var(--accent) 20%, transparent);
+      color: inherit;
+      border-radius: 2px;
     }
 
     .pagefind-ui__result:last-of-type {

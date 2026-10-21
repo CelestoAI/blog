@@ -25,13 +25,101 @@ html[data-theme="dark"] {
 }
 
 @theme inline {
-  --font-sans: var(--font-instrument-sans);
-  --font-mono: var(--font-google-sans-code);
+  --font-sans: var(--font-geist);
+  --font-mono: var(--font-geist-mono);
   --color-background: var(--background);
+  --color-surface: var(--surface);
   --color-foreground: var(--foreground);
   --color-accent: var(--accent);
   --color-muted: var(--muted);
   --color-border: var(--border);
+}
+
+/* Geist design system (https://vercel.com/geist). Typography follows
+   https://vercel.com/geist/typography: use text-heading-N, text-label-N, text-copy-N and
+   text-button-N instead of raw sizes. Geist publishes the class names and sizes but no
+   line-height or tracking, so those pairs are ours. Strong is font-semibold. Mono is
+   font-mono with a label or copy step at 12, 13, or 14. Geist has no italic. */
+@theme {
+  --text-heading-72: 72px;
+  --text-heading-72--line-height: 76px;
+  --text-heading-72--letter-spacing: -0.03em;
+  --text-heading-64: 64px;
+  --text-heading-64--line-height: 68px;
+  --text-heading-64--letter-spacing: -0.03em;
+  --text-heading-56: 56px;
+  --text-heading-56--line-height: 60px;
+  --text-heading-56--letter-spacing: -0.03em;
+  --text-heading-48: 48px;
+  --text-heading-48--line-height: 52px;
+  --text-heading-48--letter-spacing: -0.025em;
+  --text-heading-40: 40px;
+  --text-heading-40--line-height: 44px;
+  --text-heading-40--letter-spacing: -0.025em;
+  --text-heading-32: 32px;
+  --text-heading-32--line-height: 40px;
+  --text-heading-32--letter-spacing: -0.02em;
+  --text-heading-24: 24px;
+  --text-heading-24--line-height: 32px;
+  --text-heading-24--letter-spacing: -0.015em;
+  --text-heading-20: 20px;
+  --text-heading-20--line-height: 28px;
+  --text-heading-16: 16px;
+  --text-heading-16--line-height: 24px;
+  --text-heading-14: 14px;
+  --text-heading-14--line-height: 20px;
+
+  --text-label-20: 20px;
+  --text-label-20--line-height: 24px;
+  --text-label-18: 18px;
+  --text-label-18--line-height: 20px;
+  --text-label-16: 16px;
+  --text-label-16--line-height: 20px;
+  --text-label-14: 14px;
+  --text-label-14--line-height: 20px;
+  --text-label-13: 13px;
+  --text-label-13--line-height: 16px;
+  --text-label-12: 12px;
+  --text-label-12--line-height: 16px;
+
+  --text-copy-24: 24px;
+  --text-copy-24--line-height: 36px;
+  --text-copy-20: 20px;
+  --text-copy-20--line-height: 36px;
+  --text-copy-18: 18px;
+  --text-copy-18--line-height: 28px;
+  --text-copy-16: 16px;
+  --text-copy-16--line-height: 24px;
+  --text-copy-14: 14px;
+  --text-copy-14--line-height: 20px;
+  --text-copy-13: 13px;
+  --text-copy-13--line-height: 18px;
+
+  --text-button-16: 16px;
+  --text-button-16--line-height: 20px;
+  --text-button-14: 14px;
+  --text-button-14--line-height: 20px;
+  --text-button-12: 12px;
+  --text-button-12--line-height: 16px;
+
+  /* Geist materials: 6px base and small surfaces, 12px medium and large surfaces, menus and
+     modals, 16px fullscreen. rounded-md and rounded-lg are the 6px base. */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 6px;
+  --radius-xl: 12px;
+  --radius-2xl: 16px;
+  --radius-material-base: 6px;
+  --radius-material-medium: 12px;
+  --radius-material-menu: 12px;
+  --radius-material-tooltip: 6px;
+  --radius-material-modal: 12px;
+  --radius-material-fullscreen: 16px;
+
+  /* One control height scale: h-control-sm, h-control, h-control-lg. */
+  --spacing-control-sm: 2rem;
+  --spacing-control: 2.5rem;
+  --spacing-control-lg: 3rem;
 }
 
 @layer base {
@@ -48,7 +136,7 @@ html[data-theme="dark"] {
   }
   a,
   button {
-    @apply outline-offset-1 outline-accent focus-visible:no-underline focus-visible:outline-2 focus-visible:outline-dashed;
+    @apply outline-offset-2 outline-accent focus-visible:no-underline focus-visible:outline-2 focus-visible:outline-solid;
   }
   button:not(:disabled),
   [role="button"]:not(:disabled) {
@@ -113,19 +201,48 @@ html[data-theme="dark"] {
 }
 
 body {
-  line-height: 1.65;
+  line-height: 1.5;
   -webkit-font-smoothing: antialiased;
 }
 h1,
 h2,
-h3 {
-  line-height: 1.2;
-  letter-spacing: -0.035em;
+h3,
+h4 {
+  text-wrap: balance;
 }
+
+/* Geist and Geist Mono have no italic, so the browser would synthesize a slant. Syntax
+   highlighters style comments with inline font-style: italic; flatten it. */
+pre span {
+  font-style: normal !important;
+}
+
+/* One focus ring, one touch-target rule. */
+@utility focus-ring {
+  &:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+}
+@utility touch-target {
+  @media (pointer: coarse) {
+    position: relative;
+    &::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: max(100%, 44px);
+      height: max(100%, 44px);
+      transform: translate(-50%, -50%);
+    }
+  }
+}
+
 .eyebrow {
-  font-family: var(--font-google-sans-code), monospace;
-  font-size: 11px;
-  letter-spacing: 0.15em;
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: color-mix(in srgb, var(--foreground) 60%, transparent);
 }
@@ -133,19 +250,44 @@ h3 {
   padding: 88px 0 54px;
   position: relative;
 }
+/* Stepped Geist heading sizes, not a fluid size between steps. */
 .blog-hero h1 {
-  font-family: var(--font-instrument-serif), Georgia, serif;
-  font-size: clamp(48px, 6vw, 80px);
+  font-size: 40px;
   font-weight: 400;
-  font-style: normal;
-  line-height: 1.05;
-  letter-spacing: -0.045em;
+  line-height: 44px;
+  letter-spacing: -0.025em;
+}
+@media (min-width: 640px) {
+  .blog-hero h1 {
+    font-size: 48px;
+    line-height: 52px;
+  }
+}
+@media (min-width: 768px) {
+  .blog-hero h1 {
+    font-size: 56px;
+    line-height: 60px;
+    letter-spacing: -0.03em;
+  }
+}
+@media (min-width: 1024px) {
+  .blog-hero h1 {
+    font-size: 64px;
+    line-height: 68px;
+  }
+}
+@media (min-width: 1280px) {
+  .blog-hero h1 {
+    font-size: 72px;
+    line-height: 76px;
+  }
 }
 
 .hero-description {
   max-width: 540px;
   margin-top: 24px;
   font-size: 18px;
+  line-height: 28px;
   color: color-mix(in srgb, var(--foreground) 60%, transparent);
 }
 .hero-bottom {
@@ -159,6 +301,7 @@ h3 {
   align-items: center;
   gap: 8px;
   font-size: 13px;
+  line-height: 16px;
   white-space: nowrap;
   color: color-mix(in srgb, var(--foreground) 65%, transparent);
 }
@@ -171,11 +314,13 @@ h3 {
   border-top: 1px solid var(--border);
 }
 .section-heading h2 {
-  font-size: 21px;
+  font-size: 20px;
+  line-height: 28px;
   font-weight: 500;
 }
 .section-heading a {
   font-size: 13px;
+  line-height: 16px;
   opacity: 0.65;
 }
 .featured-grid {
@@ -184,13 +329,14 @@ h3 {
   gap: 20px;
   margin-bottom: 52px;
 }
+/* A medium surface: 12px. */
 .feature-card {
   position: relative;
   display: flex;
   flex-direction: column;
   padding: 30px;
   border: 1px solid var(--border);
-  border-radius: 16px;
+  border-radius: 12px;
   background: var(--surface);
   transition: border-color 0.2s;
 }
@@ -199,7 +345,9 @@ h3 {
 }
 .feature-card h3 {
   margin-top: 18px;
-  font-size: 25px;
+  font-size: 24px;
+  line-height: 32px;
+  letter-spacing: -0.015em;
   font-weight: 500;
 }
 .feature-card h3 a:hover {
@@ -209,7 +357,7 @@ h3 {
   content: "";
   position: absolute;
   inset: 0;
-  border-radius: 16px;
+  border-radius: 12px;
 }
 .feature-card h3 a:focus-visible {
   outline: none;
@@ -220,7 +368,8 @@ h3 {
 }
 .feature-card p {
   margin: 14px 0 28px;
-  font-size: 15px;
+  font-size: 14px;
+  line-height: 20px;
   color: color-mix(in srgb, var(--foreground) 60%, transparent);
 }
 .feature-meta {
@@ -231,9 +380,9 @@ h3 {
   margin-top: auto;
   padding-top: 18px;
   border-top: 1px solid var(--border);
-  font-family: var(--font-google-sans-code), monospace;
   font-variant-numeric: tabular-nums;
   font-size: 12px;
+  line-height: 16px;
   color: color-mix(in srgb, var(--foreground) 65%, transparent);
   flex-wrap: wrap;
 }
@@ -263,7 +412,9 @@ h3 {
 }
 .post-card h2,
 .post-card h3 {
-  font-size: 23px;
+  font-size: 24px;
+  line-height: 32px;
+  letter-spacing: -0.015em;
   font-weight: 500;
 }
 .post-card > a {
@@ -275,7 +426,8 @@ h3 {
 .post-card p {
   margin-top: 12px;
   max-width: 760px;
-  font-size: 15px;
+  font-size: 14px;
+  line-height: 20px;
   opacity: 0.65;
 }
 .post-card .post-date {
@@ -288,9 +440,9 @@ h3 {
   align-items: center;
   gap: 8px 24px;
   margin-top: 12px;
-  font-family: var(--font-google-sans-code), monospace;
   font-variant-numeric: tabular-nums;
   font-size: 12px;
+  line-height: 16px;
   color: color-mix(in srgb, var(--foreground) 65%, transparent);
 }
 .post-meta time,
@@ -311,20 +463,27 @@ h3 {
 }
 .product-note h2 {
   font-size: 20px;
+  line-height: 28px;
   font-weight: 400;
 }
 .product-note p {
   opacity: 0.6;
   font-size: 14px;
+  line-height: 20px;
   margin-top: 8px;
 }
+/* A default-size control: 40px tall, 6px radius, 14px button text. */
 .product-note > a {
-  border-radius: 8px;
-  padding: 10px 20px;
+  display: inline-flex;
+  align-items: center;
+  height: 2.5rem;
+  border-radius: 6px;
+  padding: 0 16px;
   background: var(--accent);
   color: var(--background);
   font-size: 14px;
-  font-weight: 600;
+  line-height: 20px;
+  font-weight: 500;
   white-space: nowrap;
 }
 #main-content[data-pagefind-body],
@@ -333,20 +492,26 @@ h3 {
 }
 #main-content[data-pagefind-body] > h1 {
   color: var(--foreground);
-  font-size: clamp(32px, 4vw, 46px);
+  font-size: 32px;
+  line-height: 40px;
+  letter-spacing: -0.02em;
   font-weight: 500;
   margin-bottom: 20px;
 }
+@media (min-width: 640px) {
+  #main-content[data-pagefind-body] > h1 {
+    font-size: 40px;
+    line-height: 44px;
+    letter-spacing: -0.025em;
+  }
+}
 .app-prose {
-  font-size: 17px;
-  line-height: 1.85;
+  font-size: 16px;
+  line-height: 1.75;
 }
 .app-prose pre {
-  border-radius: 10px;
+  border-radius: 6px;
   font-size: 13px;
-}
-.app-prose h3 {
-  font-style: normal;
 }
 @media (min-width: 640px) {
   .app-layout {
@@ -364,6 +529,7 @@ h3 {
   }
   .hero-description {
     font-size: 16px;
+    line-height: 24px;
   }
   .featured-grid {
     grid-template-columns: 1fr;
@@ -373,7 +539,9 @@ h3 {
     padding: 24px;
   }
   .feature-card h3 {
-    font-size: 23px;
+    font-size: 20px;
+    line-height: 28px;
+    letter-spacing: 0;
   }
   .product-note {
     align-items: start;
@@ -388,11 +556,8 @@ h3 {
 
 /* Restrict brand color to the Celesto mark. */
 .blog-hero h1 span {
-  font-family: var(--font-instrument-serif), Georgia, serif;
   font-size: 1em;
-  font-style: normal;
   color: color-mix(in srgb, var(--foreground) 65%, transparent);
-  letter-spacing: -0.045em;
 }
 .product-note > a {
   background: var(--muted);

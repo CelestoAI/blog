@@ -34,25 +34,20 @@ async function loadGoogleFonts(
 ): Promise<
   Array<{ name: string; data: ArrayBuffer; weight: number; style: string }>
 > {
+  // Static instances are requested per weight (explicit wght) so satori
+  // receives TTF files it can parse.
   const fontsConfig = [
-    {
-      name: "IBM Plex Mono",
-      font: "IBM+Plex+Mono",
-      weight: 400,
-      style: "normal",
-    },
-    {
-      name: "IBM Plex Mono",
-      font: "IBM+Plex+Mono",
-      weight: 700,
-      style: "bold",
-    },
+    { name: "Geist", font: "Geist", weight: 400 },
+    { name: "Geist", font: "Geist", weight: 500 },
+    { name: "Geist", font: "Geist", weight: 600 },
+    { name: "Geist", font: "Geist", weight: 700 },
+    { name: "Geist Mono", font: "Geist+Mono", weight: 400 },
   ];
 
   const fonts = await Promise.all(
-    fontsConfig.map(async ({ name, font, weight, style }) => {
+    fontsConfig.map(async ({ name, font, weight }) => {
       const data = await loadGoogleFont(font, text, weight);
-      return { name, data, weight, style };
+      return { name, data, weight, style: "normal" };
     })
   );
 

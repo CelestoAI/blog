@@ -69,9 +69,10 @@ import { BLOG_TOPICS } from "@/utils/blogTopics";
     align-items: center;
     gap: 10px;
     width: 230px;
-    padding: 10px 14px;
+    height: 40px;
+    padding: 0 12px;
     border: 1px solid var(--border);
-    border-radius: 14px;
+    border-radius: 6px;
     color: color-mix(in srgb, var(--foreground) 65%, transparent);
   }
   .blog-search:focus-within {
@@ -82,6 +83,7 @@ import { BLOG_TOPICS } from "@/utils/blogTopics";
     min-width: 0;
     background: transparent;
     font-size: 14px;
+    line-height: 20px;
     color: var(--foreground);
     outline: none;
   }
@@ -91,21 +93,25 @@ import { BLOG_TOPICS } from "@/utils/blogTopics";
   }
   .blog-search kbd {
     flex-shrink: 0;
-    border-radius: 5px;
+    border-radius: 4px;
     background: var(--muted);
-    padding: 1px 5px;
-    font-size: 11px;
+    padding: 2px 6px;
+    font-family: var(--font-sans);
+    font-size: 12px;
+    line-height: 16px;
   }
   .subscribe-button {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
-    padding: 10px 16px;
+    height: 40px;
+    padding: 0 16px;
     border: 1px solid var(--border);
-    border-radius: 14px;
+    border-radius: 6px;
     background: var(--surface);
     font-size: 14px;
+    line-height: 20px;
     font-weight: 500;
     white-space: nowrap;
   }
@@ -121,13 +127,26 @@ import { BLOG_TOPICS } from "@/utils/blogTopics";
   .blog-topics a {
     display: inline-flex;
     align-items: center;
-    min-height: 36px;
-    padding: 6px 15px;
+    position: relative;
+    height: 32px;
+    padding: 0 12px;
     border: 1px solid var(--border);
     border-radius: 999px;
     background: var(--surface);
     font-size: 14px;
+    line-height: 20px;
     color: color-mix(in srgb, var(--foreground) 65%, transparent);
+  }
+  @media (pointer: coarse) {
+    .blog-topics a::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 50%;
+      height: 44px;
+      transform: translateY(-50%);
+    }
   }
   .blog-topics a:hover {
     color: var(--foreground);
@@ -154,11 +173,7 @@ import { BLOG_TOPICS } from "@/utils/blogTopics";
     }
     .blog-search input {
       font-size: 16px;
-    }
-    .blog-search,
-    .subscribe-button,
-    .blog-topics a {
-      min-height: 44px;
+      line-height: 20px;
     }
     .blog-search kbd {
       display: none;
