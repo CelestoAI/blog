@@ -73,3 +73,8 @@ window.posthog.init("phc_vjIHlkZ5iOYWdZx0LXiifLKGl53QehS8LjudWiuSRND", {
 });
 
 window.posthog.capture("$pageview");
+
+// Client-side navigations don't reload the page, so capture their pageviews here.
+document.addEventListener("astro:after-swap", () => {
+  window.posthog.capture("$pageview");
+});

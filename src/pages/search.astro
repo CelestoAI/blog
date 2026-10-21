@@ -86,7 +86,7 @@ const backUrl = SITE.showBackButton ? `${Astro.url.pathname}` : "/";
     });
   }
 
-  initSearch();
+  document.addEventListener("astro:page-load", initSearch);
 </script>
 
 <style is:global>

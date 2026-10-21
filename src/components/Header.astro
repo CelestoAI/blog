@@ -317,5 +317,5 @@ const links = [
     };
     document.addEventListener("pointerdown", closeOutside);
   }
-  setupNavigation();
+  document.addEventListener("astro:page-load", setupNavigation);
 </script>
