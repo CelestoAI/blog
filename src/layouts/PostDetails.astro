@@ -205,12 +205,15 @@ const nextPost =
     // Append the progress container to the document body or any other desired parent element
     document.body.appendChild(progressContainer);
   }
-  createProgressBar();
+  document.addEventListener("astro:page-load", createProgressBar);
 
   /** Update the progress bar
    *  when user scrolls */
   function updateScrollProgress() {
-    document.addEventListener("scroll", () => {
+    document.addEventListener("scroll", onProgressScroll);
+  }
+  function onProgressScroll() {
+    {
       const winScroll =
         document.body.scrollTop || document.documentElement.scrollTop;
       const height =
@@ -223,9 +226,9 @@ const nextPost =
           myBar.style.width = scrolled + "%";
         }
       }
-    });
+    }
   }
-  updateScrollProgress();
+  document.addEventListener("astro:page-load", updateScrollProgress);
 
   /** Attaches links to headings in the document,
    *  allowing sharing of sections easily */
@@ -247,7 +250,7 @@ const nextPost =
       heading.appendChild(link);
     }
   }
-  addHeadingLinks();
+  document.addEventListener("astro:page-load", addHeadingLinks);
 
   /** Attaches copy buttons to code blocks in the document,
    * allowing users to copy code easily. */
@@ -298,5 +301,5 @@ const nextPost =
       }, 700);
     }
   }
-  attachCopyButtons();
+  document.addEventListener("astro:page-load", attachCopyButtons);
 </script>

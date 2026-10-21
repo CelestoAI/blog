@@ -83,8 +83,11 @@ function setThemeFeature(): void {
   });
 }
 
-// Set up theme features after page load
-setThemeFeature();
+// Set up theme features on every page load, including client-side navigations
+document.addEventListener("astro:page-load", setThemeFeature);
+
+// The swap replaces <html>, so re-apply the theme before the new page paints
+document.addEventListener("astro:after-swap", reflectPreference);
 
 // sync with system changes
 window

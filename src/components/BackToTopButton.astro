@@ -37,6 +37,7 @@ import IconArrowNarrowUp from "@/assets/icons/IconArrowNarrowUp.svg";
 <script>
   /** Scrolls the document to the top when
    * the "Back to Top" button is clicked. */
+  let onScroll: (() => void) | null = null;
   function backToTop() {
     const rootElement = document.documentElement;
     const btnContainer =
@@ -79,7 +80,8 @@ import IconArrowNarrowUp from "@/assets/icons/IconArrowNarrowUp.svg";
     };
 
     let ticking = false;
-    document.addEventListener("scroll", () => {
+    if (onScroll) document.removeEventListener("scroll", onScroll);
+    onScroll = () => {
       if (!ticking) {
         window.requestAnimationFrame(() => {
           handleScroll();
@@ -87,7 +89,9 @@ import IconArrowNarrowUp from "@/assets/icons/IconArrowNarrowUp.svg";
         });
         ticking = true;
       }
-    });
+    };
+    document.addEventListener("scroll", onScroll);
+    handleScroll();
   }
-  backToTop();
+  document.addEventListener("astro:page-load", backToTop);
 </script>

@@ -34,5 +34,5 @@ const base = `${SITE.basePath}/`;
     }
   }
 
-  updateGoBackUrl();
+  document.addEventListener("astro:page-load", updateGoBackUrl);
 </script>
