@@ -86,7 +86,7 @@ Pagefind is used for search. Since the site uses SSR, pages must be explicitly p
 
 ## Design system
 
-*   The site uses Geist and Geist Mono via Astro's Fonts API (`astro.config.ts`).
+*   The site uses Geist and Geist Mono from the `geist` npm package, served through Astro's local font provider (`astro.config.ts`); the CSP keeps `font-src 'self'`.
 *   Type uses the `text-heading-*`, `text-label-*`, `text-copy-*` and `text-button-*` utilities in `src/styles/global.css`. Sizes: 72, 64, 56, 48, 40, 32, 24, 20, 18, 16, 14, 13, 12. No raw font sizes.
 *   No negative tracking under 24px. No italics. Mono only for code and IDs.
 *   Radii: 6px base, 12px medium. Control heights: 32/40/48px.

@@ -7,6 +7,7 @@ This repository contains the source code for the official [Celesto AI Blog](http
 *   **Purpose:** To share insights, research, and updates about Celesto AI and the AI agent ecosystem.
 *   **Framework:** Astro (v5+) using the [AstroPaper](https://github.com/satnaing/astro-paper) theme as a base.
 *   **Styling:** Tailwind CSS (v4).
+    *   **Design system:** Geist and Geist Mono from the `geist` package (Astro local font provider). Use the `text-heading-*`, `text-label-*`, `text-copy-*` and `text-button-*` utilities in `src/styles/global.css` (sizes 72, 64, 56, 48, 40, 32, 24, 20, 18, 16, 14, 13, 12; no raw sizes, no italics, no negative tracking under 24px). Radii 6px base and 12px medium; control heights 32/40/48px.
 *   **Search:** [Pagefind](https://pagefind.app/) for static, client-side search.
 *   **Deployment:** Cloudflare Workers (SSR mode) via the `@astrojs/cloudflare` adapter.
 *   **Architecture:**
