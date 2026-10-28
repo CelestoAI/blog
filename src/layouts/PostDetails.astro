@@ -53,9 +53,7 @@ if (!ogImageUrl && SITE.dynamicOgImage) {
 }
 
 // Resolve OG image URL (or fallback to SITE.ogImage / default `og.png`)
-const ogImage = ogImageUrl
-  ? new URL(ogImageUrl, Astro.url.origin).href
-  : undefined;
+const ogImage = ogImageUrl ? new URL(ogImageUrl, SITE.website).href : undefined;
 
 const layoutProps = {
   title: `${title} | ${SITE.title}`,
