@@ -52,6 +52,22 @@ description: A short summary of the blog post for SEO and previews.
 | `npm run format`  | Formats code with Prettier                        |
 | `npm run lint`    | Lints code with ESLint                            |
 
+## Social preview images
+
+Each post without an `ogImage` override gets a 1200 × 630 PNG at
+`/blog/posts/<post-path>/index.png`. `npm run build` creates these files with
+Satori, Resvg, and the installed Geist fonts; no external font service or API key
+is required. Open Graph and X metadata select the generated image automatically.
+The site fallback is `/blog/og.png`.
+
+Cards use the Celesto logo, the first post tag as a topic label, the title, and
+the SEO description. Long titles and descriptions have line limits to keep the
+card within its fixed canvas.
+
+Set `ogImage` in a post's frontmatter to use a custom local asset or absolute
+image URL. Edit `src/utils/og-templates/post.js` to change the shared card design.
+Social networks may cache old previews after a deploy.
+
 ## 🤝 Contribution
 
 We are currently not accepting external Pull Requests (PRs) unless you have discussed your proposal with the team first.
