@@ -228,13 +228,13 @@ const nextPost =
   }
   document.addEventListener("astro:page-load", updateScrollProgress);
 
-  /** Attaches links to headings in the document,
-   *  allowing sharing of sections easily */
+  /** Limit section links to article content: this listener survives page swaps. */
   function addHeadingLinks() {
     const headings = Array.from(
-      document.querySelectorAll("h2, h3, h4, h5, h6")
+      document.querySelectorAll("#article :is(h2, h3, h4, h5, h6)[id]")
     );
     for (const heading of headings) {
+      if (heading.querySelector(":scope > .heading-link")) continue;
       heading.classList.add("group");
       const link = document.createElement("a");
       link.className =
