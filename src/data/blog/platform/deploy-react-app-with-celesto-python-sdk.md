@@ -1,5 +1,5 @@
 ---
-author: Celesto AI
+author: Aniket Maurya
 pubDatetime: 2026-10-19T18:00:00Z
 title: "Deploy a React app with the Celesto Python SDK"
 featured: true
@@ -18,74 +18,11 @@ This guide uses Python to control the computer and Vite to build the React app. 
 
 ![React and Vite starter app on Celesto, with the counter at 1 after a click](./images/react-sdk-cloud-preview.jpg)
 
-_The React starter app deployed with the script below. The counter responds to a click through the public HTTPS preview._
+The React starter app deployed with the script below. The counter responds to a click through the public HTTPS preview.
 
-## Paste instruction to AI agent
+![A local Python script uses the Celesto SDK to control a cloud computer. A teammate’s browser sends HTTPS requests through the public route to serve on port 3000, which reads the Vite dist files.](./images/react-sdk-preview-architecture.svg)
 
-```text
-Deploy my app to a public Celesto Cloud preview through the
-Python SDK. Use the project directory or repository I provide. If neither
-is available, ask me for one. Complete the deploy and verify the result.
-
-Use this guide for the Celesto SDK calls and computer lifecycle. Adapt
-the app commands to my project's framework and runtime:
-https://celesto.ai/blog/posts/platform/deploy-react-app-with-celesto-python-sdk/
-
-1. Inspect the README, manifests, lockfiles, and deployment configuration.
-   Identify the framework, runtime versions, install and build commands,
-   start command, HTTP port, required environment variables, and services
-   such as databases. Use the actual app and intended Git revision.
-   Account for local changes; do not silently deploy an older revision.
-   Ask only for required details you cannot infer from the project.
-
-2. Check for Python 3.11 or later. Create an isolated virtual environment
-   and install celesto==0.1.4. Use saved Celesto credentials or
-   CELESTO_API_KEY. If neither exists, ask me to authenticate with
-   celesto auth login or set CELESTO_API_KEY in the environment where
-   you run the SDK. Never request or print API keys in chat.
-
-3. Use CloudComputer with the coding-agent template and a persistent
-   lifetime. Reuse this project's saved computer ID if one exists, and
-   resume the computer if it is stopped. Otherwise create one and save
-   its ID immediately in an untracked local file. Transfer the intended
-   source revision without local secrets, dependency directories, or
-   credentials. Use authorized Git access for a private repository.
-
-4. Ask me to supply required secrets through the remote environment's
-   secret store or a protected file outside the repository and served
-   directories. Pass them only to the server processes that need them.
-   Never expose secrets in chat, logs, frontend code, or build output.
-   Use isolated preview data and keep databases and internal services
-   private. Ask before any destructive migration or use of production data.
-
-5. Install the required runtimes and dependencies on the cloud computer.
-   Build the app if required, and use its production start command rather
-   than a development server. For a static app, serve only its public
-   assets or build output, never the repository root; add a route fallback
-   only if the app needs one. For an API or server-rendered app, start its
-   server. Bind the public HTTP entry point to 0.0.0.0 on an available
-   port. Keep processes active after the command session ends and save
-   their logs. Check every command's exit code.
-
-6. Verify the app's HTTP response inside the computer, then publish its
-   HTTP entry port with publish_port. Wait for status published and use
-   the returned URL. Configure public URLs, origins, proxy routes, and
-   allowed hosts for that exact preview hostname. Rebuild or restart if
-   needed; browser code must not depend on localhost APIs. Check the public
-   page or API and a representative user flow. For a UI, verify assets and
-   route refreshes in a browser if available. Report failures, dependency
-   advisories, and any checks you could not perform. Do not claim success
-   from a URL alone.
-
-7. Leave the successful preview active and close only the SDK connection.
-   Return the public URL, computer ID, deployed revision, verification
-   results, and exact commands to update, stop, resume, or delete it.
-   The resume commands must also restart app processes and verify the
-   public route; republish the port if needed.
-   On failure, report the failed step and any resources left active.
-```
-
-For a React example you can deploy directly from your terminal, follow the steps below.
+The SDK controls the computer; browser traffic uses the public route. Your local Python process does not serve the app.
 
 ## 1. Install the SDK and authenticate
 
@@ -277,3 +214,68 @@ finally:
 The script removes the local state file only after deletion succeeds. You can then run `deploy.py` to create another preview.
 
 Treat the preview URL as public. Add app-level authentication if the app exposes private data, and keep API secrets on a backend: any value bundled into the React app is visible to visitors.
+
+## Optional: Ask your agent to deploy an existing project
+
+```text
+Deploy my app to a public Celesto Cloud preview through the
+Python SDK. Use the project directory or repository I provide. If neither
+is available, ask me for one. Complete the deploy and verify the result.
+
+Use this guide for the Celesto SDK calls and computer lifecycle. Adapt
+the app commands to my project's framework and runtime:
+https://celesto.ai/blog/posts/platform/deploy-react-app-with-celesto-python-sdk/
+
+1. Inspect the README, manifests, lockfiles, and deployment configuration.
+   Identify the framework, runtime versions, install and build commands,
+   start command, HTTP port, required environment variables, and services
+   such as databases. Use the actual app and intended Git revision.
+   Account for local changes; do not silently deploy an older revision.
+   Ask only for required details you cannot infer from the project.
+
+2. Check for Python 3.11 or later. Create an isolated virtual environment
+   and install celesto==0.1.4. Use saved Celesto credentials or
+   CELESTO_API_KEY. If neither exists, ask me to authenticate with
+   celesto auth login or set CELESTO_API_KEY in the environment where
+   you run the SDK. Never request or print API keys in chat.
+
+3. Use CloudComputer with the coding-agent template and a persistent
+   lifetime. Reuse this project's saved computer ID if one exists, and
+   resume the computer if it is stopped. Otherwise create one and save
+   its ID immediately in an untracked local file. Transfer the intended
+   source revision without local secrets, dependency directories, or
+   credentials. Use authorized Git access for a private repository.
+
+4. Ask me to supply required secrets through the remote environment's
+   secret store or a protected file outside the repository and served
+   directories. Pass them only to the server processes that need them.
+   Never expose secrets in chat, logs, frontend code, or build output.
+   Use isolated preview data and keep databases and internal services
+   private. Ask before any destructive migration or use of production data.
+
+5. Install the required runtimes and dependencies on the cloud computer.
+   Build the app if required, and use its production start command rather
+   than a development server. For a static app, serve only its public
+   assets or build output, never the repository root; add a route fallback
+   only if the app needs one. For an API or server-rendered app, start its
+   server. Bind the public HTTP entry point to 0.0.0.0 on an available
+   port. Keep processes active after the command session ends and save
+   their logs. Check every command's exit code.
+
+6. Verify the app's HTTP response inside the computer, then publish its
+   HTTP entry port with publish_port. Wait for status published and use
+   the returned URL. Configure public URLs, origins, proxy routes, and
+   allowed hosts for that exact preview hostname. Rebuild or restart if
+   needed; browser code must not depend on localhost APIs. Check the public
+   page or API and a representative user flow. For a UI, verify assets and
+   route refreshes in a browser if available. Report failures, dependency
+   advisories, and any checks you could not perform. Do not claim success
+   from a URL alone.
+
+7. Leave the successful preview active and close only the SDK connection.
+   Return the public URL, computer ID, deployed revision, verification
+   results, and exact commands to update, stop, resume, or delete it.
+   The resume commands must also restart app processes and verify the
+   public route; republish the port if needed.
+   On failure, report the failed step and any resources left active.
+```

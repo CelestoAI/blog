@@ -1,5 +1,5 @@
 ---
-author: Celesto AI
+author: Aniket Maurya
 pubDatetime: 2026-10-28T21:00:00Z
 title: "5 Tips to Reduce CI Time When You Code with AI Agents"
 slug: reduce-ci-time-with-ai-agents
@@ -43,6 +43,9 @@ jobs:
       !github.event.pull_request.draft &&
       contains(github.event.pull_request.labels.*.name, 'ci:full') &&
       (github.event.action != 'labeled' || github.event.label.name == 'ci:full')
+    concurrency:
+      group: ${{ github.workflow }}-integration-${{ github.event.pull_request.number }}
+      cancel-in-progress: true
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -63,7 +66,7 @@ Treat this as a cost control, not proof that tests passed. A [job skipped by an 
 
 ## 2. Cancel obsolete runs with `cancel-in-progress`
 
-Once an agent pushes a new commit, results from the previous revision often lose their value. Add this at the top level of the PR workflow, alongside `on` and `jobs`:
+Once an agent pushes a new commit, results from the previous revision often lose their value. For an unconditional fast-check workflow, add this at the top level, alongside `on` and `jobs`:
 
 ```yaml
 concurrency:
@@ -73,7 +76,9 @@ concurrency:
 
 The group separates each workflow and PR. A new run for the same PR cancels its predecessor; runs for other PRs remain independent. The condition limits active cancellation to PR events. GitHub documents this behavior in its [concurrency reference](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax#concurrency).
 
-Add this to the label-gated workflow too. Avoid a repository-wide constant such as `group: ci`, which would make unrelated PRs compete for the same group. Keep release and deployment workflows separate if every run must complete.
+For the label-gated workflow in tip 1, keep concurrency on the `integration` job as shown there. An unrelated label still starts a workflow run, but the job's `if` condition skips it. Job-level concurrency lets that event skip the tests without cancellation of an active integration job. Workflow-level concurrency could cancel the active run before the replacement skips its only job. See GitHub's [job concurrency reference](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax#jobsjob_idconcurrency).
+
+Avoid a repository-wide constant such as `group: ci`, which would make unrelated PRs compete for the same group. Keep release and deployment workflows separate if every run must complete.
 
 Cancellation stops future work; it does not refund runner time already consumed.
 

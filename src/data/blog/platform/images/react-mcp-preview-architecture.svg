@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="440" height="762" viewBox="0 0 440 762" role="img" aria-labelledby="title desc">
+  <title id="title">React preview with Celesto MCP</title>
+  <desc id="desc">AI assistant uses Celesto MCP to create a Celesto cloud computer, run app commands, and publish a port. Separately, a teammate’s browser sends HTTPS requests through the public route to serve on port 3000. The server reads the Vite dist files inside the cloud computer.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 8 4 0 8" fill="none" stroke="#334155" stroke-width="1.5"/></marker>
+    <marker id="control-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 8 4 0 8" fill="none" stroke="#2563eb" stroke-width="1.5"/></marker>
+  </defs>
+  <rect width="440" height="762" rx="12" fill="#fff"/>
+  <g font-family="Geist, Arial, sans-serif" fill="#0f172a">
+    <text x="24" y="32" font-size="20" font-weight="600">Control path</text>
+    <rect x="24" y="56" width="260" height="64" rx="6" fill="#eff6ff" stroke="#93c5fd"/>
+    <text x="40" y="83" font-size="20" font-weight="600">AI assistant</text>
+    <text x="40" y="106" font-size="16" fill="#475569">Your machine</text>
+    <path d="M154 120V156" fill="none" stroke="#2563eb" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#control-arrow)"/>
+    <text x="170" y="145" font-size="16" fill="#1d4ed8">Tool calls</text>
+    <rect x="24" y="158" width="260" height="64" rx="6" fill="#eff6ff" stroke="#93c5fd"/>
+    <text x="40" y="185" font-size="20" font-weight="600">Celesto MCP</text>
+    <text x="40" y="208" font-size="16" fill="#475569">Remote MCP server</text>
+    <path d="M284 190H406V506" fill="none" stroke="#2563eb" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#control-arrow)"/>
+    <text x="306" y="218" font-size="16" fill="#1d4ed8">Create</text>
+    <text x="306" y="240" font-size="16" fill="#1d4ed8">Build</text>
+    <text x="306" y="262" font-size="16" fill="#1d4ed8">Serve</text>
+    <text x="306" y="284" font-size="16" fill="#1d4ed8">Publish port</text>
+    <text x="24" y="256" font-size="20" font-weight="600">Preview request path</text>
+    <rect x="24" y="270" width="260" height="64" rx="6" fill="#f8fafc" stroke="#cbd5e1"/>
+    <text x="40" y="309" font-size="20" font-weight="600">Teammate’s browser</text>
+    <path d="M154 334V384" fill="none" stroke="#334155" stroke-width="2" marker-end="url(#arrow)"/>
+    <text x="170" y="364" font-size="16" fill="#475569">HTTPS request</text>
+    <rect x="24" y="386" width="260" height="64" rx="6" fill="#f8fafc" stroke="#cbd5e1"/>
+    <text x="40" y="413" font-size="20" font-weight="600">Celesto public route</text>
+    <text x="40" y="436" font-size="16" fill="#475569">Public HTTPS URL</text>
+    <rect x="24" y="508" width="392" height="230" rx="12" fill="#f8fafc" stroke="#94a3b8"/>
+    <text x="40" y="538" font-size="20" font-weight="600">Celesto cloud computer</text>
+    <rect x="40" y="558" width="360" height="64" rx="6" fill="#fff" stroke="#cbd5e1"/>
+    <text x="56" y="585" font-size="20" font-weight="600">serve on port 3000</text>
+    <text x="56" y="608" font-size="16" fill="#475569">Listens on 0.0.0.0</text>
+    <path d="M284 418H340V556" fill="none" stroke="#334155" stroke-width="2" marker-end="url(#arrow)"/>
+    <path d="M220 622V666" fill="none" stroke="#334155" stroke-width="2" marker-end="url(#arrow)"/>
+    <text x="236" y="650" font-size="16" fill="#475569">Read files</text>
+    <rect x="40" y="668" width="360" height="50" rx="6" fill="#fff" stroke="#cbd5e1"/>
+    <text x="56" y="700" font-size="20">Vite build output: dist</text>
+  </g>
+</svg>

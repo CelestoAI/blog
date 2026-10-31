@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="700" viewBox="0 0 480 700" role="img" aria-labelledby="title description">
+  <title id="title">Docker Compose CI on a Celesto runner</title>
+  <desc id="description">GitHub Actions starts a job on a Celesto CI runner. The job's test step calls a Python API over HTTP. Within the Docker Compose network, the API sends SQL queries to PostgreSQL and blob requests to Azurite.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+      <path d="M0 0 8 4 0 8Z" fill="#3f67cf"/>
+    </marker>
+  </defs>
+  <rect width="480" height="700" rx="12" fill="#f8fafc"/>
+  <g font-family="Geist, Arial, sans-serif" fill="#172033" text-anchor="middle">
+    <rect x="110" y="24" width="260" height="64" rx="6" fill="#fff" stroke="#64748b"/>
+    <text x="240" y="63" font-size="20" font-weight="600">GitHub Actions</text>
+    <path d="M240 88V140" fill="none" stroke="#3f67cf" stroke-width="2" marker-end="url(#arrow)"/>
+    <text x="255" y="120" text-anchor="start" font-size="16">Start job</text>
+    <rect x="20" y="148" width="440" height="528" rx="12" fill="#fff" stroke="#64748b"/>
+    <text x="240" y="178" font-size="20" font-weight="600">Celesto CI runner</text>
+    <path d="M240 182V211" fill="none" stroke="#3f67cf" stroke-width="2" marker-end="url(#arrow)"/>
+    <rect x="110" y="218" width="260" height="64" rx="6" fill="#eef3ff" stroke="#3f67cf"/>
+    <text x="240" y="245" font-size="18" font-weight="600">Job test step</text>
+    <text x="240" y="267" font-size="16">Assert SQL and blob results</text>
+    <rect x="40" y="332" width="400" height="322" rx="12" fill="#f8fafc" stroke="#94a3b8" stroke-dasharray="6 4"/>
+    <text x="240" y="363" font-size="18" font-weight="600">Docker Compose network</text>
+    <path d="M240 282V310H420V429H348" fill="none" stroke="#3f67cf" stroke-width="2" marker-end="url(#arrow)"/>
+    <text x="260" y="302" text-anchor="start" font-size="16">HTTP /exercise</text>
+    <rect x="140" y="397" width="200" height="64" rx="6" fill="#eef3ff" stroke="#3f67cf"/>
+    <text x="240" y="425" font-size="20" font-weight="600">Python API</text>
+    <text x="240" y="448" font-size="16">Port 8080</text>
+    <path d="M190 461V495H140V550" fill="none" stroke="#3f67cf" stroke-width="2" marker-end="url(#arrow)"/>
+    <path d="M290 461V495H340V550" fill="none" stroke="#3f67cf" stroke-width="2" marker-end="url(#arrow)"/>
+    <text x="125" y="488" text-anchor="end" font-size="16">SQL</text>
+    <text x="355" y="488" text-anchor="start" font-size="16">Blob API</text>
+    <rect x="60" y="558" width="160" height="64" rx="6" fill="#fff" stroke="#64748b"/>
+    <text x="140" y="585" font-size="18" font-weight="600">PostgreSQL</text>
+    <text x="140" y="608" font-size="16">Rows and sum</text>
+    <rect x="260" y="558" width="160" height="64" rx="6" fill="#fff" stroke="#64748b"/>
+    <text x="340" y="585" font-size="18" font-weight="600">Azurite</text>
+    <text x="340" y="608" font-size="16">Blob roundtrip</text>
+  </g>
+</svg>
