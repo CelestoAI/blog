@@ -1,7 +1,7 @@
 ---
-author: Celesto AI
+author: Aniket Maurya
 pubDatetime: 2026-10-19T12:00:00Z
-title: "Deploy a React app on cloud"
+title: "Deploy a React App to a Public Preview with Celesto MCP"
 slug: deploy-a-react-app-on-cloud
 featured: true
 draft: false
@@ -24,6 +24,10 @@ This guide takes you from a React project to a public preview. It uses Vite to t
 - A React project in a Git repository, or the starter app below.
 
 MCP, the Model Context Protocol, lets your assistant call Celesto tools from your conversation. All app commands run on the cloud computer, so you do not need Node.js on your laptop.
+
+![A local AI assistant uses Celesto MCP to control a cloud computer. A teammate’s browser sends HTTPS requests through the public route to serve on port 3000, which reads the Vite dist files.](./images/react-mcp-preview-architecture.svg)
+
+MCP controls the computer; browser traffic uses the public route. Your assistant does not need to stay connected for the app to serve requests.
 
 ## 1. Connect your assistant to Celesto
 

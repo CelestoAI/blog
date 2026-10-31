@@ -1,5 +1,5 @@
 ---
-author: Celesto AI
+author: Aniket Maurya
 pubDatetime: 2026-10-18T01:35:00Z
 title: "Run Docker and Compose CI from Your Personal GitHub Account"
 featured: true
@@ -91,6 +91,10 @@ For your own application, replace the fixture checkout, build context, and self-
 <summary><strong>Prove SQL and blob operations work, not just service health</strong></summary>
 
 ## Fail the job when SQL or blob results are wrong
+
+The job’s test step calls the Python API on the Celesto runner. The API sends SQL queries to PostgreSQL and blob requests to Azurite over the Compose network.
+
+![GitHub Actions starts a job on a Celesto CI runner. Its test step calls the Python API over HTTP; the API sends SQL queries to PostgreSQL and blob requests to Azurite inside Docker Compose.](./images/docker-compose-ci-flow.svg)
 
 Keep the workflow through **Build the API image**. Add this `compose.yaml` to your repository root. The first checkout supplies this file; the second supplies the API fixture.
 
