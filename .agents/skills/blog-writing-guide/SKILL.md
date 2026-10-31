@@ -1,64 +1,75 @@
 ---
 name: blog-writing-guide
-description: Write, review, and improve blog posts for the Sentry engineering blog following Sentry's specific writing standards, voice, and quality bar. Use this skill whenever someone asks to write a blog post, draft a technical article, review blog content, improve a draft, write a product announcement, create an engineering deep-dive, or produce any written content destined for the Sentry blog or developer audience. Also trigger when the user mentions "blog post," "blog draft," "write-up," "announcement post," "engineering post," "deep dive," "postmortem," or asks for help with technical writing for Sentry. Even if the user just says "help me write about [feature/topic]" — if it sounds like it could become a Sentry blog post, use this skill.
+description: Write, review, and improve Celesto AI blog posts, technical guides, product announcements, and engineering deep dives. Apply Celesto’s voice, value-first structure, and technical quality standards to content for developers who build and run AI agents.
 ---
 
-# Sentry Blog Writing Skill
+# Celesto AI Blog Writing Skill
 
-This skill enforces Sentry's blog writing standards across every post — whether you're helping an engineer write their first blog post or a marketer draft a product announcement.
+Use this guide for the Celesto AI blog. Follow `AGENTS.md` for repository conventions; it takes precedence if this guide conflicts.
 
-**The bar:** Every Sentry blog post should be something a senior engineer would share in their team's Slack, or reference in a technical decision.
+Adapted from the [upstream blog guide](https://github.com/getsentry/skills/blob/main/skills/blog-writing-guide/SKILL.md). The editorial principles remain; brand voice, examples, and author conventions reflect Celesto.
 
-What follows are the core principles to internalize and apply to every piece of content.
+**The bar:** Every Celesto AI blog post should be something a senior engineer would share in their team's Slack, or reference in a technical decision.
 
-## The Sentry Voice
+Write for developers who build and run AI agents. Topics include cloud computers, sandboxes, agent tools, CI, and the wider AI agent ecosystem. Use the product name supported by the source, such as Celesto, Celesto Cloud, or Celesto CI. Do not treat those products as interchangeable.
 
-**We sound like:** A senior developer at a conference afterparty explaining something they're genuinely excited about — smart, specific, a little irreverent, deeply knowledgeable.
+## Celesto Editorial Rules
+
+- Lead with reader value: the result they can achieve, the cost they can avoid, or the decision they can make.
+- Disclose detail progressively: practical outcome, minimum context, concrete steps, then internals and trade-offs.
+- Avoid gerunds in authored prose and headings. Preserve exact API names, commands, identifiers, and quotations.
+- Cut fluff. Use realistic examples and comments only where they clarify intent.
+- Do not use italics. Use emphasis sparingly.
+
+## The Celesto AI Voice
+
+**We sound like:** An engineer who explains a useful result to another developer: direct, specific, practical, and technically precise.
 
 **We don't sound like:** A corporate blog, a press release, a sales deck, or an AI-generated summary.
 
-Be technically precise, opinionated, and direct. Humor is welcome but should serve the content, not replace it. Sarcasm works. One good joke per post is plenty.
+Support opinions with evidence and trade-offs. A conversational voice is welcome; do not force jokes or sarcasm.
 
-Use "we" (Sentry) and "you" (the reader). This is a conversation, not a paper.
+Use "we" for Celesto’s verified work and "you" for the reader. Use "I" for a named author’s own experience. Never invent team history, personal anecdotes, customer stories, or results.
 
 ## Banned Language
 
 Never use these. They are automatic red flags:
 
-- "We're excited/thrilled to announce" — just announce it
-- "Best-in-class" / "industry-leading" / "cutting-edge" — show, don't tell
-- "Seamless" / "seamlessly" — nothing is seamless
-- "Empower" / "leverage" / "unlock" — say what you actually mean
-- "Robust" — describe what makes it robust instead
-- "At [Company], we believe..." — just state the belief
-- "Streamline" — everyone is streamlining, stop
+- "We're excited/thrilled to announce". just announce it
+- "Best-in-class" / "industry-leading" / "cutting-edge". show, don't tell
+- "Seamless" / "seamlessly". nothing is seamless
+- "Empower" / "leverage" / "unlock". say what you actually mean
+- "Robust". describe what makes it robust instead
+- "At [Company], we believe...". just state the belief
+- "Streamline". everyone is streamlining, stop
 - Filler transitions: "That being said," "It's worth noting that," "At the end of the day," "Without further ado," "As you might know"
-- "In this blog post, we will explore..." — be direct, just start
+- "In this blog post, we will explore...". be direct, just start
 
-## The Opening (First 2-3 Sentences)
+## Value-First Intro (First 2-3 Sentences)
 
-The opening must do one of two things: **state the problem** or **state the conclusion**. Never start with background, company history, or hype.
+The first two or three sentences must establish the reader’s payoff. State a concrete outcome or a problem with its practical consequence, then explain what the post helps the reader do. Never start with background, company history, or hype.
 
-**Good:** "Two weeks before launch, we killed our entire metrics product. Here's why pre-aggregating time-series metrics breaks down for debugging, and how we rebuilt the system from scratch."
+**Good:** "A React app on your laptop is hard to share: teammates cannot open your localhost URL. This guide shows how to run the app on a Celesto cloud computer and share a public preview."
 
-**Bad:** "At Sentry, we're always looking for ways to improve the developer experience. Today, we're thrilled to share some exciting updates to our metrics product that we think you'll love."
+**Bad:** "At Celesto AI, we always look for ways to improve the developer experience. We’re thrilled to announce our latest cloud features."
 
 ## Structure: Follow the Reader's Questions
 
-Structure every post around what the reader is actually wondering, not your internal narrative:
+Start with the least context the reader needs. Add depth as questions arise; introduce each unfamiliar term before its mechanics. Structure posts around the reader’s questions:
 
 1. **What problem does this solve?** (1-2 paragraphs max)
-2. **How does it actually work?** Not buttons-you-click, but underlying technology. (Bulk of the post — be specific)
+2. **How does it actually work?** Not buttons-you-click, but underlying technology. (Bulk of the post. be specific)
 3. **What were the trade-offs or alternatives?** (This separates good from great)
 4. **How do I use/try/implement this?** (Concrete next steps)
 
 For engineering deep-dives, also address:
-5. **What did we try that didn't work?** (Builds trust)
+
+5. **What did we try that didn't work?** (Only when supported by the actual project history)
 6. **What are the known limitations?** (Shows intellectual honesty)
 
-## Formatting for Skimmability
+## Format for a Quick Scan
 
-People scroll. Shorter paragraphs are almost always better for keeping people reading.
+People scroll. Shorter paragraphs are almost always better for a quick scan.
 
 **Break paragraphs at contrast points.** When a sentence introduces a "but," "however," or shifts perspective, start a new paragraph. Don't bury the turn inside a block of text.
 
@@ -70,7 +81,7 @@ People scroll. Shorter paragraphs are almost always better for keeping people re
 >
 > AI agents are different. A single run might involve multiple LLM calls, tool executions, and handoffs.
 
-The line break before the contrasting point creates visual emphasis. This is standard in online writing even though it breaks traditional paragraph rules.
+The line break before the contrasting point creates visual emphasis. Use the break where it helps the reader follow the argument.
 
 **One idea per paragraph.** If a paragraph covers two distinct points, split it. Three-sentence paragraphs are fine. One-sentence paragraphs are fine for emphasis.
 
@@ -78,17 +89,17 @@ The line break before the contrasting point creates visual emphasis. This is sta
 
 ## SEO for Developer Content
 
-When targeting a competitive search query:
+For posts that answer a search query:
 
-**Lead generic, close specific.** The first 50-60% of the post should be tool-agnostic educational content (definitions, concepts, metrics, best practices). Introduce your product as an implementation example in the second half. Google ranks guides higher than product pages for informational queries.
+**Answer the query first.** For educational guides, explain the general concept before a Celesto implementation. For product announcements, state what changed and who benefits at the start. Do not force either format into a fixed product-to-education ratio.
 
-**Put keywords in H2s.** Generic headings are invisible to search. "Key metrics for AI agent monitoring" beats "What to measure." (See **Section Headings** below for good/bad examples.)
+**Use descriptive H2s.** Include relevant search terms where they help readers identify the section. Avoid keyword repetition.
 
-**Include a definitional section.** For any head term ("agent observability", "error monitoring"), top-ranking pages almost always have a "What is X?" section. Include one even if it feels basic.
+**Define unfamiliar terms.** Add a brief definition when the audience needs one, such as what an agent sandbox isolates. Do not add a basic section that repeats what the reader already knows.
 
-**Add an FAQ.** 3-4 questions targeting long-tail keywords at the bottom of the post. These can win featured snippets and People Also Ask boxes.
+**Use an FAQ only for unresolved questions.** Do not repeat the article or promise search placement.
 
-## AI Writing Patterns to Avoid
+## AI Prose Patterns to Avoid
 
 LLM-generated prose has tells. Flag and rewrite these:
 
@@ -113,82 +124,86 @@ LLM-generated prose has tells. Flag and rewrite these:
 - Good: "Metrics show what's broken, but traces are where you'll actually figure out why."
 
 **Personality only in the bookends.** AI drafts open with a personal anecdote, go impersonal for 80% of the post, then close with a CTA. The author's voice should persist throughout.
-- Bad: Personal intro → clinical middle → "Try Sentry for free."
+- Bad: Personal intro → clinical middle → "Try Celesto now."
 - Good: First-person asides woven through the post: "this is the part that tripped me up" / "I would have blamed the wrong service."
 
 ## Section Headings Must Convey Information
 
 **Weak:** "Background," "Architecture," "Results," "Conclusion"
 
-**Strong:** "Why time-series pre-aggregation destroys debugging context," "The scatter-gather approach to distributed GROUP BY," "Where this breaks down: the cardinality wall"
+**Strong:** "What a microVM isolates from the host," "How cache keys affect CI job duration," "Why a public preview needs an active app process"
 
 ## Technical Quality Standards
 
-**Numbers over adjectives.** If you make a performance claim, include the number.
-- Bad: "This significantly reduced our error processing time."
-- Good: "This reduced our p99 error processing time from 340ms to 45ms — a 7.5× improvement."
+**Numbers over adjectives.** Support performance claims with measured results and a reproducible method. State the workload, hardware, versions, sample size, and relevant controls. Do not present one benchmark as a universal result or invent numbers for a draft.
+- Bad: "Celesto makes every CI job faster."
+- Good: "For the cache-hit job in our published comparison, Celesto CI took 24 seconds on 1 vCPU; GitHub took 31 seconds on 2 vCPUs." See `src/data/blog/celesto-ci-dependency-cache.md` for the source and limitations.
 
-**Code must work.** If a post includes code, test it. Include imports, configuration, and context. Comments should explain *why*, not *what*.
+**Code must work.** If a post includes code, test it. Include imports, configuration, and context. Comments should explain **why**, not repeat **what** the code does. Verify current APIs, product capabilities, prices, and security claims against authoritative sources before publication. If a claim lacks evidence, flag the gap instead of guessing.
 
-**Diagrams for systems.** If you describe a system with more than two interacting components, include a diagram. Label with real service names, not generic boxes.
+**Diagrams for systems.** If you describe a system with more than two interacting components, include a diagram. Label with real component names, not generic boxes. Use only components supported by the source.
 
-**Honesty over hype.** Never overstate what a feature does. Acknowledge limitations. If something is in beta, say so. If a competitor does something well, it's okay to note that. Do not claim AI features are more capable than they are — "Seer suggests a likely root cause" ≠ "Seer finds the root cause."
+**Honesty over hype.** Never overstate what a feature does. Acknowledge limitations. If something is in beta, say so. If a competitor does something well, it's okay to note that. Distinguish what the agent requests from what Celesto executes and isolates. Do not claim a sandbox prevents every attack or that an agent always completes a task. State security boundaries, required permissions, persistence limits, and failure modes where relevant.
 
 ## Title Guidelines
 
 The title is the highest-leverage sentence in the post. It must stop a developer scrolling through their RSS feed or Twitter.
 
 **Strong titles** make a specific claim, tell a story, or promise a specific payoff:
-- "The metrics product we built worked. But we killed it and started over anyway"
-- "How we reduced release delays by 5% by fixing Salt"
-- "Your JavaScript bundle has 47% dead code. Here's how to find it."
+- "How to Run Pi Coding Agent on a Celesto Cloud Computer"
+- "Run Docker and Compose CI from Your Personal GitHub Account"
+- "How qcow2 Overlays Work in QEMU"
+
+These titles come from existing repository posts. Use numerical claims in a title only when the post supplies evidence.
 
 **Weak titles** are vague announcements:
-- "Introducing our new metrics product"
-- "Performance improvements in Sentry"
-- "AI-powered debugging with Seer"
+- "Our new cloud features"
+- "Performance improvements in Celesto"
+- "The future of AI agents"
 
-## The Closing
+## End with a Useful Next Step
 
-End with something useful: a link to docs, source code, a way to try it, or a call to give feedback. Never end with generic hype ("We can't wait to see what you build!"), recaps of what you just said, or product-page CTAs ("Try Sentry for free. Included on all plans."). Connect back to the story you opened with, or give the reader something concrete to do next.
+End with something useful: a link to docs, source code, a way to try it, or a call to give feedback. Never end with generic hype ("We can't wait to see what you build!"), recaps of what you just said, or product-page CTAs ("Try Celesto for free. Included on all plans."). Connect back to the story you opened with, or give the reader something concrete to do next. Verify the destination and do not invent free plans, availability, or guarantees.
 
 ## Post Types
 
 Here's the quick map by post type:
 
-| Type | Goal | Byline |
-|------|------|--------|
-| Engineering Deep Dive | Explain a technical system/decision so other engineers learn | The engineer(s) who built it. Always. |
-| Product Launch | Explain what shipped, why it matters, how to use it | PM, engineer, or DevEx. Not PMM unless marketing built it. |
-| Postmortem | Transparent failure analysis with timeline and fixes | Engineering leadership |
-| Data / Research | Original insights from Sentry's unique data position | Data team, engineering, or research |
-| Tutorial / Guide | Help a developer accomplish something specific | DevEx, engineer, or community contributor |
+| Type | Reader payoff | Evidence to include |
+|------|---------------|---------------------|
+| Engineering Deep Dive | Understand a technical decision and its trade-offs | Actual architecture, alternatives, and limitations |
+| Product Launch | Know what changed, who benefits, and how to use it | Verified capabilities, prerequisites, and docs |
+| Postmortem | Learn from a concrete failure | Confirmed timeline, impact, cause, and fixes |
+| Data / Research | Assess an original result | Dataset provenance, method, controls, and uncertainty |
+| Tutorial / Guide | Complete a specific task | Tested steps, expected output, and failure modes |
+
+Preserve an existing byline. For a new post, use `author: Celesto AI` unless the user specifies a named author or a community contribution credits its author. Never invent a person, role, or team structure.
 
 ## The "Would I Share This?" Test
 
-Before publishing, ask: Would a developer share this post? Does it have a shot at getting on Hacker News? If the answer is no, the post either needs more depth, more original insight, or it belongs in the changelog instead.
+Before publication, ask: Would a developer share this post? Would it help someone complete a task or make a technical decision? If not, add the missing evidence or practical detail. Routine release notes belong in the changelog.
 
-Posts worth sharing contain at least one of:
+Useful posts contain at least one of:
 - A technical decision explained with trade-offs
 - Original data or research not found elsewhere
 - A real-world debugging story with specific details
-- An honest accounting of something that went wrong
+- An honest account of something that went wrong
 - A how-to that saves the reader real time
 
 ## Non-Negotiables (Quick Reference)
 
-1. Never publish without a real person's name on it. No "The Sentry Team" bylines.
+1. Use the repository’s author convention; preserve named and community authors.
 2. Never publish code that doesn't work.
 3. Never say "we're excited to announce." Just announce it.
 4. If you describe a system, include a diagram.
 5. If you make a performance claim, include the number.
 6. If you discuss a decision, explain what you didn't choose and why.
-7. Every post must have a clear "who is this for" in the author's mind before writing.
+7. Every post must have a clear "who is this for" in the author's mind before the first draft.
 8. Changelogs belong in the changelog. Blog posts should offer something more.
-9. When in doubt, go deeper. The risk of being too shallow is far greater than being too detailed.
+9. Add enough depth to support the reader’s task. Put advanced detail after the practical explanation; cut repetition.
 10. Write the post you wish existed when you were trying to solve this problem.
 
-## When Reviewing or Editing a Draft
+## Draft Review
 
 Run through both checklists:
 
@@ -200,7 +215,9 @@ Run through both checklists:
 - No oversimplifications that would make an expert cringe
 
 **Editorial Review:**
-- Opening hooks reader within 2 sentences
+- Intro establishes reader value within 2 sentences
+- Detail progresses from practical outcome to internals
+- No gerunds in authored prose or headings; no italics
 - Passes the "would I share this?" test
 - No corporate language, filler, or fluff
 - Headings convey information
@@ -208,8 +225,14 @@ Run through both checklists:
 - Title is specific and compelling
 
 **Final Check:**
-- Author byline is correct (real person's name)
-- Links to docs/getting-started included
+- Author matches the repository convention or the credited contributor
+- Relevant docs, source, or next-step links are verified
 - Post doesn't duplicate what's in the changelog
 
-When providing feedback, be specific and constructive. Quote the weak passage, explain why it's weak, and rewrite it to show the standard.
+For draft feedback, be specific and constructive. Quote the weak passage, explain why it's weak, and rewrite it to show the standard.
+
+## Repository Content Check
+
+For a new post, follow `AGENTS.md` and `src/content.config.ts`. Put Markdown under `src/data/blog/` and use the frontmatter conventions from adjacent posts. Set author, publication date, title, tags, description, and draft status deliberately; never invent a publication date or change an existing one without a reason. Keep internal blog links under `/blog/` with the repository’s trailing-slash convention.
+
+Keep requested drafts as drafts. A request to write or review a post does not authorize publication or deployment.
