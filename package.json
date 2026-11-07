@@ -9,6 +9,7 @@
     "sync": "astro sync",
     "deploy": "npm run build && wrangler deploy",
     "astro": "astro",
+    "test:security": "node --test scripts/check-publication.mjs",
     "format:check": "prettier --check .",
     "format": "prettier --write .",
     "lint": "eslint ."

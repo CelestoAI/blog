@@ -27,6 +27,11 @@ description: A short summary of the blog post for SEO and previews.
 ---
 ```
 
+Production output excludes drafts and posts more than 15 minutes before
+`pubDatetime`. This policy covers article pages, archives, social preview images,
+search, and sitemaps. A new build is required when a scheduled post becomes due.
+The dev server permits future dates so authors can preview a post locally.
+
 ## 👨🏻‍💻 Local Development
 
 1. **Install dependencies:**
@@ -43,14 +48,25 @@ description: A short summary of the blog post for SEO and previews.
 
 ## 🧞 Commands
 
-| Command           | Action                                            |
-| :---------------- | :------------------------------------------------ |
-| `npm install`     | Installs dependencies                             |
-| `npm run dev`     | Starts local dev server at `localhost:4321/blog/` |
-| `npm run build`   | Builds the production site to `./dist/`           |
-| `npm run preview` | Previews the build locally                        |
-| `npm run format`  | Formats code with Prettier                        |
-| `npm run lint`    | Lints code with ESLint                            |
+| Command                 | Action                                                                 |
+| :---------------------- | :--------------------------------------------------------------------- |
+| `npm install`           | Installs dependencies                                                  |
+| `npm run dev`           | Starts local dev server at `localhost:4321/blog/`                      |
+| `npm run build`         | Builds the production site to `./dist/`                                |
+| `npm run preview`       | Previews the build locally                                             |
+| `npm run format`        | Formats code with Prettier                                             |
+| `npm run lint`          | Lints code with ESLint                                                 |
+| `npm run test:security` | Checks publication, images, and response headers in a disposable build |
+
+## Response security
+
+Cloudflare static assets use `public/_headers`; Astro pages and endpoints use
+`src/middleware.ts`. Both apply MIME, referrer, and frame policies. The HTTP
+frame policy supplements Astro's existing script and style CSP rules.
+
+Article images use build-time optimization. Runtime image requests serve allowed
+source images without a Cloudflare Images transform. Local secrets belong in
+ignored `.env*` or `.dev.vars*` files; example files may remain in version control.
 
 ## Social preview images
 

@@ -7,6 +7,7 @@ import Footer from "@/components/Footer.astro";
 import Card from "@/components/Card.astro";
 import getPostsByGroupCondition from "@/utils/getPostsByGroupCondition";
 import { SITE } from "@/config";
+import postFilter from "@/utils/postFilter";
 
 export const prerender = true;
 
@@ -15,7 +16,7 @@ if (!SITE.showArchives) {
   return Astro.redirect("/404");
 }
 
-const posts = await getCollection("blog", ({ data }) => !data.draft);
+const posts = await getCollection("blog", postFilter);
 
 const months = [
   "January",

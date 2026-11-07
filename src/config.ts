@@ -1,3 +1,5 @@
+export const BLOG_PATH = "src/data/blog";
+
 export const SITE = {
   website: "https://celesto.ai/blog/", // replace this with your deployed domain
   basePath: "/blog", // base path for all internal links (used because site is served via Vercel rewrite)

@@ -1,4 +1,10 @@
-import { defineConfig, envField, fontProviders } from "astro/config";
+import {
+  defineConfig,
+  envField,
+  fontProviders,
+  passthroughImageService,
+  sharpImageService,
+} from "astro/config";
 import { unified } from "@astrojs/markdown-remark";
 import tailwindcss from "@tailwindcss/vite";
 import sitemap from "@astrojs/sitemap";
@@ -81,9 +87,28 @@ export default defineConfig({
   },
   output: "server",
   adapter: cloudflare({
+    // Blog images are static; optimize them at build time without runtime transforms.
+    imageService: "compile",
     prerenderEnvironment: "node",
   }),
   integrations: [
+    {
+      name: "node-build-images",
+      hooks: {
+        "astro:config:setup": ({ command, updateConfig }) => {
+          if (command !== "build") return;
+          // The adapter's default build service is an identity transform in Node.
+          updateConfig({
+            image: {
+              service: {
+                build: sharpImageService(),
+                runtime: passthroughImageService(),
+              },
+            },
+          });
+        },
+      },
+    },
     sitemap({
       entryLimit: 50_000,
       filter: page => SITE.showArchives || !page.endsWith("/archives"),
