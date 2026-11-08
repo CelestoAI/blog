@@ -1,5 +1,4 @@
-import { BLOG_PATH } from "@/content.config";
-import { SITE } from "@/config";
+import { BLOG_PATH, SITE } from "@/config";
 import { slugifyStr } from "./slugify";
 
 /**
